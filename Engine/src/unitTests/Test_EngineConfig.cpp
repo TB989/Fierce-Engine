@@ -1,24 +1,20 @@
-#include <iostream>
-
-#include<windows.h>
-
-#include "DLLTest.h"
+#include "UnitTests.h"
 
 #include "Logger.h"
-
-#include <time.h>
+#include <Windows.h>
+#include "DLLTest.h"
+#include <iostream>
 
 PFNTESTFUNCPROC testFunc;
 
-int main() {
-
+Test_EngineConfig::Test_EngineConfig() {
     Logger* logger = new Logger("Test");
     logger->info("Hello World!");
     delete logger;
 
     bool useVulkan = true;
 
-    HINSTANCE instance=NULL;
+    HINSTANCE instance = NULL;
 
     if (useVulkan) {
         instance = LoadLibrary(TEXT("../bin/VulkanRenderer.dll"));
@@ -29,20 +25,33 @@ int main() {
 
     if (instance == NULL) {
         std::cout << "Unable to load renderer!";
-        return 0;
     }
     else {
         testFunc = (PFNTESTFUNCPROC)GetProcAddress(instance, "testFunc");
 
         if (!testFunc) {
             std::cout << "Unable to load function!";
-            return 0;
         }
-
-        testFunc();
+        else {
+            testFunc();
+        }
 
         FreeLibrary(instance);
     }
+}
 
-    return 0;
+void Test_EngineConfig::init() {
+
+}
+
+void Test_EngineConfig::update() {
+
+}
+
+void Test_EngineConfig::render() {
+
+}
+
+void Test_EngineConfig::cleanUp() {
+
 }

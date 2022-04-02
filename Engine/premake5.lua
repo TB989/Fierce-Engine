@@ -9,6 +9,8 @@ project "Engine"
 	
 	defines
 	{
+		"WIN32_LEAN_AND_MEAN",
+		"NOMINMAX",
 		"DLL_IMPORT"
 	}
 
@@ -17,11 +19,13 @@ project "Engine"
 		"src/**.h",
 		"src/**.cpp",
 		"premake5.lua",
+		"Engine.ini",
 		"%{IncludeDir.Common}/**.h"
 	}
 
 	includedirs
 	{
+		"../%{prj.name}/src",
 		"%{IncludeDir.Common}"
 	}
 	
