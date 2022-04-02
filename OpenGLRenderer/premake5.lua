@@ -22,6 +22,7 @@ project "OpenGLRenderer"
 
 	includedirs
 	{
+		"../%{prj.name}/src",
 		"%{IncludeDir.Common}"
 	}
 	

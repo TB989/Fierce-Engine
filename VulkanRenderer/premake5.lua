@@ -22,6 +22,7 @@ project "VulkanRenderer"
 
 	includedirs
 	{
+		"../%{prj.name}/src",
 		"%{IncludeDir.Common}"
 	}
 	

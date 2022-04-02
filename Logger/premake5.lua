@@ -21,7 +21,7 @@ project "Logger"
 
 	includedirs
 	{
-
+		"../%{prj.name}/src"
 	}
 	
 	libdirs 
