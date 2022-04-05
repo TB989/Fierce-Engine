@@ -14,10 +14,39 @@ Core::Core() {
 	else {
 		m_settings.parse(settings);
 	}
+
+	switch (m_settings.api) {
+	case API::OPEN_GL:
+		Core::LOGGER->info("Loading rendering library OpenGL.");
+		m_renderer = LoadLibrary(TEXT("../bin/OpenGLRenderer.dll"));
+		break;
+	case API::VULKAN:
+		Core::LOGGER->info("Loading rendering library Vulkan.");
+		m_renderer = LoadLibrary(TEXT("../bin/VulkanRenderer.dll"));
+		break;
+	default:
+		Core::LOGGER->warn("Rendering library is not supported, loading OpenGL.");
+		m_renderer = LoadLibrary(TEXT("../bin/OpenGLRenderer.dll"));
+		break;
+	}
+	if (m_renderer == NULL) {
+		Core::LOGGER->error("Unable to load renderer!");
+	}
+	else {
+		initRenderer = (PFN_INIT_RENDERER_PROC)GetProcAddress(m_renderer, "initRenderer");
+
+		if (!initRenderer) {
+			Core::LOGGER->error("Unable to load function!");
+		}
+		else {
+			initRenderer();
+		}
+	}
+
 }
 
 Core::~Core() {
-	
+	FreeLibrary(m_renderer);
 }
 
 void Core::run() {

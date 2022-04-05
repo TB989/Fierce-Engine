@@ -23,7 +23,8 @@ project "OpenGLRenderer"
 	includedirs
 	{
 		"../%{prj.name}/src",
-		"%{IncludeDir.Common}"
+		"%{IncludeDir.Common}",
+		"%{IncludeDir.External}"
 	}
 	
 	libdirs 
@@ -33,6 +34,7 @@ project "OpenGLRenderer"
 
 	links 
 	{
+		"%{Library.OpenGL}",
 		"%{Library.Logger}"
 	}
 	

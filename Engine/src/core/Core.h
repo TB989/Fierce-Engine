@@ -3,6 +3,9 @@
 #include "EngineSettings.h"
 #include "Logger.h"
 
+#include <Windows.h>
+#include "DLLTest.h"
+
 class Core {
 private:
 	void coreInit();
@@ -25,7 +28,9 @@ public:
 public:
 	static Logger* LOGGER;
 
-private:
+protected:
 	EngineSettings m_settings = {};
-	
+
+	HINSTANCE m_renderer = NULL;
+	PFN_INIT_RENDERER_PROC initRenderer=nullptr;
 };
