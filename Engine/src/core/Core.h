@@ -3,6 +3,8 @@
 #include "EngineSettings.h"
 #include "Logger.h"
 
+#include "system/window/WindowSystem.h"
+
 #include <Windows.h>
 #include "DLLTest.h"
 
@@ -28,9 +30,13 @@ public:
 public:
 	static Logger* LOGGER;
 
+	//Window system
+	WindowSystem* windowSystem;
+
+	//Renderer
+	HINSTANCE m_renderer = NULL;
+	PFN_INIT_RENDERER_PROC initRenderer = nullptr;
+
 protected:
 	EngineSettings m_settings = {};
-
-	HINSTANCE m_renderer = NULL;
-	PFN_INIT_RENDERER_PROC initRenderer=nullptr;
 };

@@ -1,16 +1,21 @@
 #include <Windows.h>
-#include <exception>
+
+#include "core/FierceExceptions.h"
+#include "core/Core.h"
 
 #include "unitTests/UnitTests.h"
 
 int main() {
 
+	Test_EngineConfig* app;
+
 	try {
-		Test_EngineConfig* app=new Test_EngineConfig();
+		app=new Test_EngineConfig();
 		app->run();
 		delete app;
 	}
-	catch (...) {
+	catch (const Fierce_Exception& e) {
+		Core::LOGGER->error(e.what());
 		return EXIT_FAILURE;
 	}
 

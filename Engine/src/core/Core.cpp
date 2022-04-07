@@ -15,6 +15,10 @@ Core::Core() {
 		m_settings.parse(settings);
 	}
 
+	//Load Window
+	windowSystem = new WindowSystem(&m_settings);
+
+	//Load Renderer
 	switch (m_settings.api) {
 	case API::OPEN_GL:
 		Core::LOGGER->info("Loading rendering library OpenGL.");
@@ -47,6 +51,8 @@ Core::Core() {
 
 Core::~Core() {
 	FreeLibrary(m_renderer);
+
+	delete windowSystem;
 }
 
 void Core::run() {
