@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Windows.h>
+#include "Common.h"
 
 typedef HGLRC WINAPI wglCreateContextAttribsARB_type(HDC hdc, HGLRC hShareContext, const int* attribList);
 extern wglCreateContextAttribsARB_type* wglCreateContextAttribsARB;

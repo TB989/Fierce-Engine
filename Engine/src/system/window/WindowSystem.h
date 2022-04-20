@@ -2,12 +2,11 @@
 
 #include "core/EngineSettings.h"
 #include "core/FierceExceptions.h"
+#include "FierceWindow.h"
 
 #include <Windows.h>
 #include <windowsx.h>
 #include <map>
-
-class FierceWindow;
 
 class WindowSystem {
 public:

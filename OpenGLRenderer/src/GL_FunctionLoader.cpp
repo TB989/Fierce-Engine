@@ -1,7 +1,6 @@
 #include "GL_FunctionLoader.h"
 
-#include "Main.h"
-#include "GL_Include.h"
+#include "Common.h"
 
 //**********Vertex arrays**************************
 PFNGLGENVERTEXARRAYSPROC glGenVertexArrays;
@@ -52,7 +51,7 @@ PFNGLUNIFORMMATRIX4FVPROC glUniformMatrix4fv;
 void* getGLFunctionPointer(const char* name) {
 	void* p = (void*)wglGetProcAddress(name);
 	if (p == 0 || (p == (void*)0x1) || (p == (void*)0x2) || (p == (void*)0x3) || (p == (void*)-1)) {
-		Main::LOGGER->error("Failed to load function %s.", name);
+		LOGGER->error("Failed to load function %s.", name);
 	}
 
 	return p;

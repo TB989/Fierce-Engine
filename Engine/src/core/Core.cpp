@@ -17,6 +17,8 @@ Core::Core() {
 
 	//Load Window
 	windowSystem = new WindowSystem(&m_settings);
+	dummyWindow = windowSystem->getDummyWindow();
+	window = windowSystem->getWindow();
 
 	//Load Renderer
 	switch (m_settings.api) {
@@ -43,7 +45,7 @@ Core::Core() {
 			Core::LOGGER->error("Unable to load function!");
 		}
 		else {
-			initRenderer();
+			initRenderer(dummyWindow->getHandle(),window->getHandle());
 		}
 	}
 

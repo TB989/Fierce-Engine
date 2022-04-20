@@ -9,6 +9,7 @@ project "VulkanRenderer"
 	
 	defines
 	{
+		"VK_USE_PLATFORM_WIN32_KHR",
 		"DLL_EXPORT"
 	}
 
@@ -23,17 +24,20 @@ project "VulkanRenderer"
 	includedirs
 	{
 		"../%{prj.name}/src",
-		"%{IncludeDir.Common}"
+		"%{IncludeDir.Common}",
+		"%{IncludeDir.Vulkan}"
 	}
 	
 	libdirs 
 	{
-		"%{LibraryDir.Common}"
+		"%{LibraryDir.Common}",
+		"%{LibraryDir.Vulkan}"
 	}
 
 	links 
 	{
-		"%{Library.Logger}"
+		"%{Library.Logger}",
+		"%{Library.Vulkan}"
 	}
 	
 	filter "system:windows"

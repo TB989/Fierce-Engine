@@ -31,7 +31,9 @@ public:
 	static Logger* LOGGER;
 
 	//Window system
-	WindowSystem* windowSystem;
+	WindowSystem* windowSystem=nullptr;
+	FierceWindow* dummyWindow=nullptr;
+	FierceWindow* window=nullptr;
 
 	//Renderer
 	HINSTANCE m_renderer = NULL;

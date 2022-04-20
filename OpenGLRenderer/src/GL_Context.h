@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Windows.h>
+#include "Common.h"
 
 class GL_Context{
 public:
-	GL_Context();
+	GL_Context(HWND dummyWindowHandle,HWND windowHandle);
 	~GL_Context();
 
 	void swapBuffers();
@@ -18,11 +18,11 @@ private:
 	void deleteContext();
 
 private:
-	HWND dummyHandle = nullptr;
+	HWND m_dummyHandle = nullptr;
 	HDC dummyHDC = nullptr;
 	HGLRC dummyContext = nullptr;
 
-	HWND windowHandle = nullptr;
+	HWND m_windowHandle = nullptr;
 	HDC openGLHDC = nullptr;
 	HGLRC openGLContext = nullptr;
 };

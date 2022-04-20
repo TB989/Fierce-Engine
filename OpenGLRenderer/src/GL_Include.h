@@ -1,22 +1,9 @@
 #pragma once
 
-/* Includes:
-*  -Parent class
-*  -Objects: Object myObject;
-*/
+#include "Common.h"
 
-/* SystemIncludes*/
-#include <Windows.h>
 #include "gl/GL.h"
 #include "openGL/glext.h"
-
-/* Forward declarations: 
-*  -Pointers:  Pointer* myPointer;
-*              Reference& myReference;
-*  -Functions: Object MyFunction(Object myObject);
-*              Pointer* MyFunction(Pointer* myPointer);
-*              Reference& MyFunction(Reference& myReference);
-*/
 
 //**********Buffers********************************
 extern PFNGLGENBUFFERSPROC glGenBuffers;
