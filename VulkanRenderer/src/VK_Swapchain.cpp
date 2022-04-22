@@ -1,7 +1,5 @@
 #include "VK_Swapchain.h"
 
-#include "src/core/Exceptions.h"
-
 VK_Swapchain::VK_Swapchain(VK_Device* device, VkSurfaceKHR surface){
 	m_device = device;
 	m_surface = surface;

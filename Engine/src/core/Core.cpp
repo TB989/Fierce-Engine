@@ -47,6 +47,15 @@ Core::Core() {
 		else {
 			initRenderer(dummyWindow->getHandle(),window->getHandle());
 		}
+
+		cleanUpRenderer = (PFN_CLEAN_UP_RENDERER_PROC)GetProcAddress(m_renderer, "cleanUpRenderer");
+
+		if (!cleanUpRenderer) {
+			Core::LOGGER->error("Unable to load function!");
+		}
+		else {
+			cleanUpRenderer();
+		}
 	}
 
 }

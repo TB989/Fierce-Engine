@@ -1,27 +1,10 @@
 #pragma once
 
-/* Includes:
-*  -Parent class
-*  -Objects: Object myObject;
-*/
-
-/* SystemIncludes*/
-#include "vulkan/vulkan.h"
-#include <Windows.h>
-
-/* Forward declarations: 
-*  -Pointers:  Pointer* myPointer;
-*              Reference& myReference;
-*  -Functions: Object MyFunction(Object myObject);
-*              Pointer* MyFunction(Pointer* myPointer);
-*              Reference& MyFunction(Reference& myReference);
-*/
-class Core;
-struct WindowSendHandleEvent;
+#include "Common.h"
 
 class VK_Surface{
 public:
-	VK_Surface(Core* core, VkInstance instance);
+	VK_Surface(VkInstance instance, HWND windowHandle);
 	~VK_Surface();
 
 	void create();
@@ -29,9 +12,6 @@ public:
 
 private:
 	VkInstance m_instance=VK_NULL_HANDLE;
-	HWND windowHandle = nullptr;
+	HWND m_windowHandle = nullptr;
 	VkSurfaceKHR surface=VK_NULL_HANDLE;
-
-private:
-	void onHandleReceived(WindowSendHandleEvent* evt);
 };

@@ -1,17 +1,13 @@
 #pragma once
 
-#include "src/utils/FierceStrings.h"
+#include "Common.h"
+
 #include "VK_Helper_Extensions_ValidationLayers.h"
 #include "VK_CompatibilityChecks.h"
 
-#include "vulkan/vulkan.h"
-#include <vector>
-
-struct EngineSettings;
-
 class VK_Instance{
 public:
-	VK_Instance(EngineSettings* settings);
+	VK_Instance();
 	~VK_Instance();
 
 public:
@@ -40,7 +36,7 @@ private:
 	VkDebugUtilsMessengerEXT debugMessenger;
 
 private:
-	uint32_t API_VERSION;
+	uint32_t API_VERSION= VK_MAKE_VERSION(1,0,0);
 	std::string APP_NAME = "FIERCE-APP";
 	uint32_t APP_VERSION= VK_MAKE_VERSION(1, 0, 0);
 	std::string ENGINE_NAME = "FIERCE-ENGINE";

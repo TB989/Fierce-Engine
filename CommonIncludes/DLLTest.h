@@ -1,7 +1,7 @@
 #pragma once
 
-typedef void (* PFNTESTFUNCPROC)();
-extern PFNTESTFUNCPROC testFunc;
-
 typedef bool (*PFN_INIT_RENDERER_PROC)(HWND dummyWindowHandle,HWND windowHandle);
-extern PFNTESTFUNCPROC initRenderer;
+extern PFN_INIT_RENDERER_PROC initRenderer;
+
+typedef bool (*PFN_CLEAN_UP_RENDERER_PROC)();
+extern PFN_CLEAN_UP_RENDERER_PROC cleanUpRenderer;

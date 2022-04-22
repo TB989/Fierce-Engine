@@ -8,7 +8,7 @@ class VK_Device;
 
 class VK_Context{
 public:
-	VK_Context();
+	VK_Context(HWND windowHandle);
 	~VK_Context();
 
 	VK_Device* getDevice() { return device; }

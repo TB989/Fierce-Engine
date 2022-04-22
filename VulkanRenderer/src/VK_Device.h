@@ -1,13 +1,10 @@
 #pragma once
 
-#include "src/utils/FierceStrings.h"
-#include "VK_Helper_Extensions_ValidationLayers.h"
+#include "Common.h"
+
 #include "VK_CompatibilityChecks.h"
-
-#include "vulkan/vulkan.h"
-#include <vector>
-
-class VK_CommandBuffer;
+#include "VK_Helper_Extensions_ValidationLayers.h"
+#include "VK_Helper_Device.h"
 
 class VK_Device{
 public:
@@ -23,15 +20,11 @@ public:
 
 	SurfaceData* getSurfaceData() { return &surfaceData; }
 
-	VK_CommandBuffer* getCommandBuffer();
-
 private:
 	void pickPhysicalDevice();
 	bool checkDeviceCompatibility(ExtensionValidationLayerData* data, DeviceData* deviceData, SurfaceData* surfaceData);
 
 	void createLogicalDevice();
-
-	void createCommandPool();
 
 private:
 	VkInstance m_instance=VK_NULL_HANDLE;
@@ -47,6 +40,4 @@ private:
 	VkDevice device=VK_NULL_HANDLE;
 	VkQueue graphicsQueue=VK_NULL_HANDLE;
 	VkQueue transferQueue = VK_NULL_HANDLE;
-
-	VkCommandPool commandPool;
 };

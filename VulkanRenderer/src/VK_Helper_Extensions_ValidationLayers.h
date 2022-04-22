@@ -1,52 +1,34 @@
 #pragma once
 
-/* Includes:
-*  -Parent class
-*  -Objects: Object myObject;
-*/
-#include "src/system/logging/Logger.h"
-#include "src/utils/FierceStrings.h"
-#include "src/core/Exceptions.h"
-
-/* SystemIncludes*/
-#include "vulkan/vulkan.h"
-#include <vector>
-
-/* Forward declarations: 
-*  -Pointers:  Pointer* myPointer;
-*              Reference& myReference;
-*  -Functions: Object MyFunction(Object myObject);
-*              Pointer* MyFunction(Pointer* myPointer);
-*              Reference& MyFunction(Reference& myReference);
-*/
+#include "Common.h"
 
 class VK_Helper_Extensions_ValidationLayers{
 public:
     static void printExtensions(bool isInstance,std::string type,std::vector<VkExtensionProperties> *extensions) {
-        Loggers::VK->info("### Number of %s %s extensions: %i ###", type.c_str(), isInstance? "instance":"device",extensions->size());
+        LOGGER->info("### Number of %s %s extensions: %i ###", type.c_str(), isInstance? "instance":"device",extensions->size());
         for (const auto& extension : *extensions) {
-            Loggers::VK->info("\t%s", extension.extensionName);
+            LOGGER->info("\t%s", extension.extensionName);
         }
     }
 
     static void printExtensions(bool isInstance, std::string type, std::vector<const char*> *extensions) {
-        Loggers::VK->info("### Number of %s %s extensions: %i ###", type.c_str(), isInstance ? "instance" : "device", extensions->size());
+        LOGGER->info("### Number of %s %s extensions: %i ###", type.c_str(), isInstance ? "instance" : "device", extensions->size());
         for (const auto& extension : *extensions) {
-            Loggers::VK->info("\t%s", extension);
+            LOGGER->info("\t%s", extension);
         }
     }
 
     static void printValidationLayers(bool isInstance, std::string type, std::vector<VkLayerProperties> *layers) {
-        Loggers::VK->info("### Number of %s %s validation layers: %i ###", type.c_str(), isInstance ? "instance" : "device", layers->size());
+        LOGGER->info("### Number of %s %s validation layers: %i ###", type.c_str(), isInstance ? "instance" : "device", layers->size());
         for (const auto& layer : *layers) {
-            Loggers::VK->info("\t%s", layer.layerName);
+            LOGGER->info("\t%s", layer.layerName);
         }
     }
 
     static void printValidationLayers(bool isInstance, std::string type, std::vector<const char*> *layers) {
-        Loggers::VK->info("### Number of %s %s validation layers: %i ###", type.c_str(), isInstance ? "instance" : "device", layers->size());
+        LOGGER->info("### Number of %s %s validation layers: %i ###", type.c_str(), isInstance ? "instance" : "device", layers->size());
         for (const auto& layer : *layers) {
-            Loggers::VK->info("\t%s", layer);
+            LOGGER->info("\t%s", layer);
         }
     }
 
@@ -88,7 +70,7 @@ public:
                 enabledExtensions->push_back(extension);
             }
             else {
-                Loggers::VK->error("Required extension %s is not supported.", extension);
+                LOGGER->error("Required extension %s is not supported.", extension);
                 CHECK_VK(VK_ERROR_EXTENSION_NOT_PRESENT, "Required extensions are not supported.");
             }
         }
@@ -98,7 +80,7 @@ public:
                 enabledExtensions->push_back(extension);
             }
             else {
-                Loggers::VK->warn("Desired extension %s is not supported.", extension);
+                LOGGER->warn("Desired extension %s is not supported.", extension);
             }
         }
     }
@@ -141,7 +123,7 @@ public:
                 enabledLayers->push_back(layer);
             }
             else {
-                Loggers::VK->error("Required validation layer %s is not supported.", layer);
+                LOGGER->error("Required validation layer %s is not supported.", layer);
                 CHECK_VK(VK_ERROR_EXTENSION_NOT_PRESENT, "Required valiation layers are not supported.");
             }
         }
@@ -151,7 +133,7 @@ public:
                 enabledLayers->push_back(layer);
             }
             else {
-                Loggers::VK->warn("Desired validation layer %s is not supported.", layer);
+                LOGGER->warn("Desired validation layer %s is not supported.", layer);
             }
         }
     }

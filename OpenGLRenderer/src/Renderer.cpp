@@ -13,3 +13,11 @@ RENDERER_API bool initRenderer(HWND dummyWindowHandle,HWND windowHandle) {
 
     return true;
 }
+
+RENDERER_API bool cleanUpRenderer() {
+    LOGGER->info("Cleanning up renderer.");
+
+    delete context;
+
+    return true;
+}

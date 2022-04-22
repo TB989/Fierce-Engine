@@ -1,6 +1,6 @@
 #include "VK_Context.h"
 
-#include "Main.h"
+#include "Common.h"
 
 #include "VK_Instance.h"
 #include "VK_Surface.h"
@@ -8,19 +8,19 @@
 
 #include "VK_CompatibilityChecks.h"
 
-VK_Context::VK_Context(){
-	Main::LOGGER->info("Creating instance.");
+VK_Context::VK_Context(HWND windowHandle){
+	LOGGER->info("Creating instance.");
 	instance = new VK_Instance();
 	instance->addCheck(new VK_Check_Device_Extensions(true, { VK_KHR_SURFACE_EXTENSION_NAME, "VK_KHR_win32_surface" }));
 	instance->addCheck(new VK_Check_Device_Extensions(false, { VK_EXT_DEBUG_UTILS_EXTENSION_NAME }));
 	instance->addCheck(new VK_Check_Device_ValidationLayers(false, { "VK_LAYER_KHRONOS_validation" }));
 	instance->create();
 
-	Main::LOGGER->info("Creating window surface.");
-	surface = new VK_Surface(core,instance->getId());
+	LOGGER->info("Creating window surface.");
+	surface = new VK_Surface(instance->getId(),windowHandle);
 	surface->create();
 
-	Main::LOGGER->info("Creating device.");
+	LOGGER->info("Creating device.");
 	device = new VK_Device(instance->getId(),surface->getId());
 	device->addCheck(new VK_Check_Device_Extensions(true, { VK_KHR_SWAPCHAIN_EXTENSION_NAME }));
 	device->addCheck(new VK_Check_Device_ValidationLayers(false, { "VK_LAYER_KHRONOS_validation" }));
@@ -30,7 +30,7 @@ VK_Context::VK_Context(){
 	device->addCheck(new VK_Check_Device_Surface_PresentMode({ VK_PRESENT_MODE_MAILBOX_KHR, VK_PRESENT_MODE_FIFO_KHR }));
 	device->create();
 
-	Main::LOGGER->info("Creating swapchain.");
+	LOGGER->info("Creating swapchain.");
 	swapchain = new VK_Swapchain(device,surface->getId());
 	swapchain->create();
 }

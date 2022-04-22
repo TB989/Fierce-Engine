@@ -1,22 +1,12 @@
 #include "VK_Device.h"
 
-#include "src/core/Exceptions.h"
-#include "src/system/logging/Logger.h"
-#include "src/system/render/vulkan/VK_Helper_Device.h"
-#include "VK_CommandBuffer.h"
-
 VK_Device::VK_Device(VkInstance instance, VkSurfaceKHR surface){
     m_instance = instance;
     m_surface = surface;
 }
 
 VK_Device::~VK_Device() {
-    vkDestroyCommandPool(device, commandPool, nullptr);
     vkDestroyDevice(device, nullptr);
-}
-
-VK_CommandBuffer* VK_Device::getCommandBuffer(){
-    return new VK_CommandBuffer(device,commandPool);
 }
 
 void VK_Device::pickPhysicalDevice() {
@@ -57,7 +47,6 @@ void VK_Device::create() {
     createLogicalDevice();
     vkGetDeviceQueue(device, deviceData.graphicsQueueIndex, 0, &graphicsQueue);
     transferQueue = graphicsQueue;
-    createCommandPool();
 }
 
 void VK_Device::createLogicalDevice(){
@@ -97,14 +86,4 @@ void VK_Device::createLogicalDevice(){
     }
 
     CHECK_VK(vkCreateDevice(m_physicalDevice, &createInfo, nullptr, &device), "Failed to create logical device.");
-}
-
-void VK_Device::createCommandPool() {
-    VkCommandPoolCreateInfo poolInfo{};
-    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    poolInfo.pNext = nullptr;
-    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-    poolInfo.queueFamilyIndex = deviceData.graphicsQueueIndex;
-
-    CHECK_VK(vkCreateCommandPool(device, &poolInfo, nullptr, &commandPool), "Failed to create command pool.");
 }

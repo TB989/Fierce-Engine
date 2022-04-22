@@ -1,8 +1,6 @@
 #pragma once
 
-#include "vulkan/vulkan.h"
-
-#include <vector>
+#include "Common.h"
 
 struct ExtensionValidationLayerData {
 	std::vector<VkExtensionProperties> supportedExtensions;

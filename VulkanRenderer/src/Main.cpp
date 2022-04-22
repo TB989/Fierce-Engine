@@ -1,14 +1,10 @@
-#include "Main.h"
-
-#include <windows.h>
-
-Logger* Main::LOGGER = new Logger("VK");
+#include "Common.h"
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL,DWORD fdwReason,LPVOID lpReserved){
     switch (fdwReason)
     {
     case DLL_PROCESS_ATTACH:
-        Main::LOGGER->info("Process attached to Vulkan renderer.");
+        LOGGER->info("Process attached to Vulkan renderer.");
         break;
 
     case DLL_THREAD_ATTACH:
@@ -18,7 +14,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL,DWORD fdwReason,LPVOID lpReserved){
         break;
 
     case DLL_PROCESS_DETACH:
-        Main::LOGGER->info("Process dettached from Vulkan renderer.");
+        LOGGER->info("Process dettached from Vulkan renderer.");
         break;
     }
     return TRUE;

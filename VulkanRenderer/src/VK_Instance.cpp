@@ -1,14 +1,6 @@
 #include "VK_Instance.h"
 
-#include "src/core/EngineSettings.h"
-#include "src/core/Exceptions.h"
-#include "src/system/logging/Logger.h"
-
-#include <algorithm>
-
-VK_Instance::VK_Instance(EngineSettings* settings) {
-    API_VERSION= VK_MAKE_VERSION(settings->apiVersionMajor, settings->apiVersionMinor, 0);
-}
+VK_Instance::VK_Instance() {}
 
 VK_Instance::~VK_Instance() {
     if (isDebugSupported) {
@@ -60,7 +52,7 @@ void VK_Instance::create(){
     }
 
     if (isDebugSupported) {
-        Loggers::VK->info("Debug messenger is active.");
+        LOGGER->info("Debug messenger is active.");
 
         VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
         debugCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -80,7 +72,7 @@ void VK_Instance::create(){
         CHECK_VK(vkCreateDebugUtilsMessengerEXT(instance, &debugCreateInfo, nullptr, &debugMessenger), "Failed to create debug messenger.");
     }
     else {
-        Loggers::VK->info("Debug messenger is not active.");
+        LOGGER->info("Debug messenger is not active.");
         CHECK_VK(vkCreateInstance(&createInfo, nullptr, &instance), "Failed to create instance.");
     }
 }
@@ -116,6 +108,6 @@ PFN_vkDestroyDebugUtilsMessengerEXT VK_Instance::loadDestroyFunctionPointer(VkIn
 }
 
 VKAPI_ATTR VkBool32 VKAPI_CALL VK_Instance::debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
-    Loggers::VK->error("%s", pCallbackData->pMessage);
+    LOGGER->error("%s", pCallbackData->pMessage);
     return VK_FALSE;
 }
