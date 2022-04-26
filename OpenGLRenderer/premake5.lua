@@ -16,6 +16,8 @@ project "OpenGLRenderer"
 	{
 		"src/**.h",
 		"src/**.cpp",
+		"res/**.vs",
+		"res/**.fs",
 		"premake5.lua",
 		"%{IncludeDir.Common}/**.h"
 	}

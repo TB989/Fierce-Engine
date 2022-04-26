@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <Windows.h>
 
 #include "GL_Include.h"
