@@ -15,6 +15,10 @@ private:
 	void coreRender();
 	void coreCleanUp();
 
+	void loadRenderer();
+
+	bool running = false;
+
 protected:
 	virtual void init()=0;
 	virtual void update() = 0;
@@ -26,6 +30,7 @@ public:
 	~Core();
 
 	void run();
+	void stop() { running = false; }
 
 public:
 	static Logger* LOGGER;

@@ -6,10 +6,13 @@ LRESULT CALLBACK wndProcFierceWindow(HWND hWnd, UINT message, WPARAM wParam, LPA
 	FierceWindow* window = static_cast<FierceWindow*>(GetProp(hWnd, L"windowHandle"));
 	WindowSystem* windowSystem = static_cast<WindowSystem*>(GetProp(hWnd, L"windowSystem"));
 
+	Core* core = nullptr;
+
 	switch (message) {
 		//*** Window ***//
 	case WM_CLOSE:
-		//windowSystem->postEvent(new WindowCloseEvent());
+		core = windowSystem->getCore();
+		core->stop();
 		return 0;
 	case WM_SIZE:
 		//FIXME: Bug for fullscreen
@@ -19,7 +22,10 @@ LRESULT CALLBACK wndProcFierceWindow(HWND hWnd, UINT message, WPARAM wParam, LPA
 		return 0;
 		//*** Keyboard ***//
 	case WM_KEYDOWN:
-		//windowSystem->postEvent(new KeyDownEvent(wParam));
+		if (wParam == VK_ESCAPE) {
+			core = windowSystem->getCore();
+			core->stop();
+		}
 		return 0;
 	case WM_KEYUP:
 		//windowSystem->postEvent(new KeyUpEvent(wParam));
@@ -62,8 +68,9 @@ LRESULT CALLBACK wndProcFierceDummyWindow(HWND hWnd, UINT message, WPARAM wParam
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
-WindowSystem::WindowSystem(EngineSettings* settings) {
+WindowSystem::WindowSystem(EngineSettings* settings, Core* core) {
 	m_settings = settings;
+	m_core = core;
 	hInstance = GetModuleHandle(NULL);
 
 	CHECK_FIERCE(registerWindowClass(fierceWindowClassName, wndProcFierceWindow), "Failed to register window class for fierce window.");
