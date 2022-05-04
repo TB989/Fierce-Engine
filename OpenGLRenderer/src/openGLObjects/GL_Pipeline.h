@@ -6,6 +6,8 @@
 #include "GL_Shader.h"
 #include "GL_VertexAttribute.h"
 
+#include "Matrix.h"
+
 class GL_Pipeline {
 public:
 	GL_Pipeline(std::string name, GL_Shader* shader1, GL_Shader* shader2);
@@ -21,7 +23,7 @@ public:
 	void loadUniform(std::string location, float v1, float v2);
 	void loadUniform(std::string location, float v1, float v2, float v3);
 	void loadUniform(std::string location, float v1, float v2, float v3, float v4);
-	//void loadUniform(std::string location, Mat4* matrix);
+	void loadUniform(std::string location, Mat4* matrix);
 
 	void addVertexAttribute(GL_VertexAttribute* attribute);
 

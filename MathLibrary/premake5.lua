@@ -1,5 +1,5 @@
-project "OpenGLRenderer"
-	kind "SharedLib"
+project "MathLibrary"
+	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
 	staticruntime "on"
@@ -9,17 +9,14 @@ project "OpenGLRenderer"
 	
 	defines
 	{
-		"DLL_EXPORT"
+		
 	}
 
 	files
 	{
 		"src/**.h",
 		"src/**.cpp",
-		"res/**.vs",
-		"res/**.fs",
-		"premake5.lua",
-		"%{IncludeDir.Common}/**.h"
+		"premake5.lua"
 	}
 
 	includedirs
@@ -36,9 +33,7 @@ project "OpenGLRenderer"
 
 	links 
 	{
-		"%{Library.OpenGL}",
-		"%{Library.Logger}",
-		"%{Library.MathLibrary}"
+		"%{Library.Logger}"
 	}
 	
 	filter "system:windows"

@@ -7,6 +7,7 @@ void* getWGLFunctionPointer(const char* name) {
 	void* p = (void*)wglGetProcAddress(name);
 	if (p == 0 || (p == (void*)0x1) || (p == (void*)0x2) || (p == (void*)0x3) || (p == (void*)-1)) {
 		LOGGER->error("Failed to load function %s.", name);
+		CHECK_GL(GL_CONTEXT_ERROR, "Failed to load WGL function.");
 	}
 
 	return p;

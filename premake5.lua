@@ -17,5 +17,6 @@ workspace "Fierce-Engine"
 
 include "Engine"
 include "Logger"
+include "MathLibrary"
 include "OpenGLRenderer"
 include "VulkanRenderer"

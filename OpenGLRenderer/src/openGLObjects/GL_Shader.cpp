@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 const std::string GL_Shader::SHADER_LIBRARY = "C:/Users/tmbal/Desktop/Fierce-Engine/OpenGLRenderer/res/";
 
@@ -13,6 +14,7 @@ GL_Shader::GL_Shader(std::string path) {
 
 GL_Shader::~GL_Shader() {
 	glDeleteShader(id);
+	CHECK_GL(glGetError(), "Failed to delete shader.");
 }
 
 static inline bool endsWith(const std::string& s, const std::string& token) {
@@ -20,10 +22,10 @@ static inline bool endsWith(const std::string& s, const std::string& token) {
 }
 
 ShaderType GL_Shader::getType(std::string path) {
-	if (endsWith(path, ".vs")) {
+	if (endsWith(path, ".vert")) {
 		return ShaderType::VERTEX_SHADER;
 	}
-	else if (endsWith(path, ".fs")) {
+	else if (endsWith(path, ".frag")) {
 		return ShaderType::FRAGMENT_SHADER;
 	}
 	else {
@@ -33,17 +35,20 @@ ShaderType GL_Shader::getType(std::string path) {
 }
 
 void GL_Shader::readSourceCode(std::string path) {
-	std::string code;
-	std::ifstream stream(SHADER_LIBRARY + path, std::ios::in);
+	std::ifstream file;
+	file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
-	if (stream.is_open()) {
-		std::stringstream sstr;
-		sstr << stream.rdbuf();
-		code = sstr.str();
-		stream.close();
+	try{
+		file.open(SHADER_LIBRARY + path);
+		std::stringstream stream;
+		stream << file.rdbuf();
+		file.close();
+		sourceCode = stream.str();
 	}
-	else {
-		LOGGER->error("Unable to read shader %s.", path.c_str());
+	catch (std::ifstream::failure e)
+	{
+		LOGGER->error("Failed to read shader file %s.",path.c_str());
+		LOGGER->error("%s",e.what());
 	}
 }
 
@@ -57,9 +62,13 @@ void GL_Shader::createShader(std::string path) {
 		break;
 	}
 
+	CHECK_GL(glGetError(), "Failed to create shader.");
+
 	//Load source code
 	char const* source = sourceCode.c_str();
 	glShaderSource(id, 1, &source, NULL);
+
+	CHECK_GL(glGetError(), "Failed to load shader source.");
 
 	//Compile shader
 	glCompileShader(id);
@@ -73,5 +82,6 @@ void GL_Shader::createShader(std::string path) {
 		std::vector<char> VertexShaderErrorMessage(InfoLogLength + 1);
 		glGetShaderInfoLog(id, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
 		LOGGER->error("Shader compilation failed for shader %s:\n%s\n", path.c_str(), &VertexShaderErrorMessage[0]);
+		CHECK_GL(glGetError(), "Failed to compile shader.");
 	}
 }

@@ -62,6 +62,7 @@ void Core::coreUpdate() {
 }
 
 void Core::coreRender() {
+	doRender();
 	render();
 }
 
@@ -93,13 +94,16 @@ void Core::loadRenderer(){
 	}
 	else {
 		initRenderer = (PFN_INIT_RENDERER_PROC)GetProcAddress(m_renderer, "initRenderer");
-
 		if (!initRenderer) {
 			Core::LOGGER->error("Unable to load function!");
 		}
 
-		cleanUpRenderer = (PFN_CLEAN_UP_RENDERER_PROC)GetProcAddress(m_renderer, "cleanUpRenderer");
+		doRender = (PFN_RENDER_PROC)GetProcAddress(m_renderer, "render");
+		if (!doRender) {
+			Core::LOGGER->error("Unable to load function!");
+		}
 
+		cleanUpRenderer = (PFN_CLEAN_UP_RENDERER_PROC)GetProcAddress(m_renderer, "cleanUpRenderer");
 		if (!cleanUpRenderer) {
 			Core::LOGGER->error("Unable to load function!");
 		}

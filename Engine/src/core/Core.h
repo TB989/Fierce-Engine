@@ -43,6 +43,7 @@ public:
 	//Renderer
 	HINSTANCE m_renderer = NULL;
 	PFN_INIT_RENDERER_PROC initRenderer = nullptr;
+	PFN_RENDER_PROC doRender = nullptr;
 	PFN_CLEAN_UP_RENDERER_PROC cleanUpRenderer = nullptr;
 
 protected:

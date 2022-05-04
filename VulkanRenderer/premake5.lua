@@ -37,6 +37,7 @@ project "VulkanRenderer"
 	links 
 	{
 		"%{Library.Logger}",
+		"%{Library.MathLibrary}",
 		"%{Library.Vulkan}"
 	}
 	

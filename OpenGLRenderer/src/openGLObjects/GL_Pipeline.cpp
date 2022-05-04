@@ -3,26 +3,33 @@
 GL_Pipeline::GL_Pipeline(std::string name, GL_Shader* shader1, GL_Shader* shader2) {
 	m_name = name;
 	id = glCreateProgram();
+	CHECK_GL(glGetError(),"Failed to create shader proram.");
 
 	//Attach shaders
 	shaderList.push_back(shader1);
 	glAttachShader(id, shader1->getId());
+	CHECK_GL(glGetError(), "Failed to attach shader.");
 	shaderList.push_back(shader2);
 	glAttachShader(id, shader2->getId());
+	CHECK_GL(glGetError(), "Failed to create shader.");
 }
 
 GL_Pipeline::~GL_Pipeline() {
 	glUseProgram(0);
+	CHECK_GL(glGetError(), "Failed to use program.");
 	for (int i = 0; i < shaderList.size(); i++) {
 		glDetachShader(id, shaderList[i]->getId());
+		CHECK_GL(glGetError(), "Failed to detach shader.");
 	}
 	glDeleteProgram(id);
+	CHECK_GL(glGetError(), "Failed to delete program.");
 }
 
 void GL_Pipeline::create() {
 	//Set vertex attributes
 	for (GL_VertexAttribute* attrib : vertexAttributes) {
 		glBindAttribLocation(id, attrib->getLocation(), attrib->getName().c_str());
+		CHECK_GL(glGetError(), "Failed to bind attribute location.");
 	}
 
 	//Link program
@@ -38,6 +45,7 @@ void GL_Pipeline::create() {
 		std::vector<char> ProgramErrorMessage(InfoLogLength + 1);
 		glGetProgramInfoLog(id, InfoLogLength, NULL, &ProgramErrorMessage[0]);
 		LOGGER->error("Shader program linking failed for program %s:\n%s\n", m_name.c_str(), &ProgramErrorMessage[0]);
+		CHECK_GL(glGetError(), "Failed to link program.");
 	}
 
 	//Validate program
@@ -51,6 +59,7 @@ void GL_Pipeline::create() {
 		std::vector<char> ProgramErrorMessage(InfoLogLength + 1);
 		glGetProgramInfoLog(id, InfoLogLength, NULL, &ProgramErrorMessage[0]);
 		LOGGER->error("Shader program validation failed for program %s:\n%s\n", m_name.c_str(), &ProgramErrorMessage[0]);
+		CHECK_GL(glGetError(), "Failed to validate program.");
 	}
 
 	//Get uniform locations
@@ -67,10 +76,12 @@ void GL_Pipeline::create() {
 
 void GL_Pipeline::bind() {
 	glUseProgram(id);
+	CHECK_GL(glGetError(), "Failed to use program.");
 }
 
 void GL_Pipeline::unbind() {
 	glUseProgram(0);
+	CHECK_GL(glGetError(), "Failed to use program.");
 }
 
 void GL_Pipeline::addUniformLocation(std::string name) {
@@ -132,7 +143,7 @@ void GL_Pipeline::loadUniform(std::string name, float v1, float v2, float v3, fl
 	LOGGER->warn("Uniform location %s is not found in shader.", name.c_str());
 }
 
-/**void GL_Pipeline::loadUniform(std::string name, Mat4* matrix) {
+void GL_Pipeline::loadUniform(std::string name, Mat4* matrix) {
 	GLint load = -1;
 	for (const UniformLocation* loc : uniformLocations) {
 		if (loc->name.compare(name) == 0) {
@@ -142,8 +153,8 @@ void GL_Pipeline::loadUniform(std::string name, float v1, float v2, float v3, fl
 		}
 	}
 
-	Loggers::GL->warn("Uniform location %s is not found in shader.", name.c_str());
-}*/
+	LOGGER->warn("Uniform location %s is not found in shader.", name.c_str());
+}
 
 void GL_Pipeline::addVertexAttribute(GL_VertexAttribute* attribute) {
 	vertexAttributes.push_back(attribute);

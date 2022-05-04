@@ -36,7 +36,8 @@ project "Engine"
 
 	links 
 	{
-		"%{Library.Logger}"
+		"%{Library.Logger}",
+		"%{Library.MathLibrary}"
 	}
 	
 	filter "system:windows"

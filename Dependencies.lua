@@ -9,5 +9,6 @@ LibraryDir["Vulkan"] = "C:/VulkanSDK/1.2.135.0/Lib"
 
 Library = {}
 Library["Logger"] = "Logger.lib"
+Library["MathLibrary"] = "MathLibrary.lib"
 Library["OpenGL"] = "OpenGL32.lib"
 Library["Vulkan"] = "vulkan-1.lib"
