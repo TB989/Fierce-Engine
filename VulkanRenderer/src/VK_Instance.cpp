@@ -18,6 +18,9 @@ void VK_Instance::create(){
         CHECK_VK(VK_ERROR_INCOMPATIBLE_DRIVER,"Instance is incompatible.");
     }
 
+    VK_Helper_Extensions_ValidationLayers::printValidationLayers(true, "", &extensionLayerData.enabledValidationLayers);
+    VK_Helper_Extensions_ValidationLayers::printExtensions(true, "", &extensionLayerData.enabledExtensions);
+
     isDebugSupported = VK_Helper_Extensions_ValidationLayers::isExtensionSupported(VK_EXT_DEBUG_UTILS_EXTENSION_NAME,&extensionLayerData.enabledExtensions);
 
     VkApplicationInfo appInfo{};

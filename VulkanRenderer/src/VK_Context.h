@@ -12,6 +12,7 @@ public:
 	~VK_Context();
 
 	VK_Device* getDevice() { return device; }
+	VK_Swapchain* getSwapchain() { return swapchain; }
 
 	VkImageView getSwapchainImage(int index) { return swapchain->getImage(index); }
 	int getNumSwapchainImages() { return swapchain->getNumImages(); }

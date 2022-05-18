@@ -17,6 +17,10 @@ project "VulkanRenderer"
 	{
 		"src/**.h",
 		"src/**.cpp",
+		"res/**.frag",
+		"res/**.vert",
+		"res/**.spv",
+		"res/**.bat",
 		"premake5.lua",
 		"%{IncludeDir.Common}/**.h"
 	}

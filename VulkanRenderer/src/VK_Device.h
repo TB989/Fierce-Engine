@@ -6,6 +6,10 @@
 #include "VK_Helper_Extensions_ValidationLayers.h"
 #include "VK_Helper_Device.h"
 
+class VK_Renderpass;
+class VK_Framebuffers;
+class VK_Pipeline;
+
 class VK_Device{
 public:
 	VK_Device(VkInstance instance, VkSurfaceKHR surface);
@@ -19,6 +23,11 @@ public:
 	VkQueue getQueue() { return graphicsQueue; }
 
 	SurfaceData* getSurfaceData() { return &surfaceData; }
+
+	void createCommandPool();
+	void createCommandBuffers(int numBuffers);
+	void recordCommandBuffers(VK_Renderpass* renderpass, VK_Framebuffers* framebuffers, VK_Pipeline* pipeline);
+	VkCommandBuffer getCommandBuffer(int index) { return commandBuffers[index]; }
 
 private:
 	void pickPhysicalDevice();
@@ -40,4 +49,7 @@ private:
 	VkDevice device=VK_NULL_HANDLE;
 	VkQueue graphicsQueue=VK_NULL_HANDLE;
 	VkQueue transferQueue = VK_NULL_HANDLE;
+
+	VkCommandPool commandPool;
+	std::vector<VkCommandBuffer> commandBuffers;
 };
