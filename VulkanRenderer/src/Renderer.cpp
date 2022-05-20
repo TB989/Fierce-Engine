@@ -12,6 +12,7 @@
 #include "VK_Framebuffers.h"
 #include "VK_Semaphore.h"
 #include "VK_Fence.h"
+#include "VK_Buffer.h"
 
 int currentFrame = 0;
 
@@ -25,6 +26,7 @@ std::vector<VK_Semaphore*> imageAvailableSemaphores;
 std::vector<VK_Semaphore*> renderFinishedSemaphores;
 std::vector<VK_Fence*> inFlightFences;
 std::vector<VK_Fence*> imagesInFlight;
+VK_Buffer* vertexBuffer;
 
 RENDERER_API bool initRenderer(HWND dummyWindowHandle, HWND windowHandle) {
     LOGGER->info("Initializing renderer.");
@@ -45,8 +47,6 @@ RENDERER_API bool initRenderer(HWND dummyWindowHandle, HWND windowHandle) {
     dev->createCommandPool();
     LOGGER->info("Creating command buffers.");
     dev->createCommandBuffers(3);
-    LOGGER->info("Recording command buffers.");
-    dev->recordCommandBuffers(renderpass, framebuffers, pipeline);
 
     imageAvailableSemaphores.resize(2);
     renderFinishedSemaphores.resize(2);
@@ -57,6 +57,19 @@ RENDERER_API bool initRenderer(HWND dummyWindowHandle, HWND windowHandle) {
         renderFinishedSemaphores[i] = new VK_Semaphore(context->getDevice());
         inFlightFences[i] = new VK_Fence(context->getDevice());
     }
+
+    float vertices[] = {
+        0.0f, -0.5f, 1.0f, 1.0f, 1.0f,
+        0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+        -0.5f, 0.5f, 0.0f, 0.0f, 1.0
+    };
+
+    LOGGER->info("Creating vertex buffer.");
+    vertexBuffer = new VK_Buffer(context->getDevice(),15*sizeof(float));
+    vertexBuffer->loadData(15 * sizeof(float),vertices);
+
+    LOGGER->info("Recording command buffers.");
+    dev->recordCommandBuffers(renderpass, framebuffers, pipeline,vertexBuffer);
 
     return true;
 }
@@ -118,6 +131,8 @@ RENDERER_API bool cleanUpRenderer() {
     LOGGER->info("Cleaning up renderer.");
 
     CHECK_VK(vkDeviceWaitIdle(context->getDevice()->getDevice()), "Failed to wait for idle device.");
+
+    delete vertexBuffer;
 
     for (size_t i = 0; i < 2; i++) {
         delete imageAvailableSemaphores[i];

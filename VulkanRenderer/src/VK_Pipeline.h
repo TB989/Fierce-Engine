@@ -35,6 +35,11 @@ private:
 	VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
 
+	VkVertexInputBindingDescription bindingDescription;
+	std::vector<VkVertexInputAttributeDescription> attributes;
+	VkVertexInputAttributeDescription desc1;
+	VkVertexInputAttributeDescription desc2;
+
 private:
 	void createShaderStages(VK_Shader* vertexShader, VK_Shader* fragmentShader);
 	void createVertexInput();

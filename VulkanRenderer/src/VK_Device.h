@@ -9,6 +9,7 @@
 class VK_Renderpass;
 class VK_Framebuffers;
 class VK_Pipeline;
+class VK_Buffer;
 
 class VK_Device{
 public:
@@ -26,8 +27,10 @@ public:
 
 	void createCommandPool();
 	void createCommandBuffers(int numBuffers);
-	void recordCommandBuffers(VK_Renderpass* renderpass, VK_Framebuffers* framebuffers, VK_Pipeline* pipeline);
+	void recordCommandBuffers(VK_Renderpass* renderpass, VK_Framebuffers* framebuffers, VK_Pipeline* pipeline, VK_Buffer* vertexBuffer);
 	VkCommandBuffer getCommandBuffer(int index) { return commandBuffers[index]; }
+
+	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 private:
 	void pickPhysicalDevice();

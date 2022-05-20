@@ -3,6 +3,7 @@
 #include "VK_Renderpass.h"
 #include "VK_Framebuffers.h"
 #include "VK_Pipeline.h"
+#include "VK_Buffer.h"
 
 VK_Device::VK_Device(VkInstance instance, VkSurfaceKHR surface){
     m_instance = instance;
@@ -78,7 +79,7 @@ void VK_Device::createCommandBuffers(int numBuffers){
     CHECK_VK(vkAllocateCommandBuffers(device, &allocInfo, commandBuffers.data()), "Failed to allocate command buffers.");
 }
 
-void VK_Device::recordCommandBuffers(VK_Renderpass* renderpass, VK_Framebuffers* framebuffers, VK_Pipeline* pipeline){
+void VK_Device::recordCommandBuffers(VK_Renderpass* renderpass, VK_Framebuffers* framebuffers, VK_Pipeline* pipeline,VK_Buffer* vertexBuffer){
     for (size_t i = 0; i < commandBuffers.size(); i++) {
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -101,12 +102,26 @@ void VK_Device::recordCommandBuffers(VK_Renderpass* renderpass, VK_Framebuffers*
 
         vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getPipeline());
 
+        VkBuffer vertexBuffers[] = { vertexBuffer->getBuffer() };
+        VkDeviceSize offsets[] = { 0 };
+        vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
+
         vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
 
         vkCmdEndRenderPass(commandBuffers[i]);
 
         CHECK_VK(vkEndCommandBuffer(commandBuffers[i]), "Failed to end recording command buffer.");
     }
+}
+
+uint32_t VK_Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties){
+    for (uint32_t i = 0; i < deviceData.deviceMemoryProperties.memoryTypeCount; i++) {
+        if ((typeFilter & (1 << i)) && (deviceData.deviceMemoryProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+            return i;
+        }
+    }
+
+    CHECK_VK(VK_ERROR_OUT_OF_DEVICE_MEMORY,"Failed to find memory type.");
 }
 
 void VK_Device::createLogicalDevice(){

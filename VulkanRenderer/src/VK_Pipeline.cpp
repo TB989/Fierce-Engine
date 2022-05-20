@@ -46,13 +46,29 @@ void VK_Pipeline::createShaderStages(VK_Shader* vertexShader, VK_Shader* fragmen
 }
 
 void VK_Pipeline::createVertexInput() {
+    bindingDescription.binding = 0;
+    bindingDescription.stride = 5 * sizeof(float);
+    bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+    desc1.binding = 0;
+    desc1.location = 0;
+    desc1.format = VK_FORMAT_R32G32_SFLOAT;
+    desc1.offset = 0 * sizeof(float);
+    attributes.push_back(desc1);
+
+    desc2.binding = 0;
+    desc2.location = 1;
+    desc2.format = VK_FORMAT_R32G32B32_SFLOAT;
+    desc2.offset = 2 * sizeof(float);
+    attributes.push_back(desc2);
+
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     vertexInputInfo.pNext = nullptr;
     vertexInputInfo.flags = 0;
-    vertexInputInfo.vertexBindingDescriptionCount = 0;
-    vertexInputInfo.pVertexBindingDescriptions = nullptr; // Optional
-    vertexInputInfo.vertexAttributeDescriptionCount = 0;
-    vertexInputInfo.pVertexAttributeDescriptions = nullptr; // Optional
+    vertexInputInfo.vertexBindingDescriptionCount = 1;
+    vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+    vertexInputInfo.vertexAttributeDescriptionCount = 2;
+    vertexInputInfo.pVertexAttributeDescriptions = attributes.data();
 }
 
 void VK_Pipeline::createInputAssembly() {
