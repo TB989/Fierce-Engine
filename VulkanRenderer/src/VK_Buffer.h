@@ -6,10 +6,11 @@ class VK_Device;
 
 class VK_Buffer {
 public:
-	VK_Buffer(VK_Device* device, int size);
+	VK_Buffer(VK_Device* device, int size,VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
 	~VK_Buffer();
 
 	void loadData(int size, float* vertices);
+	void loadData(int size, uint16_t* indices);
 
 	VkBuffer getBuffer() { return buffer; }
 

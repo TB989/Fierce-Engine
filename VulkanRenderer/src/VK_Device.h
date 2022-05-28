@@ -27,8 +27,10 @@ public:
 
 	void createCommandPool();
 	void createCommandBuffers(int numBuffers);
-	void recordCommandBuffers(VK_Renderpass* renderpass, VK_Framebuffers* framebuffers, VK_Pipeline* pipeline, VK_Buffer* vertexBuffer);
+	void recordCommandBuffers(VK_Renderpass* renderpass, VK_Framebuffers* framebuffers, VK_Pipeline* pipeline, VK_Buffer* vertexBuffer, VK_Buffer* indexBuffer);
 	VkCommandBuffer getCommandBuffer(int index) { return commandBuffers[index]; }
+
+	void copyBuffer(int size, VkBuffer srcBuffer, VkBuffer dstBuffer);
 
 	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 

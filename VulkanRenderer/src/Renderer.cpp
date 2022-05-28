@@ -27,6 +27,7 @@ std::vector<VK_Semaphore*> renderFinishedSemaphores;
 std::vector<VK_Fence*> inFlightFences;
 std::vector<VK_Fence*> imagesInFlight;
 VK_Buffer* vertexBuffer;
+VK_Buffer* indexBuffer;
 
 RENDERER_API bool initRenderer(HWND dummyWindowHandle, HWND windowHandle) {
     LOGGER->info("Initializing renderer.");
@@ -59,17 +60,40 @@ RENDERER_API bool initRenderer(HWND dummyWindowHandle, HWND windowHandle) {
     }
 
     float vertices[] = {
-        0.0f, -0.5f, 1.0f, 1.0f, 1.0f,
-        0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-        -0.5f, 0.5f, 0.0f, 0.0f, 1.0
+        -0.5f,-0.5f,1.0f,0.0f,0.0f,
+        0.5f,-0.5f,0.0f,1.0f,0.0f,
+        0.5f,0.5f,0.0f,0.0f,1.0f,
+        -0.5f,0.5f,1.0f,1.0f,1.0f
     };
 
+    uint16_t indices[] = {
+        0, 1, 2, 2, 3, 0
+    };
+
+    LOGGER->info("Creating staging vertex buffer.");
+    VK_Buffer* stagingBufferVertex=new VK_Buffer(context->getDevice(), 20 * sizeof(float), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    stagingBufferVertex->loadData(20 * sizeof(float), vertices);
+
     LOGGER->info("Creating vertex buffer.");
-    vertexBuffer = new VK_Buffer(context->getDevice(),15*sizeof(float));
-    vertexBuffer->loadData(15 * sizeof(float),vertices);
+    vertexBuffer = new VK_Buffer(context->getDevice(),20*sizeof(float), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+    LOGGER->info("Copy data from staging vertex buffer.");
+    dev->copyBuffer(20 * sizeof(float),stagingBufferVertex->getBuffer(),vertexBuffer->getBuffer());
+    delete stagingBufferVertex;
+
+    LOGGER->info("Creating staging index buffer.");
+    VK_Buffer* stagingBufferIndex = new VK_Buffer(context->getDevice(), 6 * sizeof(uint16_t), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    stagingBufferIndex->loadData(6 * sizeof(uint16_t), indices);
+
+    LOGGER->info("Creating index buffer.");
+    indexBuffer = new VK_Buffer(context->getDevice(), 6 * sizeof(uint16_t), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+    LOGGER->info("Copy data from staging index buffer.");
+    dev->copyBuffer(6 * sizeof(uint16_t), stagingBufferIndex->getBuffer(), indexBuffer->getBuffer());
+    delete stagingBufferIndex;
 
     LOGGER->info("Recording command buffers.");
-    dev->recordCommandBuffers(renderpass, framebuffers, pipeline,vertexBuffer);
+    dev->recordCommandBuffers(renderpass, framebuffers, pipeline,vertexBuffer,indexBuffer);
 
     return true;
 }
@@ -133,6 +157,7 @@ RENDERER_API bool cleanUpRenderer() {
     CHECK_VK(vkDeviceWaitIdle(context->getDevice()->getDevice()), "Failed to wait for idle device.");
 
     delete vertexBuffer;
+    delete indexBuffer;
 
     for (size_t i = 0; i < 2; i++) {
         delete imageAvailableSemaphores[i];

@@ -79,7 +79,7 @@ void VK_Device::createCommandBuffers(int numBuffers){
     CHECK_VK(vkAllocateCommandBuffers(device, &allocInfo, commandBuffers.data()), "Failed to allocate command buffers.");
 }
 
-void VK_Device::recordCommandBuffers(VK_Renderpass* renderpass, VK_Framebuffers* framebuffers, VK_Pipeline* pipeline,VK_Buffer* vertexBuffer){
+void VK_Device::recordCommandBuffers(VK_Renderpass* renderpass, VK_Framebuffers* framebuffers, VK_Pipeline* pipeline,VK_Buffer* vertexBuffer, VK_Buffer* indexBuffer){
     for (size_t i = 0; i < commandBuffers.size(); i++) {
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -106,12 +106,60 @@ void VK_Device::recordCommandBuffers(VK_Renderpass* renderpass, VK_Framebuffers*
         VkDeviceSize offsets[] = { 0 };
         vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
 
+        vkCmdBindIndexBuffer(commandBuffers[i], indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT16);
+
         vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
+
+        vkCmdDrawIndexed(commandBuffers[i], 6*sizeof(uint16_t), 1, 0, 0, 0);
 
         vkCmdEndRenderPass(commandBuffers[i]);
 
         CHECK_VK(vkEndCommandBuffer(commandBuffers[i]), "Failed to end recording command buffer.");
     }
+}
+
+void VK_Device::copyBuffer(int size,VkBuffer srcBuffer,VkBuffer dstBuffer){
+    VkCommandBufferAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.pNext = nullptr;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandPool = commandPool;
+    allocInfo.commandBufferCount = 1;
+
+    VkCommandBuffer cmdCopy;
+    CHECK_VK(vkAllocateCommandBuffers(device, &allocInfo, &cmdCopy), "Failed to allocate command buffers.");
+
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.pNext = nullptr;
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+    beginInfo.pInheritanceInfo = nullptr;
+
+    CHECK_VK(vkBeginCommandBuffer(cmdCopy, &beginInfo),"Failed to begin command buffer.");
+
+    VkBufferCopy copyRegion{};
+    copyRegion.srcOffset = 0; // Optional
+    copyRegion.dstOffset = 0; // Optional
+    copyRegion.size = size;
+    vkCmdCopyBuffer(cmdCopy, srcBuffer, dstBuffer, 1, &copyRegion);
+
+    CHECK_VK(vkEndCommandBuffer(cmdCopy),"Failed to end command buffer.");
+
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.pNext = nullptr;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &cmdCopy;
+    submitInfo.waitSemaphoreCount = 0;
+    submitInfo.pWaitSemaphores = nullptr;
+    submitInfo.signalSemaphoreCount = 0;
+    submitInfo.pSignalSemaphores = nullptr;
+    submitInfo.pWaitDstStageMask = nullptr;
+
+    CHECK_VK(vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE),"Failed to submit queue.");
+    CHECK_VK(vkQueueWaitIdle(graphicsQueue),"Failed to wait for idle queue.");
+
+    vkFreeCommandBuffers(device, commandPool, 1, &cmdCopy);
 }
 
 uint32_t VK_Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties){

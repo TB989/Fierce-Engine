@@ -2,7 +2,7 @@
 
 #include "VK_Device.h"
 
-VK_Buffer::VK_Buffer(VK_Device* device, int size){
+VK_Buffer::VK_Buffer(VK_Device* device, int size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties){
 	m_device = device;
 
 	VkBufferCreateInfo bufferInfo{};
@@ -10,7 +10,7 @@ VK_Buffer::VK_Buffer(VK_Device* device, int size){
 	bufferInfo.pNext = nullptr;
 	bufferInfo.flags = 0;
 	bufferInfo.size = size;
-	bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+	bufferInfo.usage = usage;
 	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
 	CHECK_VK(vkCreateBuffer(device->getDevice(), &bufferInfo, nullptr, &buffer),"Failed to create buffer.");
@@ -22,7 +22,7 @@ VK_Buffer::VK_Buffer(VK_Device* device, int size){
 	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	allocInfo.pNext = nullptr;
 	allocInfo.allocationSize = memRequirements.size;
-	allocInfo.memoryTypeIndex = m_device->findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+	allocInfo.memoryTypeIndex = m_device->findMemoryType(memRequirements.memoryTypeBits, properties);
 
 	CHECK_VK(vkAllocateMemory(m_device->getDevice(), &allocInfo, nullptr, &memory),"Failed to allocate buffer memory.");
 
@@ -38,5 +38,12 @@ void VK_Buffer::loadData(int size,float* vertices){
 	void* data;
 	vkMapMemory(m_device->getDevice(), memory, 0, size, 0, &data);
 	memcpy(data, vertices, (size_t)size);
+	vkUnmapMemory(m_device->getDevice(), memory);
+}
+
+void VK_Buffer::loadData(int size, uint16_t* indices) {
+	void* data;
+	vkMapMemory(m_device->getDevice(), memory, 0, size, 0, &data);
+	memcpy(data, indices, (size_t)size);
 	vkUnmapMemory(m_device->getDevice(), memory);
 }
