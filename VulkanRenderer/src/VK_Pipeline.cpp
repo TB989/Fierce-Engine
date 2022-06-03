@@ -20,6 +20,7 @@ VK_Pipeline::VK_Pipeline(VK_Device* device, VK_Shader* vertexShader, VK_Shader* 
 VK_Pipeline::~VK_Pipeline() {
     vkDestroyPipeline(m_device, graphicsPipeline, nullptr);
     vkDestroyPipelineLayout(m_device, pipelineLayout, nullptr);
+    vkDestroyDescriptorSetLayout(m_device, descriptorSetLayout, nullptr);
 }
 
 void VK_Pipeline::createShaderStages(VK_Shader* vertexShader, VK_Shader* fragmentShader) {
@@ -151,12 +152,28 @@ void VK_Pipeline::createColorBlending() {
 }
 
 void VK_Pipeline::createPipeline(VkRenderPass renderpass) {
+    VkDescriptorSetLayoutBinding uboLayoutBinding{};
+    uboLayoutBinding.binding = 0;
+    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    uboLayoutBinding.descriptorCount = 1;
+    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    uboLayoutBinding.pImmutableSamplers = nullptr; // Optional
+
+    VkDescriptorSetLayoutCreateInfo layoutInfo{};
+    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    layoutInfo.pNext = nullptr;
+    layoutInfo.flags = 0;
+    layoutInfo.bindingCount = 1;
+    layoutInfo.pBindings = &uboLayoutBinding;
+
+    CHECK_VK(vkCreateDescriptorSetLayout(m_device, &layoutInfo, nullptr, &descriptorSetLayout), "Failed to create descriptor set layout.");
+
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.pNext = nullptr;
     pipelineLayoutInfo.flags = 0;
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = 0; // Optional
-    pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
+    pipelineLayoutInfo.setLayoutCount = 1; 
+    pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
     pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
     pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
 

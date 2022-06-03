@@ -6,10 +6,9 @@
 #include "VK_Helper_Extensions_ValidationLayers.h"
 #include "VK_Helper_Device.h"
 
-class VK_Renderpass;
-class VK_Framebuffers;
-class VK_Pipeline;
-class VK_Buffer;
+class VK_CommandBuffer;
+class VK_Semaphore;
+class VK_Swapchain;
 
 class VK_Device{
 public:
@@ -24,13 +23,11 @@ public:
 	VkQueue getQueue() { return graphicsQueue; }
 
 	SurfaceData* getSurfaceData() { return &surfaceData; }
+	DeviceData* getDeviceData() { return &deviceData; }
 
-	void createCommandPool();
-	void createCommandBuffers(int numBuffers);
-	void recordCommandBuffers(VK_Renderpass* renderpass, VK_Framebuffers* framebuffers, VK_Pipeline* pipeline, VK_Buffer* vertexBuffer, VK_Buffer* indexBuffer);
-	VkCommandBuffer getCommandBuffer(int index) { return commandBuffers[index]; }
-
-	void copyBuffer(int size, VkBuffer srcBuffer, VkBuffer dstBuffer);
+	uint32_t getNextImageIndex(VK_Swapchain* swapchain, VK_Semaphore* signalSemaphore);
+	void submitCommandBuffer(VK_CommandBuffer* commandBuffer,VK_Semaphore* waitSemaphore,VK_Semaphore* signalSemaphore, VkPipelineStageFlags waitStageMask);
+	void presentImage(VK_Swapchain* swapchain, uint32_t imageIndex,VK_Semaphore* waitSemaphore);
 
 	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
@@ -54,7 +51,4 @@ private:
 	VkDevice device=VK_NULL_HANDLE;
 	VkQueue graphicsQueue=VK_NULL_HANDLE;
 	VkQueue transferQueue = VK_NULL_HANDLE;
-
-	VkCommandPool commandPool;
-	std::vector<VkCommandBuffer> commandBuffers;
 };

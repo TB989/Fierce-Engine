@@ -1,9 +1,8 @@
 #include "VK_Device.h"
 
-#include "VK_Renderpass.h"
-#include "VK_Framebuffers.h"
-#include "VK_Pipeline.h"
-#include "VK_Buffer.h"
+#include "VK_CommandBuffer.h"
+#include "VK_Semaphore.h"
+#include "VK_Swapchain.h"
 
 VK_Device::VK_Device(VkInstance instance, VkSurfaceKHR surface){
     m_instance = instance;
@@ -11,8 +10,6 @@ VK_Device::VK_Device(VkInstance instance, VkSurfaceKHR surface){
 }
 
 VK_Device::~VK_Device() {
-    vkFreeCommandBuffers(device, commandPool, commandBuffers.size(), commandBuffers.data());
-    vkDestroyCommandPool(device, commandPool, nullptr);
     vkDestroyDevice(device, nullptr);
 }
 
@@ -56,110 +53,64 @@ void VK_Device::create() {
     transferQueue = graphicsQueue;
 }
 
-void VK_Device::createCommandPool(){
-    VkCommandPoolCreateInfo poolInfo{};
-    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    poolInfo.pNext = nullptr;
-    poolInfo.flags = 0;
-    poolInfo.queueFamilyIndex = deviceData.graphicsQueueIndex;
-
-    CHECK_VK(vkCreateCommandPool(device, &poolInfo, nullptr, &commandPool), "Failed to create command pool.");
+uint32_t VK_Device::getNextImageIndex(VK_Swapchain* swapchain, VK_Semaphore* signalSemaphore){
+    uint32_t imageIndex;
+    CHECK_VK(vkAcquireNextImageKHR(device, swapchain->getSwapchain(), UINT64_MAX, signalSemaphore->getSemaphore(), VK_NULL_HANDLE, &imageIndex), "Failed to aquire image.");
+    return imageIndex;
 }
 
-void VK_Device::createCommandBuffers(int numBuffers){
-    commandBuffers.resize(numBuffers);
-
-    VkCommandBufferAllocateInfo allocInfo{};
-    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.pNext = nullptr;
-    allocInfo.commandPool = commandPool;
-    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandBufferCount = (uint32_t)numBuffers;
-
-    CHECK_VK(vkAllocateCommandBuffers(device, &allocInfo, commandBuffers.data()), "Failed to allocate command buffers.");
-}
-
-void VK_Device::recordCommandBuffers(VK_Renderpass* renderpass, VK_Framebuffers* framebuffers, VK_Pipeline* pipeline,VK_Buffer* vertexBuffer, VK_Buffer* indexBuffer){
-    for (size_t i = 0; i < commandBuffers.size(); i++) {
-        VkCommandBufferBeginInfo beginInfo{};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        beginInfo.pNext = nullptr;
-        beginInfo.flags = 0; // Optional
-        beginInfo.pInheritanceInfo = nullptr; // Optional
-        CHECK_VK(vkBeginCommandBuffer(commandBuffers[i], &beginInfo), "Failed to begin recording command buffer.");
-
-        VkRenderPassBeginInfo renderPassInfo{};
-        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        renderPassInfo.pNext = nullptr;
-        renderPassInfo.renderPass = renderpass->getRenderpass();
-        renderPassInfo.framebuffer = framebuffers->getFramebuffer(i);
-        renderPassInfo.renderArea.offset = { 0, 0 };
-        renderPassInfo.renderArea.extent = { surfaceData.swapchainWidth, surfaceData.swapchainHeight };
-        VkClearValue clearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
-        renderPassInfo.clearValueCount = 1;
-        renderPassInfo.pClearValues = &clearColor;
-        vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-        vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getPipeline());
-
-        VkBuffer vertexBuffers[] = { vertexBuffer->getBuffer() };
-        VkDeviceSize offsets[] = { 0 };
-        vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
-
-        vkCmdBindIndexBuffer(commandBuffers[i], indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT16);
-
-        vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
-
-        vkCmdDrawIndexed(commandBuffers[i], 6*sizeof(uint16_t), 1, 0, 0, 0);
-
-        vkCmdEndRenderPass(commandBuffers[i]);
-
-        CHECK_VK(vkEndCommandBuffer(commandBuffers[i]), "Failed to end recording command buffer.");
-    }
-}
-
-void VK_Device::copyBuffer(int size,VkBuffer srcBuffer,VkBuffer dstBuffer){
-    VkCommandBufferAllocateInfo allocInfo{};
-    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.pNext = nullptr;
-    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandPool = commandPool;
-    allocInfo.commandBufferCount = 1;
-
-    VkCommandBuffer cmdCopy;
-    CHECK_VK(vkAllocateCommandBuffers(device, &allocInfo, &cmdCopy), "Failed to allocate command buffers.");
-
-    VkCommandBufferBeginInfo beginInfo{};
-    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    beginInfo.pNext = nullptr;
-    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-    beginInfo.pInheritanceInfo = nullptr;
-
-    CHECK_VK(vkBeginCommandBuffer(cmdCopy, &beginInfo),"Failed to begin command buffer.");
-
-    VkBufferCopy copyRegion{};
-    copyRegion.srcOffset = 0; // Optional
-    copyRegion.dstOffset = 0; // Optional
-    copyRegion.size = size;
-    vkCmdCopyBuffer(cmdCopy, srcBuffer, dstBuffer, 1, &copyRegion);
-
-    CHECK_VK(vkEndCommandBuffer(cmdCopy),"Failed to end command buffer.");
+void VK_Device::submitCommandBuffer(VK_CommandBuffer* commandBuffer, VK_Semaphore* waitSemaphore, VK_Semaphore* signalSemaphore, VkPipelineStageFlags waitStageMask){
+    VkCommandBuffer cmdBuffer = commandBuffer->getCommandBuffer();
 
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     submitInfo.pNext = nullptr;
     submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &cmdCopy;
-    submitInfo.waitSemaphoreCount = 0;
-    submitInfo.pWaitSemaphores = nullptr;
-    submitInfo.signalSemaphoreCount = 0;
-    submitInfo.pSignalSemaphores = nullptr;
-    submitInfo.pWaitDstStageMask = nullptr;
+    submitInfo.pCommandBuffers = &cmdBuffer;
+    if (waitSemaphore!=nullptr) {
+        VkSemaphore waitSema = waitSemaphore->getSemaphore();
+        submitInfo.waitSemaphoreCount = 1;
+        submitInfo.pWaitSemaphores = &waitSema;
+    }
+    else {
+        submitInfo.waitSemaphoreCount = 0;
+        submitInfo.pWaitSemaphores = nullptr;
+    }
+    if (signalSemaphore != nullptr) {
+        VkSemaphore signalSema = signalSemaphore->getSemaphore();
+        submitInfo.signalSemaphoreCount = 1;
+        submitInfo.pSignalSemaphores = &signalSema;
+    }
+    else {
+        submitInfo.signalSemaphoreCount = 0;
+        submitInfo.pSignalSemaphores = nullptr;
+    }
+    submitInfo.pWaitDstStageMask = &waitStageMask;
 
-    CHECK_VK(vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE),"Failed to submit queue.");
-    CHECK_VK(vkQueueWaitIdle(graphicsQueue),"Failed to wait for idle queue.");
+    CHECK_VK(vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE), "Failed to submit queue.");
+}
 
-    vkFreeCommandBuffers(device, commandPool, 1, &cmdCopy);
+void VK_Device::presentImage(VK_Swapchain* swapchain,uint32_t imageIndex,VK_Semaphore* waitSemaphore){
+    VkSwapchainKHR swpchain = swapchain->getSwapchain();
+
+    VkPresentInfoKHR presentInfo{};
+    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    presentInfo.pNext = nullptr;
+    if (waitSemaphore != nullptr) {
+        VkSemaphore waitSema = waitSemaphore->getSemaphore();
+        presentInfo.waitSemaphoreCount = 1;
+        presentInfo.pWaitSemaphores = &waitSema;
+    }
+    else {
+        presentInfo.waitSemaphoreCount = 0;
+        presentInfo.pWaitSemaphores = nullptr;
+    }
+    presentInfo.swapchainCount = 1;
+    presentInfo.pSwapchains = &swpchain;
+    presentInfo.pImageIndices = &imageIndex;
+    presentInfo.pResults = nullptr;
+
+    CHECK_VK(vkQueuePresentKHR(graphicsQueue, &presentInfo), "Failed to present image.");
 }
 
 uint32_t VK_Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties){

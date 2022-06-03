@@ -10,7 +10,7 @@ public:
 	~VK_Swapchain();
 
 	void create();
-	VkSwapchainKHR getId() { return m_swapchain; }
+	VkSwapchainKHR getSwapchain() { return m_swapchain; }
 	VkImageView getImage(int index) { return images[index]; }
 	int getNumImages() { return images.size(); }
 

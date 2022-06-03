@@ -12,6 +12,8 @@ public:
 	~VK_Pipeline();
 
 	VkPipeline getPipeline() { return graphicsPipeline; }
+	VkPipelineLayout getPipelineLayout() { return pipelineLayout; }
+	VkDescriptorSetLayout getDescLayout() { return descriptorSetLayout; }
 
 private:
 	VkDevice m_device;
@@ -39,6 +41,8 @@ private:
 	std::vector<VkVertexInputAttributeDescription> attributes;
 	VkVertexInputAttributeDescription desc1;
 	VkVertexInputAttributeDescription desc2;
+
+	VkDescriptorSetLayout descriptorSetLayout;
 
 private:
 	void createShaderStages(VK_Shader* vertexShader, VK_Shader* fragmentShader);

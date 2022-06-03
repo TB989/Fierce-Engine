@@ -10,11 +10,13 @@
 #include "VK_Shader.h"
 #include "VK_Pipeline.h"
 #include "VK_Framebuffers.h"
-#include "VK_Semaphore.h"
-#include "VK_Fence.h"
+#include "VK_DescriptorPool.h"
+
 #include "VK_Buffer.h"
 
-int currentFrame = 0;
+#include "Matrix.h"
+
+#include <chrono>
 
 VK_Context* context;
 VK_Renderpass* renderpass;
@@ -22,12 +24,17 @@ VK_Shader* vertexShader;
 VK_Shader* fragmentShader;
 VK_Pipeline* pipeline;
 VK_Framebuffers* framebuffers;
-std::vector<VK_Semaphore*> imageAvailableSemaphores;
-std::vector<VK_Semaphore*> renderFinishedSemaphores;
-std::vector<VK_Fence*> inFlightFences;
-std::vector<VK_Fence*> imagesInFlight;
+VK_DescriptorPool* descriptorPool;
+
 VK_Buffer* vertexBuffer;
 VK_Buffer* indexBuffer;
+Mat4 orthographicProjectionMatrix;
+Mat4 modelMatrix;
+
+const int NUM_FRAMES_IN_FLIGHT = 2;
+uint32_t imageIndex;
+int currentFrame = 0;
+FrameData framesData[NUM_FRAMES_IN_FLIGHT];
 
 RENDERER_API bool initRenderer(HWND dummyWindowHandle, HWND windowHandle) {
     LOGGER->info("Initializing renderer.");
@@ -43,20 +50,21 @@ RENDERER_API bool initRenderer(HWND dummyWindowHandle, HWND windowHandle) {
     pipeline = new VK_Pipeline(context->getDevice(), vertexShader,fragmentShader,renderpass);
     LOGGER->info("Creating framebuffers.");
     framebuffers = new VK_Framebuffers(context->getDevice(),context->getSwapchain(),renderpass);
-    VK_Device* dev = context->getDevice();
-    LOGGER->info("Creating command pool.");
-    dev->createCommandPool();
-    LOGGER->info("Creating command buffers.");
-    dev->createCommandBuffers(3);
+    LOGGER->info("Creating descriptor pool.");
+    descriptorPool = new VK_DescriptorPool(context->getDevice());
 
-    imageAvailableSemaphores.resize(2);
-    renderFinishedSemaphores.resize(2);
-    inFlightFences.resize(2);
-    imagesInFlight.resize(context->getSwapchain()->getNumImages(), VK_NULL_HANDLE);
-    for (size_t i = 0; i < 2; i++) {
-        imageAvailableSemaphores[i] = new VK_Semaphore(context->getDevice());
-        renderFinishedSemaphores[i] = new VK_Semaphore(context->getDevice());
-        inFlightFences[i] = new VK_Fence(context->getDevice());
+    LOGGER->info("Creating frame ressources.");
+    for (int i = 0;i<NUM_FRAMES_IN_FLIGHT;i++) {
+        framesData[i].imageAvailableSemaphore = new VK_Semaphore(context->getDevice());
+        framesData[i].renderFinishedSemaphore = new VK_Semaphore(context->getDevice());
+        framesData[i].renderFinishedFence = new VK_Fence(context->getDevice());
+
+        framesData[i].commandPool = new VK_CommandPool(context->getDevice());
+        framesData[i].commandBuffer = new VK_CommandBuffer(context->getDevice(), framesData[i].commandPool);
+
+        framesData[i].UBO = new VK_Buffer(context->getDevice(), 2 * 16 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+        framesData[i].descriptorSet = new VK_DescriptorSet(context->getDevice(),descriptorPool,pipeline);
+        framesData[i].descriptorSet->update(framesData[i].UBO);
     }
 
     float vertices[] = {
@@ -77,10 +85,6 @@ RENDERER_API bool initRenderer(HWND dummyWindowHandle, HWND windowHandle) {
     LOGGER->info("Creating vertex buffer.");
     vertexBuffer = new VK_Buffer(context->getDevice(),20*sizeof(float), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-    LOGGER->info("Copy data from staging vertex buffer.");
-    dev->copyBuffer(20 * sizeof(float),stagingBufferVertex->getBuffer(),vertexBuffer->getBuffer());
-    delete stagingBufferVertex;
-
     LOGGER->info("Creating staging index buffer.");
     VK_Buffer* stagingBufferIndex = new VK_Buffer(context->getDevice(), 6 * sizeof(uint16_t), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     stagingBufferIndex->loadData(6 * sizeof(uint16_t), indices);
@@ -88,65 +92,77 @@ RENDERER_API bool initRenderer(HWND dummyWindowHandle, HWND windowHandle) {
     LOGGER->info("Creating index buffer.");
     indexBuffer = new VK_Buffer(context->getDevice(), 6 * sizeof(uint16_t), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-    LOGGER->info("Copy data from staging index buffer.");
-    dev->copyBuffer(6 * sizeof(uint16_t), stagingBufferIndex->getBuffer(), indexBuffer->getBuffer());
+    LOGGER->info("Copy data to gpu.");
+    framesData[0].commandBuffer->startRecording();
+    framesData[0].commandBuffer->recordCopy(20 * sizeof(float),stagingBufferVertex,vertexBuffer);
+    framesData[0].commandBuffer->recordCopy(6 * sizeof(uint16_t), stagingBufferIndex, indexBuffer);
+    framesData[0].commandBuffer->endRecording();
+    context->getDevice()->submitCommandBuffer(framesData[0].commandBuffer,nullptr,nullptr,0);
+    vkQueueWaitIdle(context->getDevice()->getQueue());
+    framesData[0].commandBuffer->reset();
+    delete stagingBufferVertex;
     delete stagingBufferIndex;
 
-    LOGGER->info("Recording command buffers.");
-    dev->recordCommandBuffers(renderpass, framebuffers, pipeline,vertexBuffer,indexBuffer);
+    LOGGER->info("Creating matrices.");
+    orthographicProjectionMatrix = Mat4();
+    orthographicProjectionMatrix.setToOrthographicProjection(800.0f, 600.0f, -1.0f, 1.0f);
+    modelMatrix = Mat4();
+    modelMatrix.setToTransform(Transform2D(10.0f, 10.0f, 100.0f, 100.0f, 0.0f));
 
     return true;
 }
 
-RENDERER_API bool render() {
-    VkFence fence = inFlightFences[currentFrame]->getFence();
+void beginFrame() {
+    FrameData& frameData = framesData[currentFrame];
+    VkFence fence = frameData.renderFinishedFence->getFence();
+
     CHECK_VK(vkWaitForFences(context->getDevice()->getDevice(), 1, &fence, VK_TRUE, UINT64_MAX), "Failed to wait for fences.");
-
-    uint32_t imageIndex;
-    CHECK_VK(vkAcquireNextImageKHR(context->getDevice()->getDevice(),context->getSwapchain()->getId(), UINT64_MAX, imageAvailableSemaphores[currentFrame]->getSemaphore(), VK_NULL_HANDLE, &imageIndex), "Failed to aquire image.");
-
-    if (imagesInFlight[imageIndex] != VK_NULL_HANDLE) {
-        VkFence fence1 = imagesInFlight[imageIndex]->getFence();
-        CHECK_VK(vkWaitForFences(context->getDevice()->getDevice(), 1, &fence1, VK_TRUE, UINT64_MAX), "Failed to wait for fences.");
-    }
-    imagesInFlight[imageIndex] = inFlightFences[currentFrame];
-
-    VkCommandBuffer buffer = context->getDevice()->getCommandBuffer(imageIndex);
-
-    VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame]->getSemaphore() };
-    VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-    VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame]->getSemaphore() };
-
-    VkSubmitInfo submitInfo{};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.pNext = nullptr;
-    submitInfo.waitSemaphoreCount = 1;
-    submitInfo.pWaitSemaphores = waitSemaphores;
-    submitInfo.pWaitDstStageMask = waitStages;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &buffer;
-    submitInfo.signalSemaphoreCount = 1;
-    submitInfo.pSignalSemaphores = signalSemaphores;
-
+    imageIndex=context->getDevice()->getNextImageIndex(context->getSwapchain(), frameData.imageAvailableSemaphore);
     CHECK_VK(vkResetFences(context->getDevice()->getDevice(), 1, &fence), "Failed to reset fence.");
+    frameData.commandBuffer->reset();
+}
 
-    CHECK_VK(vkQueueSubmit(context->getDevice()->getQueue(), 1, &submitInfo, inFlightFences[currentFrame]->getFence()), "Failed to submit to queue.");
+void endFrame() {
+    FrameData& frameData = framesData[currentFrame];
 
-    VkSwapchainKHR swapChains[] = { context->getSwapchain()->getId() };
+    context->getDevice()->submitCommandBuffer(frameData.commandBuffer, frameData.imageAvailableSemaphore, frameData.renderFinishedSemaphore, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+    context->getDevice()->presentImage(context->getSwapchain(),imageIndex, frameData.renderFinishedSemaphore);
 
-    VkPresentInfoKHR presentInfo{};
-    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-    presentInfo.pNext = nullptr;
-    presentInfo.waitSemaphoreCount = 1;
-    presentInfo.pWaitSemaphores = signalSemaphores;
-    presentInfo.swapchainCount = 1;
-    presentInfo.pSwapchains = swapChains;
-    presentInfo.pImageIndices = &imageIndex;
-    presentInfo.pResults = nullptr; // Optional
+    currentFrame = (currentFrame + 1) % NUM_FRAMES_IN_FLIGHT;
+}
 
-    CHECK_VK(vkQueuePresentKHR(context->getDevice()->getQueue(), &presentInfo), "Failed to present image.");
+RENDERER_API bool render() {
+    LOGGER->info("render");
 
-    currentFrame = (currentFrame + 1) % 2;
+    FrameData& frameData = framesData[currentFrame];
+
+    beginFrame();
+
+    //Update UBOs
+    static auto startTime = std::chrono::high_resolution_clock::now();
+
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
+    modelMatrix.rotateZ(time * 90.0f);
+
+    float* mat1 = orthographicProjectionMatrix.get();
+    float* mat2 = modelMatrix.get();
+
+    frameData.UBO->loadData(mat1,mat2);
+
+    //Record command buffer
+    frameData.commandBuffer->startRecording();
+    frameData.commandBuffer->beginRenderPass(renderpass,framebuffers->getFramebuffer(imageIndex));
+    frameData.commandBuffer->bindPipeline(pipeline);
+    frameData.commandBuffer->bindVertexBuffer(vertexBuffer);
+    frameData.commandBuffer->bindIndexBuffer(indexBuffer);
+    frameData.commandBuffer->bindDescriptorSet(pipeline,frameData.descriptorSet);
+    frameData.commandBuffer->recordRenderIndexed(6);
+    frameData.commandBuffer->endRenderPass();
+    frameData.commandBuffer->endRecording();
+
+    endFrame();
 
     return true;
 }
@@ -159,11 +175,19 @@ RENDERER_API bool cleanUpRenderer() {
     delete vertexBuffer;
     delete indexBuffer;
 
-    for (size_t i = 0; i < 2; i++) {
-        delete imageAvailableSemaphores[i];
-        delete renderFinishedSemaphores[i];
-        delete inFlightFences[i];
+    for (int i = 0; i < NUM_FRAMES_IN_FLIGHT; i++) {
+        delete framesData[i].imageAvailableSemaphore;
+        delete framesData[i].renderFinishedSemaphore;
+        delete framesData[i].renderFinishedFence;
+
+        delete framesData[i].commandPool;
+        delete framesData[i].commandBuffer;
+
+        delete framesData[i].UBO;
+        delete framesData[i].descriptorSet;
     }
+
+    delete descriptorPool;
     delete framebuffers;
     delete pipeline;
     delete fragmentShader;

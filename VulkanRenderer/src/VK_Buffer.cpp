@@ -47,3 +47,15 @@ void VK_Buffer::loadData(int size, uint16_t* indices) {
 	memcpy(data, indices, (size_t)size);
 	vkUnmapMemory(m_device->getDevice(), memory);
 }
+
+void VK_Buffer::loadData(float* mat1, float* mat2) {
+	void* data1;
+	vkMapMemory(m_device->getDevice(), memory, 0, 16*sizeof(float), 0, &data1);
+	memcpy(data1, mat1, (size_t)(16*sizeof(float)));
+	vkUnmapMemory(m_device->getDevice(), memory);
+
+	void* data2;
+	vkMapMemory(m_device->getDevice(), memory, 16*sizeof(float), 16 * sizeof(float), 0, &data2);
+	memcpy(data2, mat2, (size_t)(16 * sizeof(float)));
+	vkUnmapMemory(m_device->getDevice(), memory);
+}

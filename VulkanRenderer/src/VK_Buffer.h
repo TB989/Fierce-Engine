@@ -11,6 +11,7 @@ public:
 
 	void loadData(int size, float* vertices);
 	void loadData(int size, uint16_t* indices);
+	void loadData(float* mat1, float* mat2);
 
 	VkBuffer getBuffer() { return buffer; }
 
