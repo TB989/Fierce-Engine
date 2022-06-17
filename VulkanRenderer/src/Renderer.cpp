@@ -4,15 +4,15 @@
 
 #include "Common.h"
 
-#include "VK_Context.h"
-#include "VK_Device.h"
-#include "VK_Renderpass.h"
-#include "VK_Shader.h"
-#include "VK_Pipeline.h"
-#include "VK_Framebuffers.h"
-#include "VK_DescriptorPool.h"
+#include "vulkanObjects/VK_Context.h"
+#include "vulkanObjects/VK_Device.h"
+#include "vulkanObjects/VK_Renderpass.h"
+#include "vulkanObjects/VK_Shader.h"
+#include "vulkanObjects/VK_Pipeline.h"
+#include "vulkanObjects/VK_Framebuffers.h"
+#include "vulkanObjects/VK_DescriptorPool.h"
 
-#include "VK_Buffer.h"
+#include "vulkanObjects/VK_Buffer.h"
 
 #include "Matrix.h"
 
@@ -97,7 +97,7 @@ RENDERER_API bool initRenderer(HWND dummyWindowHandle, HWND windowHandle) {
     framesData[0].commandBuffer->recordCopy(20 * sizeof(float),stagingBufferVertex,vertexBuffer);
     framesData[0].commandBuffer->recordCopy(6 * sizeof(uint16_t), stagingBufferIndex, indexBuffer);
     framesData[0].commandBuffer->endRecording();
-    context->getDevice()->submitCommandBuffer(framesData[0].commandBuffer,nullptr,nullptr,0);
+    context->getDevice()->submitCommandBuffer(framesData[0].commandBuffer,nullptr,nullptr,0,nullptr);
     vkQueueWaitIdle(context->getDevice()->getQueue());
     framesData[0].commandBuffer->reset();
     delete stagingBufferVertex;
@@ -116,8 +116,8 @@ void beginFrame() {
     FrameData& frameData = framesData[currentFrame];
     VkFence fence = frameData.renderFinishedFence->getFence();
 
+    imageIndex=context->getSwapchain()->getNextImageIndex(frameData.imageAvailableSemaphore);
     CHECK_VK(vkWaitForFences(context->getDevice()->getDevice(), 1, &fence, VK_TRUE, UINT64_MAX), "Failed to wait for fences.");
-    imageIndex=context->getDevice()->getNextImageIndex(context->getSwapchain(), frameData.imageAvailableSemaphore);
     CHECK_VK(vkResetFences(context->getDevice()->getDevice(), 1, &fence), "Failed to reset fence.");
     frameData.commandBuffer->reset();
 }
@@ -125,8 +125,8 @@ void beginFrame() {
 void endFrame() {
     FrameData& frameData = framesData[currentFrame];
 
-    context->getDevice()->submitCommandBuffer(frameData.commandBuffer, frameData.imageAvailableSemaphore, frameData.renderFinishedSemaphore, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-    context->getDevice()->presentImage(context->getSwapchain(),imageIndex, frameData.renderFinishedSemaphore);
+    context->getDevice()->submitCommandBuffer(frameData.commandBuffer, frameData.imageAvailableSemaphore, frameData.renderFinishedSemaphore, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,frameData.renderFinishedFence);
+    context->getSwapchain()->presentImage(imageIndex, frameData.renderFinishedSemaphore);
 
     currentFrame = (currentFrame + 1) % NUM_FRAMES_IN_FLIGHT;
 }
@@ -149,6 +149,8 @@ RENDERER_API bool render() {
     float* mat1 = orthographicProjectionMatrix.get();
     float* mat2 = modelMatrix.get();
 
+    orthographicProjectionMatrix.setToIdentity();
+    modelMatrix.setToIdentity();
     frameData.UBO->loadData(mat1,mat2);
 
     //Record command buffer
@@ -180,8 +182,8 @@ RENDERER_API bool cleanUpRenderer() {
         delete framesData[i].renderFinishedSemaphore;
         delete framesData[i].renderFinishedFence;
 
-        delete framesData[i].commandPool;
         delete framesData[i].commandBuffer;
+        delete framesData[i].commandPool;
 
         delete framesData[i].UBO;
         delete framesData[i].descriptorSet;

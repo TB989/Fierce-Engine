@@ -2,6 +2,7 @@
 
 #include "VK_CommandBuffer.h"
 #include "VK_Semaphore.h"
+#include "VK_Fence.h"
 #include "VK_Swapchain.h"
 
 VK_Device::VK_Device(VkInstance instance, VkSurfaceKHR surface){
@@ -53,13 +54,7 @@ void VK_Device::create() {
     transferQueue = graphicsQueue;
 }
 
-uint32_t VK_Device::getNextImageIndex(VK_Swapchain* swapchain, VK_Semaphore* signalSemaphore){
-    uint32_t imageIndex;
-    CHECK_VK(vkAcquireNextImageKHR(device, swapchain->getSwapchain(), UINT64_MAX, signalSemaphore->getSemaphore(), VK_NULL_HANDLE, &imageIndex), "Failed to aquire image.");
-    return imageIndex;
-}
-
-void VK_Device::submitCommandBuffer(VK_CommandBuffer* commandBuffer, VK_Semaphore* waitSemaphore, VK_Semaphore* signalSemaphore, VkPipelineStageFlags waitStageMask){
+void VK_Device::submitCommandBuffer(VK_CommandBuffer* commandBuffer, VK_Semaphore* waitSemaphore, VK_Semaphore* signalSemaphore, VkPipelineStageFlags waitStageMask, VK_Fence* waitFence){
     VkCommandBuffer cmdBuffer = commandBuffer->getCommandBuffer();
 
     VkSubmitInfo submitInfo{};
@@ -87,30 +82,12 @@ void VK_Device::submitCommandBuffer(VK_CommandBuffer* commandBuffer, VK_Semaphor
     }
     submitInfo.pWaitDstStageMask = &waitStageMask;
 
-    CHECK_VK(vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE), "Failed to submit queue.");
-}
-
-void VK_Device::presentImage(VK_Swapchain* swapchain,uint32_t imageIndex,VK_Semaphore* waitSemaphore){
-    VkSwapchainKHR swpchain = swapchain->getSwapchain();
-
-    VkPresentInfoKHR presentInfo{};
-    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-    presentInfo.pNext = nullptr;
-    if (waitSemaphore != nullptr) {
-        VkSemaphore waitSema = waitSemaphore->getSemaphore();
-        presentInfo.waitSemaphoreCount = 1;
-        presentInfo.pWaitSemaphores = &waitSema;
+    if (waitFence==nullptr) {
+        CHECK_VK(vkQueueSubmit(graphicsQueue, 1, &submitInfo, nullptr), "Failed to submit queue.");
     }
     else {
-        presentInfo.waitSemaphoreCount = 0;
-        presentInfo.pWaitSemaphores = nullptr;
+        CHECK_VK(vkQueueSubmit(graphicsQueue, 1, &submitInfo, waitFence->getFence()), "Failed to submit queue.");
     }
-    presentInfo.swapchainCount = 1;
-    presentInfo.pSwapchains = &swpchain;
-    presentInfo.pImageIndices = &imageIndex;
-    presentInfo.pResults = nullptr;
-
-    CHECK_VK(vkQueuePresentKHR(graphicsQueue, &presentInfo), "Failed to present image.");
 }
 
 uint32_t VK_Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties){
@@ -121,6 +98,7 @@ uint32_t VK_Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags pr
     }
 
     CHECK_VK(VK_ERROR_OUT_OF_DEVICE_MEMORY,"Failed to find memory type.");
+    return 0;
 }
 
 void VK_Device::createLogicalDevice(){

@@ -15,7 +15,7 @@ public:
 	VK_Swapchain* getSwapchain() { return swapchain; }
 
 	VkImageView getSwapchainImage(int index) { return swapchain->getImage(index); }
-	int getNumSwapchainImages() { return swapchain->getNumImages(); }
+	size_t getNumSwapchainImages() { return swapchain->getNumImages(); }
 
 private:
 	VK_Instance* instance;

@@ -20,7 +20,8 @@ project "Engine"
 		"src/**.cpp",
 		"premake5.lua",
 		"Engine.ini",
-		"%{IncludeDir.Common}/**.h"
+		"%{IncludeDir.Common}/**.h",
+		"res/**"
 	}
 
 	includedirs

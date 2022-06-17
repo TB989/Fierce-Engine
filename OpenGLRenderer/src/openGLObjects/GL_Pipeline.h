@@ -10,7 +10,7 @@
 
 class GL_Pipeline {
 public:
-	GL_Pipeline(std::string name, GL_Shader* shader1, GL_Shader* shader2);
+	GL_Pipeline(GL_Shader* shader1, GL_Shader* shader2);
 	~GL_Pipeline();
 
 	void create();
@@ -35,7 +35,6 @@ private:
 
 private:
 	GLuint id;
-	std::string m_name;
 	std::vector<GL_Shader*> shaderList;
 
 	std::vector<UniformLocation*> uniformLocations;

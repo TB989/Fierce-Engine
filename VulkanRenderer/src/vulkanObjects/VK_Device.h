@@ -9,6 +9,7 @@
 class VK_CommandBuffer;
 class VK_Semaphore;
 class VK_Swapchain;
+class VK_Fence;
 
 class VK_Device{
 public:
@@ -25,9 +26,7 @@ public:
 	SurfaceData* getSurfaceData() { return &surfaceData; }
 	DeviceData* getDeviceData() { return &deviceData; }
 
-	uint32_t getNextImageIndex(VK_Swapchain* swapchain, VK_Semaphore* signalSemaphore);
-	void submitCommandBuffer(VK_CommandBuffer* commandBuffer,VK_Semaphore* waitSemaphore,VK_Semaphore* signalSemaphore, VkPipelineStageFlags waitStageMask);
-	void presentImage(VK_Swapchain* swapchain, uint32_t imageIndex,VK_Semaphore* waitSemaphore);
+	void submitCommandBuffer(VK_CommandBuffer* commandBuffer,VK_Semaphore* waitSemaphore,VK_Semaphore* signalSemaphore, VkPipelineStageFlags waitStageMask,VK_Fence* waitFence);
 
 	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 

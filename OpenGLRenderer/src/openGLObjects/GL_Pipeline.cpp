@@ -1,7 +1,6 @@
 #include "GL_Pipeline.h"
 
-GL_Pipeline::GL_Pipeline(std::string name, GL_Shader* shader1, GL_Shader* shader2) {
-	m_name = name;
+GL_Pipeline::GL_Pipeline(GL_Shader* shader1, GL_Shader* shader2) {
 	id = glCreateProgram();
 	CHECK_GL(glGetError(),"Failed to create shader proram.");
 
@@ -44,7 +43,7 @@ void GL_Pipeline::create() {
 		glGetProgramiv(id, GL_INFO_LOG_LENGTH, &InfoLogLength);
 		std::vector<char> ProgramErrorMessage(InfoLogLength + 1);
 		glGetProgramInfoLog(id, InfoLogLength, NULL, &ProgramErrorMessage[0]);
-		LOGGER->error("Shader program linking failed for program %s:\n%s\n", m_name.c_str(), &ProgramErrorMessage[0]);
+		LOGGER->error("Shader program linking failed for program:\n%s\n", &ProgramErrorMessage[0]);
 		CHECK_GL(glGetError(), "Failed to link program.");
 	}
 
@@ -58,7 +57,7 @@ void GL_Pipeline::create() {
 		glGetProgramiv(id, GL_INFO_LOG_LENGTH, &InfoLogLength);
 		std::vector<char> ProgramErrorMessage(InfoLogLength + 1);
 		glGetProgramInfoLog(id, InfoLogLength, NULL, &ProgramErrorMessage[0]);
-		LOGGER->error("Shader program validation failed for program %s:\n%s\n", m_name.c_str(), &ProgramErrorMessage[0]);
+		LOGGER->error("Shader program validation failed for program:\n%s\n", &ProgramErrorMessage[0]);
 		CHECK_GL(glGetError(), "Failed to validate program.");
 	}
 

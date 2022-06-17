@@ -1,9 +1,6 @@
 #pragma once
 
-#include "utils/FierceStrings.h"
-
-#include <vector>
-#include <map>
+#include "Common.h"
 
 enum API {
 	VULKAN,

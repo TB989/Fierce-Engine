@@ -2,6 +2,8 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
+
 #include <Windows.h>
 
 #include "GL_Include.h"

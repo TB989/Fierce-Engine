@@ -1,8 +1,7 @@
 #pragma once
 
-#include "utils/FierceStrings.h"
+#include "Common.h"
 
-#include <Windows.h>
 #include <stdexcept>
 
 enum FIERCE_ERROR {

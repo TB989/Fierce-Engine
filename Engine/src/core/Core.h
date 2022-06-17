@@ -1,12 +1,10 @@
 #pragma once
 
+#include "Common.h"
+
 #include "EngineSettings.h"
-#include "Logger.h"
-
 #include "system/window/WindowSystem.h"
-
-#include <Windows.h>
-#include "DLLTest.h"
+#include "system/renderer/FunctionLoader.h"
 
 class Core {
 private:
@@ -22,8 +20,11 @@ private:
 protected:
 	virtual void init()=0;
 	virtual void update() = 0;
-	virtual void render() = 0;
+	virtual void doRender() = 0;
 	virtual void cleanUp()=0;
+
+	virtual void loadShaders() = 0;
+	virtual void loadPipelines() = 0;
 
 public:
 	Core();
@@ -33,7 +34,6 @@ public:
 	void stop() { running = false; }
 
 public:
-	static Logger* LOGGER;
 
 	//Window system
 	WindowSystem* windowSystem=nullptr;
@@ -42,9 +42,6 @@ public:
 
 	//Renderer
 	HINSTANCE m_renderer = NULL;
-	PFN_INIT_RENDERER_PROC initRenderer = nullptr;
-	PFN_RENDER_PROC doRender = nullptr;
-	PFN_CLEAN_UP_RENDERER_PROC cleanUpRenderer = nullptr;
 
 protected:
 	EngineSettings m_settings = {};

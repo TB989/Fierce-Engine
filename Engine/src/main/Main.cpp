@@ -15,7 +15,7 @@ int main() {
 		delete app;
 	}
 	catch (const Fierce_Exception& e) {
-		Core::LOGGER->error(e.what());
+		LOGGER->error(e.what());
 		return EXIT_FAILURE;
 	}
 

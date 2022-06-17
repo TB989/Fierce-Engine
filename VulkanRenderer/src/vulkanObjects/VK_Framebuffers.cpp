@@ -8,7 +8,7 @@ VK_Framebuffers::VK_Framebuffers(VK_Device* device, VK_Swapchain* swapchain, VK_
     m_device = device->getDevice();
     framebuffers.resize(swapchain->getNumImages());
 
-    for (size_t i = 0; i < framebuffers.size(); i++) {
+    for (int i = 0; i < framebuffers.size(); i++) {
         VkImageView attachments[] = {
             swapchain->getImage(i)
         };

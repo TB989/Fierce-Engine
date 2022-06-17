@@ -4,18 +4,28 @@
 
 #include <fstream>
 
-const std::string VK_Shader::SHADER_LIBRARY = "C:/Users/tmbal/Desktop/Fierce-Engine/VulkanRenderer/res/";
+//const std::string VK_Shader::SHADER_LIBRARY = "C:/Users/tmbal/Desktop/Fierce-Engine/VulkanRenderer/res/";
 
-VK_Shader::VK_Shader(VK_Device* device, std::string path) {
+VK_Shader::VK_Shader(VK_Device* device, ShaderType shaderType) {
 	m_device = device->getDevice();
+	m_shaderType = shaderType;
 
-	type = getType(path);
-	readSourceCode(path);
-	createShader(path);
+	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+	createInfo.pNext = nullptr;
+	createInfo.flags = 0;
 }
 
 VK_Shader::~VK_Shader() {
 	vkDestroyShaderModule(m_device, shaderModule, nullptr);
+}
+
+void VK_Shader::create(){
+	CHECK_VK(vkCreateShaderModule(m_device, &createInfo, nullptr, &shaderModule), "Failed to create shader module.");
+}
+
+void VK_Shader::setSourceCode(std::vector<char> sourceCode){
+	createInfo.codeSize = sourceCode.size();
+	createInfo.pCode = reinterpret_cast<const uint32_t*>(sourceCode.data());
 }
 
 void VK_Shader::fillInShaderStageInfo(VkPipelineShaderStageCreateInfo createInfo) {
@@ -23,7 +33,7 @@ void VK_Shader::fillInShaderStageInfo(VkPipelineShaderStageCreateInfo createInfo
 	createInfo.pNext = nullptr;
 	createInfo.flags = 0;
 	createInfo.pSpecializationInfo = nullptr;
-	switch (type) {
+	switch (m_shaderType) {
 	case VERTEX_SHADER:
 		createInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
 		break;
@@ -35,7 +45,7 @@ void VK_Shader::fillInShaderStageInfo(VkPipelineShaderStageCreateInfo createInfo
 	createInfo.pName = "main";
 }
 
-ShaderType VK_Shader::getType(std::string path) {
+/**ShaderType VK_Shader::getType(std::string path) {
 	if (contains(path, "vert")) {
 		return ShaderType::VERTEX_SHADER;
 	}
@@ -46,9 +56,9 @@ ShaderType VK_Shader::getType(std::string path) {
 		LOGGER->error("Shader %s is not a valid shader file.", path.c_str());
 		return ShaderType::UNKNOWN;
 	}
-}
+}*/
 
-void VK_Shader::readSourceCode(std::string path) {
+/**void VK_Shader::readSourceCode(std::string path) {
 	std::ifstream stream(SHADER_LIBRARY + path, std::ios::ate | std::ios::binary);
 
 	if (stream.is_open()) {
@@ -61,15 +71,4 @@ void VK_Shader::readSourceCode(std::string path) {
 	else {
 		LOGGER->error("Unable to read shader %s.", path.c_str());
 	}
-}
-
-void VK_Shader::createShader(std::string path) {
-	VkShaderModuleCreateInfo createInfo1{};
-	createInfo1.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-	createInfo1.pNext = nullptr;
-	createInfo1.flags = 0;
-	createInfo1.codeSize = sourceCode.size();
-	createInfo1.pCode = reinterpret_cast<const uint32_t*>(sourceCode.data());
-
-	CHECK_VK(vkCreateShaderModule(m_device, &createInfo1, nullptr, &shaderModule), "Failed to create shader module.");
-}
+}*/

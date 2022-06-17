@@ -27,7 +27,7 @@ public:
 
         data->presentSupport.clear();
         data->presentSupport.resize(queueFamilyCount);
-        for (int i = 0;i< queueFamilyCount;i++) {
+        for (uint32_t i = 0;i< queueFamilyCount;i++) {
             VkBool32 supported;
             vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &supported);
 
@@ -273,7 +273,7 @@ public:
 
     static void printDeviceMemoryProperties(DeviceData* data) {
         LOGGER->info("Memory properties:");
-        for (int i = 0;i< data->deviceMemoryProperties.memoryHeapCount;i++) {
+        for (uint32_t i = 0;i< data->deviceMemoryProperties.memoryHeapCount;i++) {
             LOGGER->info("\tHeap %i:",i);
             LOGGER->info("\tMemory size: %llu GB", data->deviceMemoryProperties.memoryHeaps[i].size/100000000);
             std::string flags = "";
@@ -285,7 +285,7 @@ public:
             }
             LOGGER->info("\tHeap flags: %s", flags.c_str());
 
-            for (int j = 0; j < data->deviceMemoryProperties.memoryTypeCount; j++) {
+            for (uint32_t j = 0; j < data->deviceMemoryProperties.memoryTypeCount; j++) {
                 if (data->deviceMemoryProperties.memoryTypes[j].heapIndex==i) {
                     LOGGER->info("\tMemory type %i:", j);
                     std::string flags = "";
@@ -323,7 +323,7 @@ public:
     static void printDeviceQueueFamilies(DeviceData* data) {
         int counter = 0;
         LOGGER->info("Queue families:");
-        for (VkQueueFamilyProperties family:data->queueFamilies) {
+        for (VkQueueFamilyProperties const family:data->queueFamilies) {
             std::string flags = "";
             LOGGER->info("\tFamily #%i:",counter);
             LOGGER->info("\tQueueCount: %i", family.queueCount);

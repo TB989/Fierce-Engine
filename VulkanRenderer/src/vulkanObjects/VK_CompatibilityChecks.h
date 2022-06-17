@@ -11,9 +11,9 @@ struct ExtensionValidationLayerData {
 };
 
 struct DeviceData {
-	VkPhysicalDeviceProperties deviceProperties;
-	VkPhysicalDeviceFeatures deviceFeatures;
-	VkPhysicalDeviceMemoryProperties deviceMemoryProperties;
+	VkPhysicalDeviceProperties deviceProperties = {};
+	VkPhysicalDeviceFeatures deviceFeatures = {};
+	VkPhysicalDeviceMemoryProperties deviceMemoryProperties = {};
 	std::vector<VkQueueFamilyProperties> queueFamilies;
 	std::vector<bool> presentSupport;
 
@@ -23,14 +23,14 @@ struct DeviceData {
 };
 
 struct SurfaceData {
-	VkSurfaceCapabilitiesKHR surfaceCapabilities;
+	VkSurfaceCapabilitiesKHR surfaceCapabilities = {};
 	std::vector<VkSurfaceFormatKHR> surfaceFormats;
 	std::vector<VkPresentModeKHR> presentModes;
 
-	VkSurfaceFormatKHR swapchainFormat;
-	VkPresentModeKHR swapchainPresentMode;
-	uint32_t swapchainWidth;
-	uint32_t swapchainHeight;
+	VkSurfaceFormatKHR swapchainFormat = {};
+	VkPresentModeKHR swapchainPresentMode = {};
+	uint32_t swapchainWidth=0;
+	uint32_t swapchainHeight=0;
 };
 
 class VK_CompatibilityCheck_Device{

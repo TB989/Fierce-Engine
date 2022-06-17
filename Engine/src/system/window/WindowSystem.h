@@ -1,12 +1,12 @@
 #pragma once
 
+#include "Common.h"
+
+#include "FierceWindow.h"
 #include "core/EngineSettings.h"
 #include "core/FierceExceptions.h"
-#include "FierceWindow.h"
 
-#include <Windows.h>
 #include <windowsx.h>
-#include <map>
 
 class Core;
 

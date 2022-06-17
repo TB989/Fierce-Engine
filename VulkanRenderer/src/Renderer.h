@@ -1,11 +1,11 @@
 #pragma once
 
-#include "VK_Semaphore.h"
-#include "VK_Fence.h"
-#include "VK_Buffer.h"
-#include "VK_CommandPool.h"
-#include "VK_CommandBuffer.h"
-#include "VK_DescriptorSet.h"
+#include "vulkanObjects/VK_Semaphore.h"
+#include "vulkanObjects/VK_Fence.h"
+#include "vulkanObjects/VK_Buffer.h"
+#include "vulkanObjects/VK_CommandPool.h"
+#include "vulkanObjects/VK_CommandBuffer.h"
+#include "vulkanObjects/VK_DescriptorSet.h"
 
 struct FrameData {
 	VK_Semaphore* imageAvailableSemaphore;

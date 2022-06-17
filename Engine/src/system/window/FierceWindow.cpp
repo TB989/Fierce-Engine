@@ -2,7 +2,6 @@
 
 #include "core/Core.h"
 
-#include <windows.h>
 #include <strsafe.h>
 
 FierceWindow::FierceWindow(LPCWSTR className, LPCWSTR title, EngineSettings* settings, bool dummy) {

@@ -1,15 +1,12 @@
 #include "Core.h"
 
-#include "Logger.h"
 #include "io/Parser.h"
 
-Logger* Core::LOGGER = new Logger("CORE");
-
 Core::Core() {
-	Core::LOGGER->info("Loading engine settings.");
+	LOGGER->info("Loading engine settings.");
 	std::map<std::string, std::string> settings = Parser::parsePropertiesFile("Engine.ini");
 	if (settings.empty()) {
-		Core::LOGGER->warn("Failed to load engine settings, using default.");
+		LOGGER->warn("Failed to load engine settings, using default.");
 	}
 	else {
 		m_settings.parse(settings);
@@ -51,6 +48,8 @@ void Core::coreInit() {
 	//Load renderer
 	loadRenderer();
 	initRenderer(dummyWindow->getHandle(), window->getHandle());
+	loadShaders();
+	loadPipelines();
 
 	init();
 
@@ -62,8 +61,8 @@ void Core::coreUpdate() {
 }
 
 void Core::coreRender() {
-	doRender();
 	render();
+	doRender();
 }
 
 void Core::coreCleanUp() {
@@ -75,37 +74,19 @@ void Core::loadRenderer(){
 	//Choose rendering API and open DLL
 	switch (m_settings.api) {
 	case API::OPEN_GL:
-		Core::LOGGER->info("Loading rendering library OpenGL.");
+		LOGGER->info("Loading rendering library OpenGL.");
 		m_renderer = LoadLibrary(TEXT("../bin/OpenGLRenderer.dll"));
 		break;
 	case API::VULKAN:
-		Core::LOGGER->info("Loading rendering library Vulkan.");
+		LOGGER->info("Loading rendering library Vulkan.");
 		m_renderer = LoadLibrary(TEXT("../bin/VulkanRenderer.dll"));
 		break;
 	default:
-		Core::LOGGER->warn("Rendering library is not supported, loading OpenGL.");
+		LOGGER->warn("Rendering library is not supported, loading OpenGL.");
 		m_renderer = LoadLibrary(TEXT("../bin/OpenGLRenderer.dll"));
 		break;
 	}
 
-	//Load functions
-	if (m_renderer == NULL) {
-		Core::LOGGER->error("Unable to load renderer!");
-	}
-	else {
-		initRenderer = (PFN_INIT_RENDERER_PROC)GetProcAddress(m_renderer, "initRenderer");
-		if (!initRenderer) {
-			Core::LOGGER->error("Unable to load function!");
-		}
-
-		doRender = (PFN_RENDER_PROC)GetProcAddress(m_renderer, "render");
-		if (!doRender) {
-			Core::LOGGER->error("Unable to load function!");
-		}
-
-		cleanUpRenderer = (PFN_CLEAN_UP_RENDERER_PROC)GetProcAddress(m_renderer, "cleanUpRenderer");
-		if (!cleanUpRenderer) {
-			Core::LOGGER->error("Unable to load function!");
-		}
-	}
+	//Load render functions
+	loadAllFunctions(m_renderer);
 }

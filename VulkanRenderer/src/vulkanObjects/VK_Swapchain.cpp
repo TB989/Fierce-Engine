@@ -1,5 +1,7 @@
 #include "VK_Swapchain.h"
 
+#include "VK_Semaphore.h"
+
 VK_Swapchain::VK_Swapchain(VK_Device* device, VkSurfaceKHR surface){
 	m_device = device;
 	m_surface = surface;
@@ -77,4 +79,31 @@ void VK_Swapchain::create(){
 
 		CHECK_VK(vkCreateImageView(m_device->getDevice(), &createInfo, nullptr, &images[i]), "Failed to create image view for swapchain.");
 	}
+}
+
+uint32_t VK_Swapchain::getNextImageIndex(VK_Semaphore* signalSemaphore){
+	uint32_t imageIndex;
+	CHECK_VK(vkAcquireNextImageKHR(m_device->getDevice(), m_swapchain, UINT64_MAX, signalSemaphore->getSemaphore(), VK_NULL_HANDLE, &imageIndex), "Failed to aquire image.");
+	return imageIndex;
+}
+
+void VK_Swapchain::presentImage(uint32_t imageIndex, VK_Semaphore* waitSemaphore){
+	VkPresentInfoKHR presentInfo{};
+	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+	presentInfo.pNext = nullptr;
+	if (waitSemaphore != nullptr) {
+		VkSemaphore waitSema = waitSemaphore->getSemaphore();
+		presentInfo.waitSemaphoreCount = 1;
+		presentInfo.pWaitSemaphores = &waitSema;
+	}
+	else {
+		presentInfo.waitSemaphoreCount = 0;
+		presentInfo.pWaitSemaphores = nullptr;
+	}
+	presentInfo.swapchainCount = 1;
+	presentInfo.pSwapchains = &m_swapchain;
+	presentInfo.pImageIndices = &imageIndex;
+	presentInfo.pResults = nullptr;
+
+	CHECK_VK(vkQueuePresentKHR(m_device->getQueue(), &presentInfo), "Failed to present image.");
 }
