@@ -25,7 +25,7 @@ public:
 	void loadUniform(std::string location, float v1, float v2, float v3, float v4);
 	void loadUniform(std::string location, Mat4* matrix);
 
-	void addVertexAttribute(GL_VertexAttribute* attribute);
+	void addVertexInput(VertexInput* input);
 
 private:
 	struct UniformLocation {
@@ -38,5 +38,5 @@ private:
 	std::vector<GL_Shader*> shaderList;
 
 	std::vector<UniformLocation*> uniformLocations;
-	std::vector<GL_VertexAttribute*> vertexAttributes;
+	std::vector<VertexInput*> vertexInputs;
 };

@@ -59,6 +59,8 @@ RENDERER_API bool render() {
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
     pipe->bind();
+    pipe->loadUniform("projectionMatrix", &orthographicProjectionMatrix);
+    pipe->loadUniform("modelMatrix", &modelMatrix);
     pipe->loadUniform("color",1.0f,0.0f,0.0f);
     vao->bind();
     vao->draw();
@@ -95,9 +97,20 @@ RENDERER_API ShaderID addShader(ShaderType shaderType, int sourceCodeSize, char*
 RENDERER_API PipelineID addPipeline(ShaderID vertexShader,ShaderID fragmentShader) {
     PipelineID pipeline= pipelineManager->addPipeline(shaderManager->getShader(vertexShader), shaderManager->getShader(fragmentShader));
     pipe = pipelineManager->getPipeline(pipeline);
-    pipe->bind();
-    pipe->loadUniform("projectionMatrix", &orthographicProjectionMatrix);
-    pipe->loadUniform("modelMatrix", &modelMatrix);
-    pipe->unbind();
     return pipeline;
+}
+
+RENDERER_API void createPipeline(PipelineID id) {
+    GL_Pipeline* pipeline = pipelineManager->getPipeline(id);
+    pipeline->create();
+}
+
+RENDERER_API void addVertexInput(PipelineID id,VertexInput* input) {
+    GL_Pipeline* pipeline = pipelineManager->getPipeline(id);
+    pipeline->addVertexInput(input);
+}
+
+RENDERER_API void addPipelineParameter(PipelineID id, ParameterType type,char* name) {
+    GL_Pipeline* pipeline = pipelineManager->getPipeline(id);
+    pipeline->addUniformLocation(name);
 }

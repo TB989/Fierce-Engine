@@ -34,4 +34,9 @@ void Test_EngineConfig::loadShaders() {
 
 void Test_EngineConfig::loadPipelines() {
     PipelineID pipeline=addPipeline(vertexShader,fragmentShader);
+    addVertexInput(pipeline,&POS2);
+    addPipelineParameter(pipeline, ParameterType::UNIFORM, "color");
+    addPipelineParameter(pipeline, ParameterType::UNIFORM, "projectionMatrix");
+    addPipelineParameter(pipeline, ParameterType::UNIFORM, "modelMatrix");
+    createPipeline(pipeline);
 }

@@ -12,6 +12,9 @@ PFN_ADD_SHADER_PROC addShader;
 
 //Pipelines
 PFN_ADD_PIPELINE_PROC addPipeline;
+PFN_ADD_VERTEX_INPUT_PROC addVertexInput;
+PFN_ADD_PIPELINE_PARAMETER_PROC addPipelineParameter;
+PFN_CREATE_PIPELINE_PROC createPipeline;
 
 void* getFunctionPointer(HINSTANCE renderer,const char* name) {
 	void* p = (void*)GetProcAddress(renderer,name);
@@ -30,4 +33,7 @@ void loadAllFunctions(HINSTANCE renderer) {
 	addShader = (PFN_ADD_SHADER_PROC)getFunctionPointer(renderer,"addShader");
 
 	addPipeline= (PFN_ADD_PIPELINE_PROC)getFunctionPointer(renderer, "addPipeline");
+	addVertexInput=(PFN_ADD_VERTEX_INPUT_PROC)getFunctionPointer(renderer, "addVertexInput");
+	addPipelineParameter= (PFN_ADD_PIPELINE_PARAMETER_PROC)getFunctionPointer(renderer, "addPipelineParameter");
+	createPipeline=(PFN_CREATE_PIPELINE_PROC)getFunctionPointer(renderer, "createPipeline");
 }
