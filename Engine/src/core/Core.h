@@ -23,8 +23,10 @@ protected:
 	virtual void doRender() = 0;
 	virtual void cleanUp()=0;
 
+	virtual void loadRenderpass() = 0;
 	virtual void loadShaders() = 0;
 	virtual void loadPipelines() = 0;
+	virtual void loadFramebuffers() = 0;
 
 public:
 	Core();

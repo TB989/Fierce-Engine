@@ -1,6 +1,8 @@
 #include "Common.h"
 
 #include <stdexcept>
+#include "vulkanObjects/VulkanObject.h"
+#include <Windows.h>
 
 class VK_Exception :public std::runtime_error {
 public:

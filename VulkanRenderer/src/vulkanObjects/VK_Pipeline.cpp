@@ -4,7 +4,7 @@
 #include "VK_Renderpass.h"
 #include "VK_Shader.h"
 
-VK_Pipeline::VK_Pipeline(VK_Device* device, VK_Shader* vertexShader, VK_Shader* fragmentShader, VK_Renderpass* renderpass) {
+VK_Pipeline::VK_Pipeline(VK_Device* device, VK_Shader* vertexShader, VK_Shader* fragmentShader) {
     m_device = device->getDevice();
 
     createShaderStages(vertexShader, fragmentShader);
@@ -14,13 +14,16 @@ VK_Pipeline::VK_Pipeline(VK_Device* device, VK_Shader* vertexShader, VK_Shader* 
     createRasterizer();
     createMultisampling();
     createColorBlending();
-    createPipeline(renderpass->getRenderpass());
 }
 
 VK_Pipeline::~VK_Pipeline() {
     vkDestroyPipeline(m_device, graphicsPipeline, nullptr);
     vkDestroyPipelineLayout(m_device, pipelineLayout, nullptr);
     vkDestroyDescriptorSetLayout(m_device, descriptorSetLayout, nullptr);
+}
+
+void VK_Pipeline::create(){
+    createPipeline();
 }
 
 void VK_Pipeline::createShaderStages(VK_Shader* vertexShader, VK_Shader* fragmentShader) {
@@ -30,7 +33,7 @@ void VK_Pipeline::createShaderStages(VK_Shader* vertexShader, VK_Shader* fragmen
     vertShaderStageInfo.flags = 0;
     vertShaderStageInfo.pSpecializationInfo = nullptr;
     vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-    vertShaderStageInfo.module = vertexShader->getId();
+    vertShaderStageInfo.module = vertexShader->getShader();
     vertShaderStageInfo.pName = "main";
 
     VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
@@ -39,7 +42,7 @@ void VK_Pipeline::createShaderStages(VK_Shader* vertexShader, VK_Shader* fragmen
     fragShaderStageInfo.flags = 0;
     fragShaderStageInfo.pSpecializationInfo = nullptr;
     fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-    fragShaderStageInfo.module = fragmentShader->getId();
+    fragShaderStageInfo.module = fragmentShader->getShader();
     fragShaderStageInfo.pName = "main";
 
     shaderStages[0] = vertShaderStageInfo;
@@ -66,10 +69,10 @@ void VK_Pipeline::createVertexInput() {
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     vertexInputInfo.pNext = nullptr;
     vertexInputInfo.flags = 0;
-    vertexInputInfo.vertexBindingDescriptionCount = 1;
-    vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
-    vertexInputInfo.vertexAttributeDescriptionCount = 2;
-    vertexInputInfo.pVertexAttributeDescriptions = attributes.data();
+    vertexInputInfo.vertexBindingDescriptionCount = 0;
+    vertexInputInfo.pVertexBindingDescriptions = nullptr;
+    vertexInputInfo.vertexAttributeDescriptionCount = 0;
+    vertexInputInfo.pVertexAttributeDescriptions = nullptr;
 }
 
 void VK_Pipeline::createInputAssembly() {
@@ -151,8 +154,8 @@ void VK_Pipeline::createColorBlending() {
     colorBlending.blendConstants[3] = 0.0f; // Optional
 }
 
-void VK_Pipeline::createPipeline(VkRenderPass renderpass) {
-    VkDescriptorSetLayoutBinding uboLayoutBinding{};
+void VK_Pipeline::createPipeline() {
+    /*VkDescriptorSetLayoutBinding uboLayoutBinding{};
     uboLayoutBinding.binding = 0;
     uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     uboLayoutBinding.descriptorCount = 1;
@@ -166,14 +169,14 @@ void VK_Pipeline::createPipeline(VkRenderPass renderpass) {
     layoutInfo.bindingCount = 1;
     layoutInfo.pBindings = &uboLayoutBinding;
 
-    CHECK_VK(vkCreateDescriptorSetLayout(m_device, &layoutInfo, nullptr, &descriptorSetLayout), "Failed to create descriptor set layout.");
+    CHECK_VK(vkCreateDescriptorSetLayout(m_device, &layoutInfo, nullptr, &descriptorSetLayout), "Failed to create descriptor set layout.");*/
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.pNext = nullptr;
     pipelineLayoutInfo.flags = 0;
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = 1; 
-    pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
+    pipelineLayoutInfo.setLayoutCount = 0; 
+    pipelineLayoutInfo.pSetLayouts = nullptr;
     pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
     pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
 
@@ -194,7 +197,7 @@ void VK_Pipeline::createPipeline(VkRenderPass renderpass) {
     pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.pDynamicState = nullptr; // Optional
     pipelineInfo.layout = pipelineLayout;
-    pipelineInfo.renderPass = renderpass;
+    pipelineInfo.renderPass = m_renderpass->getRenderpass();
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
     pipelineInfo.basePipelineIndex = -1; // Optional

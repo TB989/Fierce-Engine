@@ -1,14 +1,15 @@
 #pragma once
 
 #include "Common.h"
-#include "GL_Include.h"
-
-#include "GL_Shader.h"
-#include "GL_VertexAttribute.h"
+#include "OpenGLObject.h"
 
 #include "Matrix.h"
+#include "Renderer_API.h"
 
-class GL_Pipeline {
+class GL_Shader;
+class GL_VertexAttribute;
+
+class GL_Pipeline : public OpenGLObject{
 public:
 	GL_Pipeline(GL_Shader* shader1, GL_Shader* shader2);
 	~GL_Pipeline();

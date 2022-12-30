@@ -1,10 +1,11 @@
 #pragma once
 
 #include "Common.h"
+#include "VulkanObject.h"
 
 class VK_Device;
 
-class VK_Buffer {
+class VK_Buffer : public VulkanObject{
 public:
 	VK_Buffer(VK_Device* device, int size,VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
 	~VK_Buffer();

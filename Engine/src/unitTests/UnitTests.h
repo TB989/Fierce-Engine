@@ -9,10 +9,6 @@ class Test_EngineConfig : public Core {
 public:
 	Test_EngineConfig();
 
-private:
-	ShaderID vertexShader;
-	ShaderID fragmentShader;
-
 protected:
 	void init() override;
 	void update() override;
@@ -21,4 +17,6 @@ protected:
 
 	void loadShaders() override;
 	void loadPipelines() override;
+	void loadRenderpass() override;
+	void loadFramebuffers() override;
 };

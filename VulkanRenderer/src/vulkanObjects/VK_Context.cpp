@@ -1,7 +1,5 @@
 #include "VK_Context.h"
 
-#include "Common.h"
-
 #include "VK_Instance.h"
 #include "VK_Surface.h"
 #include "VK_Device.h"

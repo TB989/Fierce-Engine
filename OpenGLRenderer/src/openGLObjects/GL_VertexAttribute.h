@@ -1,9 +1,9 @@
 #pragma once
 
 #include "common.h"
-#include "GL_Include.h"
+#include "OpenGLObject.h"
 
-class GL_VertexAttribute {
+class GL_VertexAttribute : public OpenGLObject{
 public:
 	static GL_VertexAttribute* POS2;
 	static GL_VertexAttribute* POS3;

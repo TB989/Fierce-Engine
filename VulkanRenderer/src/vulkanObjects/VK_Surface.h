@@ -1,8 +1,9 @@
 #pragma once
 
 #include "Common.h"
+#include "VulkanObject.h"
 
-class VK_Surface{
+class VK_Surface:public VulkanObject{
 public:
 	VK_Surface(VkInstance instance, HWND windowHandle);
 	~VK_Surface();

@@ -1,5 +1,8 @@
 #include "GL_Pipeline.h"
 
+#include "GL_Shader.h"
+#include "GL_VertexAttribute.h"
+
 GL_Pipeline::GL_Pipeline(GL_Shader* shader1, GL_Shader* shader2) {
 	id = glCreateProgram();
 	CHECK_GL(glGetError(),"Failed to create shader proram.");

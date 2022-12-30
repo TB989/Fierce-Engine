@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Common.h"
+#include "VulkanObject.h"
 
 struct ExtensionValidationLayerData {
 	std::vector<VkExtensionProperties> supportedExtensions;
@@ -33,12 +34,12 @@ struct SurfaceData {
 	uint32_t swapchainHeight=0;
 };
 
-class VK_CompatibilityCheck_Device{
+class VK_CompatibilityCheck{
 public:
 	virtual bool check(ExtensionValidationLayerData* data1, DeviceData* data2, SurfaceData* data3)=0;
 };
 
-class VK_Check_Device_Extensions :public VK_CompatibilityCheck_Device {
+class VK_Check_Device_Extensions :public VK_CompatibilityCheck {
 public:
 	VK_Check_Device_Extensions(bool required, std::vector<const char*> extensions) {
 		m_required = required;
@@ -54,7 +55,7 @@ private:
 	bool isExtensionSupported(const char* extensionName, std::vector<VkExtensionProperties>* supportedExtensions);
 };
 
-class VK_Check_Device_ValidationLayers :public VK_CompatibilityCheck_Device {
+class VK_Check_Device_ValidationLayers :public VK_CompatibilityCheck {
 public:
 	VK_Check_Device_ValidationLayers(bool required, std::vector<const char*> layers) {
 		m_required = required;
@@ -70,21 +71,21 @@ private:
 	bool isValidationLayerSupported(const char* layerName, std::vector<VkLayerProperties>* supportedLayers);
 };
 
-class VK_Check_Device_General:public VK_CompatibilityCheck_Device{
+class VK_Check_Device_General:public VK_CompatibilityCheck{
 public:
 	VK_Check_Device_General() {};
 
 	bool check(ExtensionValidationLayerData* data1, DeviceData* data2, SurfaceData* data3);
 };
 
-class VK_Check_Device_Queues :public VK_CompatibilityCheck_Device {
+class VK_Check_Device_Queues :public VK_CompatibilityCheck {
 public:
 	VK_Check_Device_Queues() {};
 
 	bool check(ExtensionValidationLayerData* data1, DeviceData* data2, SurfaceData* data3);
 };
 
-class VK_Check_Device_Surface_Format :public VK_CompatibilityCheck_Device {
+class VK_Check_Device_Surface_Format :public VK_CompatibilityCheck {
 public:
 	VK_Check_Device_Surface_Format(std::vector<VkFormat> formats) {
 		m_formats=formats;
@@ -96,7 +97,7 @@ private:
 	std::vector<VkFormat> m_formats;
 };
 
-class VK_Check_Device_Surface_PresentMode :public VK_CompatibilityCheck_Device {
+class VK_Check_Device_Surface_PresentMode :public VK_CompatibilityCheck {
 public:
 	VK_Check_Device_Surface_PresentMode(std::vector<VkPresentModeKHR> presentModes) {
 		m_presentModes = presentModes;

@@ -1,24 +1,21 @@
 #pragma once
 
 #include "Common.h"
+#include "VulkanObject.h"
 
 #include "VK_Helper_Extensions_ValidationLayers.h"
-#include "VK_CompatibilityChecks.h"
+#include "VK_Check_System.h"
 
-class VK_Instance{
+class VK_Instance:public VulkanObject,public VK_Check_System{
 public:
 	VK_Instance();
 	~VK_Instance();
 
 public:
-	void addCheck(VK_CompatibilityCheck_Device* check) { checks.push_back(check); }
-	
 	void create();
 	VkInstance getId() {return instance;}
 
 private:
-	bool checkInstanceCompatibility(ExtensionValidationLayerData* data, DeviceData* deviceData, SurfaceData* surfaceData);
-
 	PFN_vkCreateDebugUtilsMessengerEXT loadCreateFunctionPointer(VkInstance instance);
 	PFN_vkDestroyDebugUtilsMessengerEXT loadDestroyFunctionPointer(VkInstance instance);
 	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);
@@ -27,8 +24,6 @@ private:
 	VkInstance instance;
 
 	ExtensionValidationLayerData extensionLayerData;
-
-	std::vector<VK_CompatibilityCheck_Device*> checks;
 
 	bool isDebugSupported=false;
 	PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT;

@@ -14,12 +14,9 @@ void VK_Instance::create(){
     VK_Helper_Extensions_ValidationLayers::getExtensions(nullptr, &extensionLayerData.supportedExtensions);
     VK_Helper_Extensions_ValidationLayers::getValidationLayers(nullptr, &extensionLayerData.supportedValidationLayers);
 
-    if (!checkInstanceCompatibility(&extensionLayerData, nullptr, nullptr)) {
+    if (!doCheck(&extensionLayerData, nullptr, nullptr)) {
         CHECK_VK(VK_ERROR_INCOMPATIBLE_DRIVER,"Instance is incompatible.");
     }
-
-    VK_Helper_Extensions_ValidationLayers::printValidationLayers(true, "", &extensionLayerData.enabledValidationLayers);
-    VK_Helper_Extensions_ValidationLayers::printExtensions(true, "", &extensionLayerData.enabledExtensions);
 
     isDebugSupported = VK_Helper_Extensions_ValidationLayers::isExtensionSupported(VK_EXT_DEBUG_UTILS_EXTENSION_NAME,&extensionLayerData.enabledExtensions);
 
@@ -55,7 +52,7 @@ void VK_Instance::create(){
     }
 
     if (isDebugSupported) {
-        LOGGER->info("Debug messenger is active.");
+        LOGGER->info("\tDebug messenger is active.");
 
         VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
         debugCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -78,16 +75,6 @@ void VK_Instance::create(){
         LOGGER->info("Debug messenger is not active.");
         CHECK_VK(vkCreateInstance(&createInfo, nullptr, &instance), "Failed to create instance.");
     }
-}
-
-bool VK_Instance::checkInstanceCompatibility(ExtensionValidationLayerData* data, DeviceData* deviceData, SurfaceData* surfaceData){
-    for (auto mcheck : checks) {
-        if (!mcheck->check(data, deviceData, surfaceData)) {
-            return false;
-        }
-    }
-
-    return true;
 }
 
 PFN_vkCreateDebugUtilsMessengerEXT VK_Instance::loadCreateFunctionPointer(VkInstance instance) {

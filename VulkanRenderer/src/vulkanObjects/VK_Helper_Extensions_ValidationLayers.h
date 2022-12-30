@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Common.h"
+#include "VulkanObject.h"
 
 class VK_Helper_Extensions_ValidationLayers{
 public:

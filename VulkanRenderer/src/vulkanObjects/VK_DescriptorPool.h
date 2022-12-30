@@ -1,10 +1,11 @@
 #pragma once
 
 #include "Common.h"
+#include "VulkanObject.h"
 
 class VK_Device;
 
-class VK_DescriptorPool {
+class VK_DescriptorPool : public VulkanObject{
 public:
 	VK_DescriptorPool(VK_Device* device);
 	~VK_DescriptorPool();

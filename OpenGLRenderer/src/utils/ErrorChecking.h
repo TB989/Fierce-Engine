@@ -1,5 +1,6 @@
 #include "Common.h"
 
+#include "openGLObjects/OpenGLObject.h"
 #include <stdexcept>
 
 #define GL_CONTEXT_ERROR 0x0555

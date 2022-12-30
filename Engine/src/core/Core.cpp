@@ -48,8 +48,11 @@ void Core::coreInit() {
 	//Load renderer
 	loadRenderer();
 	initRenderer(dummyWindow->getHandle(), window->getHandle());
+
+	loadRenderpass();
 	loadShaders();
 	loadPipelines();
+	loadFramebuffers();
 
 	init();
 

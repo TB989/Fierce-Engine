@@ -1,8 +1,9 @@
 #pragma once
 
 #include "Common.h"
+#include "VulkanObject.h"
 
-#include "VK_CompatibilityChecks.h"
+#include "VK_Check_System.h"
 #include "VK_Helper_Extensions_ValidationLayers.h"
 #include "VK_Helper_Device.h"
 
@@ -11,14 +12,12 @@ class VK_Semaphore;
 class VK_Swapchain;
 class VK_Fence;
 
-class VK_Device{
+class VK_Device : public VulkanObject, public VK_Check_System{
 public:
 	VK_Device(VkInstance instance, VkSurfaceKHR surface);
 	~VK_Device();
 
 public:
-	void addCheck(VK_CompatibilityCheck_Device* check) { checks.push_back(check); }
-
 	void create();
 	VkDevice getDevice() { return device; }
 	VkQueue getQueue() { return graphicsQueue; }
@@ -32,15 +31,12 @@ public:
 
 private:
 	void pickPhysicalDevice();
-	bool checkDeviceCompatibility(ExtensionValidationLayerData* data, DeviceData* deviceData, SurfaceData* surfaceData);
 
 	void createLogicalDevice();
 
 private:
 	VkInstance m_instance=VK_NULL_HANDLE;
 	VkSurfaceKHR m_surface=VK_NULL_HANDLE;
-
-	std::vector<VK_CompatibilityCheck_Device*> checks;
 
 	VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
 	DeviceData deviceData;

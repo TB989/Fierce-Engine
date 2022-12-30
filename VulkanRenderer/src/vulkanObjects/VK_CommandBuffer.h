@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Common.h"
+#include "VulkanObject.h"
 
 class VK_Device;
 class VK_CommandPool;
@@ -11,7 +12,7 @@ class VK_Pipeline;
 class VK_Buffer;
 class VK_DescriptorSet;
 
-class VK_CommandBuffer {
+class VK_CommandBuffer : public VulkanObject{
 public:
 	VK_CommandBuffer(VK_Device* device,VK_CommandPool* commandPool);
 	~VK_CommandBuffer();

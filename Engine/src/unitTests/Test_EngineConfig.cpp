@@ -2,6 +2,8 @@
 
 #include "io/Parser.h"
 
+#include "Logger.h"
+
 Test_EngineConfig::Test_EngineConfig() {
     
 }
@@ -23,20 +25,17 @@ void Test_EngineConfig::cleanUp() {
 }
 
 void Test_EngineConfig::loadShaders() {
-    std::vector<char> sourceCode;
-
-    sourceCode=Parser::readText("C:/Users/tmbal/Desktop/Fierce-Engine/Engine/res/openGL/shaders/Shader_Color2D.vert");
-    vertexShader = addShader(ShaderType::VERTEX_SHADER,sourceCode.size(), reinterpret_cast<char*>(sourceCode.data()));
-
-    sourceCode = Parser::readText("C:/Users/tmbal/Desktop/Fierce-Engine/Engine/res/openGL/shaders/Shader_Color.frag");
-    fragmentShader = addShader(ShaderType::FRAGMENT_SHADER,sourceCode.size(), reinterpret_cast<char*>(sourceCode.data()));
+    
 }
 
 void Test_EngineConfig::loadPipelines() {
-    PipelineID pipeline=addPipeline(vertexShader,fragmentShader);
-    addVertexInput(pipeline,&POS2);
-    addPipelineParameter(pipeline, ParameterType::UNIFORM, "color");
-    addPipelineParameter(pipeline, ParameterType::UNIFORM, "projectionMatrix");
-    addPipelineParameter(pipeline, ParameterType::UNIFORM, "modelMatrix");
-    createPipeline(pipeline);
+    
+}
+
+void Test_EngineConfig::loadRenderpass(){
+    
+}
+
+void Test_EngineConfig::loadFramebuffers() {
+    
 }

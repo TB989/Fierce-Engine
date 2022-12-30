@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Common.h"
-#include "GL_Include.h"
+#include "OpenGLObject.h"
 
-class GL_VBO {
+class GL_VBO : public OpenGLObject{
 public:
 	GL_VBO(GLenum type);
 	~GL_VBO();

@@ -28,23 +28,15 @@ void VK_Device::pickPhysicalDevice() {
         VK_Helper_Device::getSurfaceData(device, m_surface, &surfaceData);
         VK_Helper_Device::getDeviceData(device,m_surface,&deviceData);
 
-        if (checkDeviceCompatibility(&extensionLayerData, &deviceData, &surfaceData)) {
+        LOGGER->info("\tChecking physical device %s:", deviceData.deviceProperties.deviceName);
+
+        if (doCheck(&extensionLayerData, &deviceData, &surfaceData)) {
             m_physicalDevice = device;
             return;
         }
     }
 
     CHECK_VK(VK_ERROR_INCOMPATIBLE_DRIVER,"No compatible device found.");
-}
-
-bool VK_Device::checkDeviceCompatibility(ExtensionValidationLayerData* data, DeviceData* deviceData, SurfaceData* surfaceData) {
-    for (auto mcheck : checks) {
-        if (!mcheck->check(data, deviceData, surfaceData)) {
-            return false;
-        }
-    }
-
-    return true;
 }
 
 void VK_Device::create() {
@@ -102,9 +94,6 @@ uint32_t VK_Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags pr
 }
 
 void VK_Device::createLogicalDevice(){
-
-    VK_Helper_Extensions_ValidationLayers::printValidationLayers(false, "", &extensionLayerData.enabledValidationLayers);
-    VK_Helper_Extensions_ValidationLayers::printExtensions(false,"", &extensionLayerData.enabledExtensions);
 
     VkDeviceQueueCreateInfo queueCreateInfo{};
     queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;

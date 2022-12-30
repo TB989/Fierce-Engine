@@ -1,43 +1,27 @@
 #pragma once
 
 #include "Common.h"
+#include "VulkanObject.h"
+
+#include "Renderer_API.h"
 
 class VK_Device;
 
-enum ShaderType {
-	VERTEX_SHADER,
-	FRAGMENT_SHADER,
-	UNKNOWN
-};
-
-class VK_Shader {
+class VK_Shader :public VulkanObject{
 public:
 	VK_Shader(VK_Device* device, ShaderType shaderType);
 	~VK_Shader();
 
-	void create();
 	VkShaderModule getShader() { return shaderModule; }
+	ShaderType getType() { return m_shaderType; }
 
-	void setSourceCode(std::vector<char> sourceCode);
-	void fillInShaderStageInfo(VkPipelineShaderStageCreateInfo createInfo);
-
-private:
-	//ShaderType getType(std::string path);
-	//void readSourceCode(std::string path);
-
-/**	static inline bool contains(const std::string& s, const std::string& token) {
-		return s.find(token) != std::string::npos;
-	}*/
+	void addSourceCode(int sourceCodeSize, char* sourceCode);
+	void create();
 
 private:
-	//static const std::string SHADER_LIBRARY;
-
 	VkDevice m_device;
 
 	ShaderType m_shaderType=ShaderType::UNKNOWN;
 	VkShaderModuleCreateInfo createInfo = {};
 	VkShaderModule shaderModule=VK_NULL_HANDLE;
-
-	//std::vector<char> sourceCode;
-	//VkShaderModule shaderModule;
 };

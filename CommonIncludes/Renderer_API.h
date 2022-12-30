@@ -6,6 +6,8 @@
 
 typedef uint32_t ShaderID;
 typedef uint32_t PipelineID;
+typedef uint32_t RenderpassID;
+typedef uint32_t FramebuffersID;
 
 enum class ShaderType{
 	VERTEX_SHADER,
@@ -39,22 +41,40 @@ typedef bool (*PFN_INIT_RENDERER_PROC)(HWND dummyWindowHandle, HWND windowHandle
 typedef bool (*PFN_RENDER_PROC)();
 typedef bool (*PFN_CLEAN_UP_RENDERER_PROC)();
 
-typedef ShaderID (*PFN_ADD_SHADER_PROC)(ShaderType shaderType,int sourceCodeSize,char* sourceCode);
+/*typedef ShaderID(*PFN_ADD_SHADER_PROC)(ShaderType shaderType, int sourceCodeSize, char* sourceCode);
 
 typedef PipelineID (*PFN_ADD_PIPELINE_PROC)(ShaderID vertexShader, ShaderID fragmentShader);
 typedef void (*PFN_ADD_VERTEX_INPUT_PROC)(PipelineID id,VertexInput* input);
 typedef void (*PFN_ADD_PIPELINE_PARAMETER_PROC)(PipelineID id, ParameterType type,char* name);
+typedef void (*PFN_ADD_PIPELINE_RENDERPASS_PROC)(PipelineID pipeline, RenderpassID renderpass);
 typedef void (*PFN_CREATE_PIPELINE_PROC)(PipelineID id);
+
+typedef RenderpassID (*PFN_ADD_RENDERPASS_PROC)();
+typedef void (*PFN_ADD_RENDERPASS_COLOR_ATTACHMENT_PROC)(RenderpassID renderpass);
+typedef void (*PFN_CREATE_RENDERPASS_PROC)(RenderpassID renderpass);
+
+typedef FramebuffersID(*PFN_ADD_FRAMEBUFFERS_PROC)();
+typedef void (*PFN_ADD_FRAMEBUFFERS_RENDERPASS_PROC)(FramebuffersID framebuffers,RenderpassID renderpass);
+typedef void (*PFN_CREATE_FRAMEBUFFERS_PROC)(FramebuffersID framebuffers);*/
 
 extern PFN_INIT_RENDERER_PROC initRenderer;
 extern PFN_RENDER_PROC render;
 extern PFN_CLEAN_UP_RENDERER_PROC cleanUpRenderer;
 
-extern PFN_ADD_SHADER_PROC addShader;
+/*extern PFN_ADD_SHADER_PROC addShader;
 
 extern PFN_ADD_PIPELINE_PROC addPipeline;
 extern PFN_ADD_VERTEX_INPUT_PROC addVertexInput;
 extern PFN_ADD_PIPELINE_PARAMETER_PROC addPipelineParameter;
+extern PFN_ADD_PIPELINE_RENDERPASS_PROC addPipelineRenderpass;
 extern PFN_CREATE_PIPELINE_PROC createPipeline;
+
+extern PFN_ADD_RENDERPASS_PROC addRenderpass;
+extern PFN_ADD_RENDERPASS_COLOR_ATTACHMENT_PROC addRenderpassColorAttachment;
+extern PFN_CREATE_RENDERPASS_PROC createRenderpass;
+
+extern PFN_ADD_FRAMEBUFFERS_PROC addFramebuffers;
+extern PFN_ADD_FRAMEBUFFERS_RENDERPASS_PROC addFramebuffersRenderpass;
+extern PFN_CREATE_FRAMEBUFFERS_PROC createFramebuffers;*/
 
 #endif // DLL_IMPORT

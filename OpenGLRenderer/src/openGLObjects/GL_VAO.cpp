@@ -1,5 +1,7 @@
 #include "GL_VAO.h"
 
+#include "GL_VertexAttribute.h"
+
 GL_VAO::GL_VAO(GL_VBO* vertexBuffer) {
 	glGenVertexArrays(1, &m_id);
 	CHECK_GL(glGetError(), "Failed to generate vertex array.");

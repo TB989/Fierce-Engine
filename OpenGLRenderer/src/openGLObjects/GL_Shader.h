@@ -3,9 +3,9 @@
 #include "Renderer_API.h"
 
 #include "Common.h"
-#include "GL_Include.h"
+#include "OpenGLObject.h"
 
-class GL_Shader {
+class GL_Shader : public OpenGLObject{
 public:
 	GL_Shader(ShaderType shaderType);
 	~GL_Shader();

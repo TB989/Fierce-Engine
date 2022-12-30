@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Common.h"
-
+#include "VulkanObject.h"
 #include "VK_Device.h"
 
 class VK_Semaphore;
 
-class VK_Swapchain {
+class VK_Swapchain :public VulkanObject{
 public:
 	VK_Swapchain(VK_Device* device, VkSurfaceKHR surface);
 	~VK_Swapchain();

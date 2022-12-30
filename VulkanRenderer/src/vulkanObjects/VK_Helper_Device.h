@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Common.h"
-
+#include "VulkanObject.h"
 #include "VK_Device.h"
 
 class VK_Helper_Device{

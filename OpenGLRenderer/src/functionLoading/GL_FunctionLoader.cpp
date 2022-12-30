@@ -1,6 +1,7 @@
 #include "GL_FunctionLoader.h"
 
 #include "Common.h"
+#include "openGLObjects/OpenGLObject.h"
 
 //**********Vertex arrays**************************
 PFNGLGENVERTEXARRAYSPROC glGenVertexArrays;

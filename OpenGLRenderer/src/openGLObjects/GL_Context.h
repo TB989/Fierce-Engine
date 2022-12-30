@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Common.h"
+#include "OpenGLObject.h"
+#include <Windows.h>
 
 class GL_Context{
 public:

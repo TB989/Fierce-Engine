@@ -1,10 +1,11 @@
 #pragma once
 
 #include "Common.h"
-#include "GL_Include.h"
+#include "OpenGLObject.h"
 
 #include "GL_VBO.h"
-#include "GL_VertexAttribute.h"
+
+class GL_VertexAttribute;
 
 class GL_VAO {
 public:

@@ -1,15 +1,20 @@
 #pragma once
 
 #include "Common.h"
+#include "VulkanObject.h"
 
 class VK_Device;
 class VK_Shader;
 class VK_Renderpass;
 
-class VK_Pipeline {
+class VK_Pipeline:public VulkanObject {
 public:
-	VK_Pipeline(VK_Device* device, VK_Shader* vertexShader, VK_Shader* fragmentShader, VK_Renderpass* renderpass);
+	VK_Pipeline(VK_Device* device, VK_Shader* vertexShader, VK_Shader* fragmentShader);
 	~VK_Pipeline();
+
+	void create();
+	
+	void addRenderPass(VK_Renderpass* renderpass) { m_renderpass = renderpass; }
 
 	VkPipeline getPipeline() { return graphicsPipeline; }
 	VkPipelineLayout getPipelineLayout() { return pipelineLayout; }
@@ -17,6 +22,7 @@ public:
 
 private:
 	VkDevice m_device;
+	VK_Renderpass* m_renderpass;
 
 	VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
 	VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
@@ -52,5 +58,5 @@ private:
 	void createRasterizer();
 	void createMultisampling();
 	void createColorBlending();
-	void createPipeline(VkRenderPass renderpass);
+	void createPipeline();
 };

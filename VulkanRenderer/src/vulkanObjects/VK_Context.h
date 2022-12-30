@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Common.h"
+#include "VulkanObject.h"
+
 #include "VK_Swapchain.h"
 
 class VK_Instance;
