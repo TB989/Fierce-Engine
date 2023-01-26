@@ -1,6 +1,6 @@
 #include "FierceWindow.h"
 
-#include "core/Core.h"
+#include "src/core/Core.h"
 
 #include <strsafe.h>
 

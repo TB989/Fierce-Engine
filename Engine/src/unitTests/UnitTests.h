@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Common.h"
+#include "src/Common.h"
 
-#include "core/Core.h"
+#include "src/core/Core.h"
 #include "Renderer_API.h"
 
 class Test_EngineConfig : public Core {

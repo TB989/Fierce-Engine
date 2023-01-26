@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common.h"
+#include "src/Common.h"
 #include "OpenGLObject.h"
 
 class GL_VBO : public OpenGLObject{

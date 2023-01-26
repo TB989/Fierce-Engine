@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Common.h"
+#include "src/Common.h"
 
-#include "core/EngineSettings.h"
-#include "core/FierceExceptions.h"
+#include "src/core/EngineSettings.h"
+#include "src/core/FierceExceptions.h"
 
 class FierceWindow {
 public:

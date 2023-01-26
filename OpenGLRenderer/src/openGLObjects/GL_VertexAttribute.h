@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include "src/Common.h"
 #include "OpenGLObject.h"
 
 class GL_VertexAttribute : public OpenGLObject{

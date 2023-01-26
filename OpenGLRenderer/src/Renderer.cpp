@@ -6,8 +6,7 @@
 
 #include "openGLObjects/GL_VertexAttribute.h"
 
-#include "Matrix.h"
-#include "Transform.h"
+#include "MathLibrary.h"
 
 GL_Context* context;
 

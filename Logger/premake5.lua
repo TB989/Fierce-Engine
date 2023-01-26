@@ -9,19 +9,20 @@ project "Logger"
 	
 	defines
 	{
-		
+		"WIN32_LEAN_AND_MEAN",
+		"NOMINMAX"
 	}
 
 	files
 	{
-		"src/**.h",
-		"src/**.cpp",
+		"**.h",
+		"**.cpp",
 		"premake5.lua"
 	}
 
 	includedirs
 	{
-		"../%{prj.name}/src"
+		"../%{prj.name}"
 	}
 	
 	libdirs 

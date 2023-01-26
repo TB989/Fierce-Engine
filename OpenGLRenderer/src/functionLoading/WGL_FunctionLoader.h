@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Common.h"
-#include "openGLObjects/OpenGLObject.h"
+#include "src/Common.h"
+#include "src/openGLObjects/OpenGLObject.h"
 
 typedef HGLRC WINAPI wglCreateContextAttribsARB_type(HDC hdc, HGLRC hShareContext, const int* attribList);
 extern wglCreateContextAttribsARB_type* wglCreateContextAttribsARB;

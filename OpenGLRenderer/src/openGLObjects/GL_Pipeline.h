@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Common.h"
+#include "src/Common.h"
 #include "OpenGLObject.h"
 
-#include "Matrix.h"
+#include "MathLibrary.h"
+
 #include "Renderer_API.h"
 
 class GL_Shader;

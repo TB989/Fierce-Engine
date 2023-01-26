@@ -1,7 +1,7 @@
 #include "GL_Context.h"
 
-#include "functionLoading/WGL_FunctionLoader.h"
-#include "functionLoading/GL_FunctionLoader.h"
+#include "src/functionLoading/WGL_FunctionLoader.h"
+#include "src/functionLoading/GL_FunctionLoader.h"
 
 GL_Context::GL_Context(HWND dummyWindowHandle,HWND windowHandle){
 

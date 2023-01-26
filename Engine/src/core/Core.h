@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Common.h"
+#include "src/Common.h"
 
 #include "EngineSettings.h"
-#include "system/window/WindowSystem.h"
-#include "system/renderer/FunctionLoader.h"
+#include "src/system/window/WindowSystem.h"
+#include "src/system/renderer/FunctionLoader.h"
 
 class Core {
 private:

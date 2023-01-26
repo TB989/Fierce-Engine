@@ -1,6 +1,6 @@
 #include "WindowSystem.h"
 
-#include "core/Core.h"
+#include "src/core/Core.h"
 
 LRESULT CALLBACK wndProcFierceWindow(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	FierceWindow* window = static_cast<FierceWindow*>(GetProp(hWnd, L"windowHandle"));

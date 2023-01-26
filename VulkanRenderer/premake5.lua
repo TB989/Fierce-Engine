@@ -15,30 +15,30 @@ project "VulkanRenderer"
 
 	files
 	{
-		"src/**.h",
-		"src/**.cpp",
-		"premake5.lua",
-		"%{IncludeDir.Common}/**.h"
+		"**.h",
+		"**.cpp",
+		"premake5.lua"
 	}
 
 	includedirs
 	{
-		"../%{prj.name}/src",
-		"%{IncludeDir.Common}",
-		"%{IncludeDir.Vulkan}"
+		"../%{prj.name}",
+		"%{IncludeDir.Vulkan}",
+		"%{IncludeDir.Logger}",
+		"%{IncludeDir.MathLibrary}"
 	}
 	
 	libdirs 
 	{
-		"%{LibraryDir.Common}",
-		"%{LibraryDir.Vulkan}"
+		"%{LibraryDir.Vulkan}",
+		"%{LibraryDir.Common}"
 	}
 
 	links 
 	{
+		"%{Library.Vulkan}",
 		"%{Library.Logger}",
-		"%{Library.MathLibrary}",
-		"%{Library.Vulkan}"
+		"%{Library.MathLibrary}"
 	}
 	
 	filter "system:windows"

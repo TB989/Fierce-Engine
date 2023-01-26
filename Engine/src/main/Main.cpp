@@ -1,9 +1,9 @@
 #include <Windows.h>
 
-#include "core/FierceExceptions.h"
-#include "core/Core.h"
+#include "src/core/FierceExceptions.h"
+#include "src/core/Core.h"
 
-#include "unitTests/UnitTests.h"
+#include "src/unitTests/UnitTests.h"
 
 int main() {
 

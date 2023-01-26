@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Common.h"
+#include "src/Common.h"
 
 #include "FierceWindow.h"
-#include "core/EngineSettings.h"
-#include "core/FierceExceptions.h"
+#include "src/core/EngineSettings.h"
+#include "src/core/FierceExceptions.h"
 
 #include <windowsx.h>
 

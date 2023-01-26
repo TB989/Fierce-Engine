@@ -1,6 +1,6 @@
 #include "Core.h"
 
-#include "io/Parser.h"
+#include "src/io/Parser.h"
 
 Core::Core() {
 	LOGGER->info("Loading engine settings.");

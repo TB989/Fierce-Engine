@@ -16,18 +16,19 @@ project "Engine"
 
 	files
 	{
-		"src/**.h",
-		"src/**.cpp",
+		"**.h",
+		"**.cpp",
 		"premake5.lua",
 		"Engine.ini",
-		"%{IncludeDir.Common}/**.h",
 		"res/**"
 	}
 
 	includedirs
 	{
-		"../%{prj.name}/src",
-		"%{IncludeDir.Common}"
+		"../%{prj.name}",
+		"%{IncludeDir.GeometryLibrary}",
+		"%{IncludeDir.Logger}",
+		"%{IncludeDir.MathLibrary}"
 	}
 	
 	libdirs 
@@ -37,9 +38,9 @@ project "Engine"
 
 	links 
 	{
+		"%{Library.GeometryLibrary}",
 		"%{Library.Logger}",
-		"%{Library.MathLibrary}",
-		"%{Library.GeometryLibrary}"
+		"%{Library.MathLibrary}"
 	}
 	
 	filter "system:windows"

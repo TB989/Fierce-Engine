@@ -1,5 +1,7 @@
 #pragma once
 
+#include "utils/Logging.h"
+
 #include <unordered_map>
 
 using Entity = int;
@@ -17,7 +19,7 @@ public:
 
 	~ComponentArray() {
 		if (pointer != 0) {
-			Loggers::ECS->warn("%d components have not been removed.", pointer);
+			LOGGER->warn("%d components have not been removed.", pointer);
 		}
 
 		delete[] components;
@@ -25,12 +27,12 @@ public:
 
 	void insertComponent(Entity entity, T component){
 		if (entityToIndexMap.find(entity)!= entityToIndexMap.end()) {
-			Loggers::ECS->warn("Trying to insert component more than once for entity %i.",entity);
+			LOGGER->warn("Trying to insert component more than once for entity %i.",entity);
 			return;
 		}
 
 		if (pointer > m_maxComponents - 1) {
-			Loggers::ECS->warn("Cannot add component, component array is full.");
+			LOGGER->warn("Cannot add component, component array is full.");
 			return;
 		}
 
@@ -43,12 +45,12 @@ public:
 
 	void removeComponent(Entity entity){
 		if (entityToIndexMap.find(entity) == entityToIndexMap.end()) {
-			Loggers::ECS->warn("Trying to remove nonexistent component for entity %i.", entity);
+			LOGGER->warn("Trying to remove nonexistent component for entity %i.", entity);
 			return;
 		}
 
 		if (pointer < 1) {
-			Loggers::ECS->warn("Cannot remove component for entity %i.",entity);
+			LOGGER->warn("Cannot remove component for entity %i.",entity);
 			return;
 		}
 
@@ -68,7 +70,7 @@ public:
 
 	T& getComponent(Entity entity){
 		if (entityToIndexMap.find(entity) == entityToIndexMap.end()) {
-			Loggers::ECS->warn("Component does not exist for entity %i.", entity);
+			LOGGER->warn("Component does not exist for entity %i.", entity);
 			return T();
 		}
 

@@ -14,17 +14,17 @@ project "OpenGLRenderer"
 
 	files
 	{
-		"src/**.h",
-		"src/**.cpp",
-		"premake5.lua",
-		"%{IncludeDir.Common}/**.h"
+		"**.h",
+		"**.cpp",
+		"premake5.lua"
 	}
 
 	includedirs
 	{
-		"../%{prj.name}/src",
-		"%{IncludeDir.Common}",
-		"%{IncludeDir.External}"
+		"../%{prj.name}",
+		"%{wks.location}/external",
+		"%{IncludeDir.Logger}",
+		"%{IncludeDir.MathLibrary}"
 	}
 	
 	libdirs 

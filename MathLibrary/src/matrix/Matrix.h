@@ -1,7 +1,7 @@
 #pragma once
 
-#include "vector/Vector.h"
-#include "transform/Transform.h"
+#include "src/vector/Vector.h"
+#include "src/transform/Transform.h"
 
 #include <string>
 

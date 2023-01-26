@@ -1,5 +1,7 @@
 #pragma once
 
+#include "utils/Logging.h"
+
 using Entity = int;
 
 class EntityManager{
@@ -15,7 +17,7 @@ public:
 
 	~EntityManager() {
 		if (pointer != 0) {
-			Loggers::ECS->warn("%d entities have not been destroyed.",pointer);
+			LOGGER->warn("%d entities have not been destroyed.",pointer);
 		}
 
 		delete[] entityIDs;
@@ -23,7 +25,7 @@ public:
 
 	Entity createEntity() {
 		if (pointer> m_maxEntities-1) {
-			Loggers::ECS->warn("Cannot create entity, no entity IDs left.");
+			LOGGER->warn("Cannot create entity, no entity IDs left.");
 			return -1;
 		}
 
@@ -34,7 +36,7 @@ public:
 
 	void destroyEntity(Entity entity) {
 		if (pointer < 1) {
-			Loggers::ECS->warn("Cannot destroy entity, no space left to return ID.");
+			LOGGER->warn("Cannot destroy entity, no space left to return ID.");
 			return;
 		}
 

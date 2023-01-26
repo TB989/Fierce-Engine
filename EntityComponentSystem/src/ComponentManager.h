@@ -1,5 +1,7 @@
 #pragma once
 
+#include "utils/Logging.h"
+
 #include "ComponentArray.h"
 
 #include <unordered_map>
@@ -10,9 +12,9 @@ class ComponentManager{
 public:
 	~ComponentManager() {
 		if (!m_componentArrays.empty()) {
-			Loggers::ECS->warn("The following components have not been unregistered:");
+			LOGGER->warn("The following components have not been unregistered:");
 			for (auto& it : m_componentArrays) {
-				Loggers::ECS->warn("%s",it.first);
+				LOGGER->warn("%s",it.first);
 			}
 		}
 	}
@@ -22,7 +24,7 @@ public:
 		const char* typeName = typeid(T).name();
 
 		if (m_componentArrays.find(typeName)!= m_componentArrays.end()) {
-			Loggers::ECS->warn("Trying to register component %s more than once.", typeName);
+			LOGGER->warn("Trying to register component %s more than once.", typeName);
 			return;
 		}
 
@@ -34,7 +36,7 @@ public:
 		const char* typeName = typeid(T).name();
 
 		if (m_componentArrays.find(typeName) == m_componentArrays.end()) {
-			Loggers::ECS->warn("Trying to unregister component %s, which has never been registered, or already has been unregistered.", typeName);
+			LOGGER->warn("Trying to unregister component %s, which has never been registered, or already has been unregistered.", typeName);
 			return;
 		}
 
@@ -48,7 +50,7 @@ public:
 		const char* typeName = typeid(T).name();
 
 		if (m_componentArrays.find(typeName) == m_componentArrays.end()) {
-			Loggers::ECS->warn("Cannot add component %s, as component has never been registered.", typeName);
+			LOGGER->warn("Cannot add component %s, as component has never been registered.", typeName);
 			return;
 		}
 
@@ -60,7 +62,7 @@ public:
 		const char* typeName = typeid(T).name();
 
 		if (m_componentArrays.find(typeName) == m_componentArrays.end()) {
-			Loggers::ECS->warn("Cannot remove component %s, as component has never been registered.", typeName);
+			LOGGER->warn("Cannot remove component %s, as component has never been registered.", typeName);
 			return;
 		}
 
@@ -72,7 +74,7 @@ public:
 		const char* typeName = typeid(T).name();
 
 		if (m_componentArrays.find(typeName) == m_componentArrays.end()) {
-			Loggers::ECS->warn("Cannot get component %s, as component has never been registered.", typeName);
+			LOGGER->warn("Cannot get component %s, as component has never been registered.", typeName);
 			return T();
 		}
 

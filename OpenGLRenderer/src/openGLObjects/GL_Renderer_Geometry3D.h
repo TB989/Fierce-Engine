@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Common.h"
-#include "GL_Include.h"
+#include "src/Common.h"
+#include "src/GL_Include.h"
 
 #include "GL_Renderer.h"
 #include "GL_Pipeline.h"

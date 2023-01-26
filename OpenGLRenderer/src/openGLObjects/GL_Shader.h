@@ -2,7 +2,7 @@
 
 #include "Renderer_API.h"
 
-#include "Common.h"
+#include "src/Common.h"
 #include "OpenGLObject.h"
 
 class GL_Shader : public OpenGLObject{

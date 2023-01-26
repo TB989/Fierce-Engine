@@ -1,5 +1,5 @@
 #pragma once
 
-#include "Common.h"
+#include "src/Common.h"
 
 void loadAllFunctions(HINSTANCE renderer);

@@ -14,16 +14,15 @@ project "EntityComponentSystem"
 
 	files
 	{
-		"src/**.h",
-		"src/**.cpp",
+		"**.h",
+		"**.cpp",
 		"premake5.lua"
 	}
 
 	includedirs
 	{
-		"../%{prj.name}/src",
-		"%{IncludeDir.Common}",
-		"%{IncludeDir.External}"
+		"../%{prj.name}",
+		"%{IncludeDir.Logger}"
 	}
 	
 	libdirs 
