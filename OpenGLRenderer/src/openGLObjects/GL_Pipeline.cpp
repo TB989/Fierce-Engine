@@ -29,10 +29,10 @@ GL_Pipeline::~GL_Pipeline() {
 
 void GL_Pipeline::create() {
 	//Set vertex attributes
-	for (VertexInput* input:vertexInputs) {
+	/**for (VertexInput* input : vertexInputs) {
 		glBindAttribLocation(id, input->location, input->name.c_str());
 		CHECK_GL(glGetError(), "Failed to bind attribute location.");
-	}
+	}*/
 
 	//Link program
 	glLinkProgram(id);
@@ -156,8 +156,4 @@ void GL_Pipeline::loadUniform(std::string name, Mat4* matrix) {
 	}
 
 	LOGGER->warn("Uniform location %s is not found in shader.", name.c_str());
-}
-
-void GL_Pipeline::addVertexInput(VertexInput* input){
-	vertexInputs.push_back(input);
 }

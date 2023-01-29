@@ -5,7 +5,7 @@
 
 #include "MathLibrary.h"
 
-#include "Renderer_API.h"
+#include "RendererBase.h"
 
 class GL_Shader;
 class GL_VertexAttribute;
@@ -27,8 +27,6 @@ public:
 	void loadUniform(std::string location, float v1, float v2, float v3, float v4);
 	void loadUniform(std::string location, Mat4* matrix);
 
-	void addVertexInput(VertexInput* input);
-
 private:
 	struct UniformLocation {
 		std::string name;
@@ -40,5 +38,4 @@ private:
 	std::vector<GL_Shader*> shaderList;
 
 	std::vector<UniformLocation*> uniformLocations;
-	std::vector<VertexInput*> vertexInputs;
 };

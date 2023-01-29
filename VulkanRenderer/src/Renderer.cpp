@@ -1,6 +1,6 @@
 #include "Renderer.h"
 
-#include "Renderer_API.h"
+#include "RendererBase.h"
 
 #include "Common.h"
 
@@ -39,51 +39,4 @@ RENDERER_API bool cleanUpRenderer() {
     delete renderpass;
     delete context;
     return true;
-}
-
-RENDERER_API ShaderID addShader(ShaderType shaderType, int sourceCodeSize, char* sourceCode) {
-    return 0;
-}
-
-RENDERER_API PipelineID addPipeline(ShaderID vertexShader, ShaderID fragmentShader) {
-    return 0;
-}
-
-RENDERER_API void createPipeline(PipelineID id) {
-
-}
-
-RENDERER_API void addVertexInput(PipelineID id, VertexInput* input) {
-    
-}
-
-RENDERER_API void addPipelineParameter(PipelineID id, ParameterType type, char* name) {
-    
-}
-
-RENDERER_API void addPipelineRenderpass(PipelineID id, RenderpassID renderpass) {
-}
-
-RENDERER_API RenderpassID addRenderpass() {
-    return 0;
-}
-
-RENDERER_API void createRenderpass(RenderpassID id) {
-
-}
-
-RENDERER_API void addRenderpassColorAttachment(RenderpassID id) {
-
-}
-
-RENDERER_API FramebuffersID addFramebuffers() {
-    return 0;
-}
-
-RENDERER_API void createFramebuffers(FramebuffersID id) {
-
-}
-
-RENDERER_API void addFramebuffersRenderpass(FramebuffersID id, RenderpassID renderpass) {
-
 }

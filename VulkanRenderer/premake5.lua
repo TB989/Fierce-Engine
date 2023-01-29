@@ -15,17 +15,19 @@ project "VulkanRenderer"
 
 	files
 	{
-		"**.h",
-		"**.cpp",
-		"premake5.lua"
+		"%{prj.location}/**.h",
+		"%{prj.location}/**.cpp",
+		"premake5.lua",
+		"res/**"
 	}
 
 	includedirs
 	{
-		"../%{prj.name}",
+		"%{prj.location}",
 		"%{IncludeDir.Vulkan}",
 		"%{IncludeDir.Logger}",
-		"%{IncludeDir.MathLibrary}"
+		"%{IncludeDir.MathLibrary}",
+		"%{IncludeDir.RendererBase}"
 	}
 	
 	libdirs 

@@ -1,7 +1,5 @@
 #include "FunctionLoader.h"
 
-#include "Renderer_API.h"
-
 //General
 PFN_INIT_RENDERER_PROC initRenderer;
 PFN_RENDER_PROC render;

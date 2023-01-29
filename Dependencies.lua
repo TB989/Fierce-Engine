@@ -6,6 +6,7 @@ IncludeDir["EntityComponentSystem"] = "%{wks.location}/EntityComponentSystem"
 IncludeDir["GeometryLibrary"] = "%{wks.location}/GeometryLibrary"
 IncludeDir["Logger"] = "%{wks.location}/Logger"
 IncludeDir["MathLibrary"] = "%{wks.location}/MathLibrary"
+IncludeDir["RendererBase"] = "%{wks.location}/RendererBase"
 IncludeDir["OpenGLRenderer"] = "%{wks.location}/OpenGLRenderer"
 IncludeDir["VulkanRenderer"] = "%{wks.location}/VulkanRenderer"
 

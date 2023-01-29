@@ -14,14 +14,14 @@ project "EntityComponentSystem"
 
 	files
 	{
-		"**.h",
-		"**.cpp",
+		"%{prj.location}/**.h",
+		"%{prj.location}/**.cpp",
 		"premake5.lua"
 	}
 
 	includedirs
 	{
-		"../%{prj.name}",
+		"%{prj.location}",
 		"%{IncludeDir.Logger}"
 	}
 	

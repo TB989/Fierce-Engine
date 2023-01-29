@@ -49,11 +49,6 @@ void Core::coreInit() {
 	loadRenderer();
 	initRenderer(dummyWindow->getHandle(), window->getHandle());
 
-	loadRenderpass();
-	loadShaders();
-	loadPipelines();
-	loadFramebuffers();
-
 	init();
 
 	window->show();

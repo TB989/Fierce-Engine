@@ -1,8 +1,6 @@
 #include "UnitTests.h"
 
-#include "src/io/Parser.h"
-
-#include "Logger.h"
+#include "src/utils/Logging.h"
 
 Test_EngineConfig::Test_EngineConfig() {
     
@@ -22,20 +20,4 @@ void Test_EngineConfig::doRender() {
 
 void Test_EngineConfig::cleanUp() {
 
-}
-
-void Test_EngineConfig::loadShaders() {
-    
-}
-
-void Test_EngineConfig::loadPipelines() {
-    
-}
-
-void Test_EngineConfig::loadRenderpass(){
-    
-}
-
-void Test_EngineConfig::loadFramebuffers() {
-    
 }

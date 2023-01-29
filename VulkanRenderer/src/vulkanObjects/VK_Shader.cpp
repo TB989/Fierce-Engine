@@ -2,9 +2,8 @@
 
 #include "VK_Device.h"
 
-VK_Shader::VK_Shader(VK_Device* device, ShaderType shaderType) {
+VK_Shader::VK_Shader(VK_Device* device) {
 	m_device = device->getDevice();
-	m_shaderType = shaderType;
 
 	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 	createInfo.pNext = nullptr;

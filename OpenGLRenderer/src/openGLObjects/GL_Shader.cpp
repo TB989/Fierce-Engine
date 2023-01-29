@@ -1,15 +1,7 @@
 #include "GL_Shader.h"
 
-GL_Shader::GL_Shader(ShaderType shaderType) {
-	m_shaderType = shaderType;
-	switch (shaderType) {
-	case ShaderType::VERTEX_SHADER:
-		id = glCreateShader(GL_VERTEX_SHADER);
-		break;
-	case ShaderType::FRAGMENT_SHADER:
-		id = glCreateShader(GL_FRAGMENT_SHADER);
-		break;
-	}
+GL_Shader::GL_Shader(GLenum type) {
+	id = glCreateShader(type);
 	CHECK_GL(glGetError(), "Failed to create shader.");
 }
 

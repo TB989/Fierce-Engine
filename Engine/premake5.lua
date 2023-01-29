@@ -16,19 +16,19 @@ project "Engine"
 
 	files
 	{
-		"**.h",
-		"**.cpp",
+		"%{prj.location}/**.h",
+		"%{prj.location}/**.cpp",
 		"premake5.lua",
-		"Engine.ini",
-		"res/**"
+		"Engine.ini"
 	}
 
 	includedirs
 	{
-		"../%{prj.name}",
+		"%{prj.location}",
 		"%{IncludeDir.GeometryLibrary}",
 		"%{IncludeDir.Logger}",
-		"%{IncludeDir.MathLibrary}"
+		"%{IncludeDir.MathLibrary}",
+		"%{IncludeDir.RendererBase}"
 	}
 	
 	libdirs 

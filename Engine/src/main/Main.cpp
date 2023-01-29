@@ -7,10 +7,10 @@
 
 int main() {
 
-	Test_EngineConfig* app;
+	Test_GeometryLibrary* app;
 
 	try {
-		app=new Test_EngineConfig();
+		app=new Test_GeometryLibrary();
 		app->run();
 		delete app;
 	}

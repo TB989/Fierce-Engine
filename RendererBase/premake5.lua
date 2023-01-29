@@ -1,4 +1,4 @@
-project "GeometryLibrary"
+project "RendererBase"
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
@@ -9,7 +9,7 @@ project "GeometryLibrary"
 	
 	defines
 	{
-		
+
 	}
 
 	files
@@ -21,18 +21,17 @@ project "GeometryLibrary"
 
 	includedirs
 	{
-		"%{prj.location}",
-		"%{IncludeDir.Logger}"
+		"%{prj.location}"
 	}
 	
 	libdirs 
 	{
-		"%{LibraryDir.Common}"
+		
 	}
 
 	links 
 	{
-		"%{Library.Logger}"
+		
 	}
 	
 	filter "system:windows"
