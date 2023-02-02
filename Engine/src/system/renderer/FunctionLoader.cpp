@@ -5,6 +5,8 @@ PFN_INIT_RENDERER_PROC initRenderer;
 PFN_RENDER_PROC render;
 PFN_CLEAN_UP_RENDERER_PROC cleanUpRenderer;
 
+PFN_RENDERER_LOAD_MESH_PROC renderer_loadMesh;
+
 void* getFunctionPointer(HINSTANCE renderer,const char* name) {
 	void* p = (void*)GetProcAddress(renderer,name);
 	if (p == 0 || (p == (void*)0x1) || (p == (void*)0x2) || (p == (void*)0x3) || (p == (void*)-1)) {
@@ -18,4 +20,5 @@ void loadAllFunctions(HINSTANCE renderer) {
 	initRenderer = (PFN_INIT_RENDERER_PROC)getFunctionPointer(renderer,"initRenderer");
 	render = (PFN_RENDER_PROC)getFunctionPointer(renderer,"render");
 	cleanUpRenderer = (PFN_CLEAN_UP_RENDERER_PROC)getFunctionPointer(renderer,"cleanUpRenderer");
+	renderer_loadMesh = (PFN_RENDERER_LOAD_MESH_PROC)getFunctionPointer(renderer, "renderer_loadMesh");
 }

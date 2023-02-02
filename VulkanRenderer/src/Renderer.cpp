@@ -40,3 +40,8 @@ RENDERER_API bool cleanUpRenderer() {
     delete context;
     return true;
 }
+
+RENDERER_API int renderer_loadMesh(MeshSettings settings, float* vertices, unsigned int* indices) {
+    LOGGER->info("Loading mesh.");
+    return 1;
+}

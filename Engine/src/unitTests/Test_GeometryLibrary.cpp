@@ -25,6 +25,8 @@ void Test_GeometryLibrary::init() {
 	std::vector<unsigned int> indices;
 
 	loader->loadGeometry(GeometrySettings{ RECTANGLE,0,0.0f,0.0f,0 }, vertices, indices);
+
+	int id = renderer_loadMesh(MeshSettings{true,false,false,false}, vertices.size(), vertices.data(), indices.size(), indices.data());
 }
 
 void Test_GeometryLibrary::update() {
