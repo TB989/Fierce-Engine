@@ -5,9 +5,12 @@
 #include "openGLObjects/GL_Context.h"
 #include "openGLObjects/GL_VBO.h"
 #include "openGLObjects/GL_VAO.h"
-#include "openGLObjects/GL_VertexAttribute.h" 
+#include "openGLObjects/GL_VertexAttribute.h"
 
 GL_Context* context;
+
+ShaderManager* shaderManager;
+PipelineManager* pipelineManager;
 
 GL_VAO* vao;
 GL_VBO* vertexBuffer;
@@ -18,12 +21,32 @@ RENDERER_API bool initRenderer(HWND dummyWindowHandle,HWND windowHandle) {
 
     context = new GL_Context(dummyWindowHandle,windowHandle);
 
+    shaderManager = new ShaderManager();
+    loadShaders(shaderManager);
+
+    pipelineManager = new PipelineManager();
+    loadPipelines(pipelineManager);
+
     return true;
 }
 
 RENDERER_API bool render() {
-    glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+    //glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
+    GL_Pipeline* pipeline = pipelineManager->getPipeline("SimpleColor");
+    if (pipeline == nullptr) {
+        LOGGER->error("Failed to find pipeline.");
+    }
+    else {
+        pipeline->bind();
+        pipeline->loadUniform("color", 0.0f, 0.0f, 1.0f);
+        vao->bind();
+        vao->draw();
+        vao->unbind();
+        pipeline->unbind();
+    }
+
     context->swapBuffers();
     return true;
 }
@@ -37,6 +60,9 @@ RENDERER_API bool cleanUpRenderer() {
     delete vertexBuffer;
     indexBuffer->unbind();
     delete indexBuffer;
+
+    delete pipelineManager;
+    delete shaderManager;
 
     delete context;
     return true;
@@ -69,4 +95,39 @@ RENDERER_API int renderer_loadMesh(MeshSettings settings,int numVertices, float 
     }
 
     return 1;
+}
+
+void loadShaders(ShaderManager* shaderManager){
+    GL_Shader* vertexShader = new GL_Shader(GL_VERTEX_SHADER);
+    vertexShader->addSourceCode("C:/Users/tmbal/Desktop/Fierce-Engine/OpenGLRenderer/res/shaders/Shader_Color2D.vert");
+    vertexShader->create();
+    shaderManager->addShader("Shader_Color2D.vert", vertexShader);
+
+    GL_Shader* fragmentShader = new GL_Shader(GL_FRAGMENT_SHADER);
+    fragmentShader->addSourceCode("C:/Users/tmbal/Desktop/Fierce-Engine/OpenGLRenderer/res/shaders/Shader_Color.frag");
+    fragmentShader->create();
+    shaderManager->addShader("Shader_Color.frag",fragmentShader);
+
+    LOGGER->info("Done loading shaders.");
+}
+
+void loadPipelines(PipelineManager* pipelineManager){
+    GL_Shader* vertexShader = shaderManager->getShader("Shader_Color2D.vert");
+    GL_Shader* fragmentShader = shaderManager->getShader("Shader_Color.frag");
+
+    if (vertexShader == nullptr) {
+        LOGGER->error("Failed to find vertex shader.");
+        return;
+    }
+    if (fragmentShader ==nullptr) {
+        LOGGER->error("Failed to find fragment shader.");
+        return;
+    }
+
+    GL_Pipeline* simpleColorPipeline = new GL_Pipeline(vertexShader,fragmentShader);
+    simpleColorPipeline->addUniformLocation("color");
+    simpleColorPipeline->create();
+    pipelineManager->addPipeline("SimpleColor", simpleColorPipeline);
+
+    LOGGER->info("Done loading pipelines.");
 }

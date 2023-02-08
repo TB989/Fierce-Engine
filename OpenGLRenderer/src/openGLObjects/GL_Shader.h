@@ -12,7 +12,7 @@ public:
 
 	GLuint getId() { return id; }
 
-	void addSourceCode(int sourceCodeSize, char* sourceCode);
+	void addSourceCode(std::string filename);
 	void create();
 
 private:
