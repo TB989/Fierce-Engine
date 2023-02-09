@@ -7,6 +7,8 @@ Test_GeometryLibrary::Test_GeometryLibrary() {
 }
 
 void Test_GeometryLibrary::init() {
+	setOrthographicProjection(800,600,-1,1);
+
 	loader = new GeometryLoader();
 
 	loader->registerGeometry(RECTANGLE, new Rectangle2D());
