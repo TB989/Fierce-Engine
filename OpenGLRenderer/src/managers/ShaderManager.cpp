@@ -1,5 +1,9 @@
 #include "ShaderManager.h"
 
+ShaderManager::ShaderManager(AssetManager* assetManager){
+	m_assetManager = assetManager;
+}
+
 ShaderManager::~ShaderManager(){
 	for (auto& shader : shaders) {
 		delete shader.second;

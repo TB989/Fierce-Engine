@@ -8,6 +8,12 @@ public:
 		m_b = b;
 	}
 
+	Color3f(float* values) {
+		m_r = values[0];
+		m_g = values[1];
+		m_b = values[2];
+	}
+
 	float getR() { return m_r; }
 	float getG() { return m_g; }
 	float getB() { return m_b; }

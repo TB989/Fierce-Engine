@@ -7,7 +7,7 @@ Test_GeometryLibrary::Test_GeometryLibrary() {
 }
 
 void Test_GeometryLibrary::init() {
-	setOrthographicProjection(800,600,-1,1);
+	renderer_setOrthographicProjection(800,600,-1,1);
 
 	loader = new GeometryLoader();
 
@@ -36,7 +36,8 @@ void Test_GeometryLibrary::update() {
 }
 
 void Test_GeometryLibrary::doRender() {
-
+	float temp[] = {0.0f,0.0f};
+	renderer_addEntity(RenderType::SIMPLE_COLOR_2D,*temp, 0, *temp);
 }
 
 void Test_GeometryLibrary::cleanUp() {

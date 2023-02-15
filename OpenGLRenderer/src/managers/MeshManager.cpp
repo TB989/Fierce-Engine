@@ -1,5 +1,9 @@
 #include "MeshManager.h"
 
+MeshManager::MeshManager(AssetManager* assetManager){
+    m_assetManager = assetManager;
+}
+
 MeshManager::~MeshManager() {
 	for (auto& mesh : meshes) {
 		delete mesh.second;
@@ -47,8 +51,14 @@ Mesh::~Mesh(){
     delete indexBuffer;
 }
 
-void Mesh::render(){
+void Mesh::bind(){
     vao->bind();
+}
+
+void Mesh::render(){
     vao->draw();
+}
+
+void Mesh::unbind(){
     vao->unbind();
 }

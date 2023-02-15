@@ -6,7 +6,7 @@ GL_Renderer_Geometry2D::GL_Renderer_Geometry2D(GL_Pipeline* pipeline) {
 
 void GL_Renderer_Geometry2D::render() {
 	m_pipeline->bind();
-	/*for (Entity2D* entity : entities) {
+	for (Entity2D* entity : entities) {
 		//Prepare entity
 		Mat4 modelMatrix;
 		modelMatrix.setToIdentity();
@@ -19,11 +19,11 @@ void GL_Renderer_Geometry2D::render() {
 
 		//Render entity
 		renderEntity(entity);
-	}*/
+	}
 	m_pipeline->unbind();
 }
 
-/*void GL_Renderer_Geometry2D::renderEntity(Entity2D* entity) {
+void GL_Renderer_Geometry2D::renderEntity(Entity2D* entity) {
 	ComponentMaterialColors* colors = (ComponentMaterialColors*)(entity->getComponent(ComponentType::MATERIAL_COLORS));
 	colors->reset();
 	ComponentMesh* mesh = (ComponentMesh*)(entity->getComponent(ComponentType::MESH));
@@ -67,4 +67,4 @@ void GL_Renderer_Geometry2D::render() {
 		}
 		break;
 	}
-}*/
+}

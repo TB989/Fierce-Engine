@@ -1,12 +1,12 @@
-#include "GL_Renderer_Color2D.h"
+#include "GL_Renderer_Color3D.h"
 
-GL_Renderer_Color2D::GL_Renderer_Color2D(GL_Pipeline* pipeline){
+GL_Renderer_Color3D::GL_Renderer_Color3D(GL_Pipeline* pipeline){
 	m_pipeline = pipeline;
 }
 
-void GL_Renderer_Color2D::render(){
+void GL_Renderer_Color3D::render() {
 	m_pipeline->bind();
-	/*for (Entity2D* entity : entities) {
+	for (Entity3D* entity : entities) {
 		//Prepare entity
 		Mat4 modelMatrix;
 		modelMatrix.setToIdentity();
@@ -20,6 +20,6 @@ void GL_Renderer_Color2D::render(){
 		//Render entity
 		ComponentMesh* mesh = (ComponentMesh*)(entity->getComponent(ComponentType::MESH));
 		mesh->render();
-	}*/
+	}
 	m_pipeline->unbind();
 }

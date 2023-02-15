@@ -1,5 +1,9 @@
 #include "PipelineManager.h"
 
+PipelineManager::PipelineManager(AssetManager* assetManager){
+	m_assetManager = assetManager;
+}
+
 PipelineManager::~PipelineManager() {
 	for (auto& pipeline : pipelines) {
 		delete pipeline.second;

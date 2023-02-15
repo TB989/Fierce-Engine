@@ -47,7 +47,7 @@ void Core::coreInit() {
 
 	//Load renderer
 	loadRenderer();
-	initRenderer(dummyWindow->getHandle(), window->getHandle());
+	renderer_init(dummyWindow->getHandle(), window->getHandle());
 
 	init();
 
@@ -59,12 +59,13 @@ void Core::coreUpdate() {
 }
 
 void Core::coreRender() {
-	render();
-	doRender();
+	renderer_startFrame();
+	doRender(); 
+	renderer_endFrame();
 }
 
 void Core::coreCleanUp() {
-	cleanUpRenderer();
+	renderer_cleanUp();
 	cleanUp();
 }
 
