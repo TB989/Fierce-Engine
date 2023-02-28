@@ -1,6 +1,6 @@
 #include "GL_Renderer_Color2D.h"
 
-GL_Renderer_Color2D::GL_Renderer_Color2D(AssetManager* assetManager, GL_Pipeline* pipeline){
+/**GL_Renderer_Color2D::GL_Renderer_Color2D(AssetManager* assetManager, GL_Pipeline* pipeline) {
 	m_assetManager = assetManager;
 	m_pipeline = pipeline;
 }
@@ -76,4 +76,4 @@ void GL_Renderbatch_Color2D::clear(){
 		delete modelMatrix;
 	}
 	modelMatrices.clear();
-}
+}*/

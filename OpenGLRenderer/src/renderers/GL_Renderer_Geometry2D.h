@@ -1,6 +1,6 @@
 #pragma once
 
-#include "src/Common.h"
+/**#include "src/Common.h"
 #include "src/GL_Include.h"
 
 #include "GL_Renderer.h"
@@ -19,4 +19,4 @@ private:
 	std::vector<Entity2D*> entities;
 
 	void renderEntity(Entity2D* entity);
-};
+};*/

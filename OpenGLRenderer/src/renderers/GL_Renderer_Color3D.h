@@ -1,6 +1,6 @@
 #pragma once
 
-#include "src/Common.h"
+/**#include "src/Common.h"
 #include "src/GL_Include.h"
 
 #include "GL_Renderer.h"
@@ -17,4 +17,4 @@ public:
 private:
 	GL_Pipeline* m_pipeline;
 	std::vector<Entity3D*> entities;
-};
+};*/

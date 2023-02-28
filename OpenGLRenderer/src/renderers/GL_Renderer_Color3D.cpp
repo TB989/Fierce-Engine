@@ -1,6 +1,6 @@
 #include "GL_Renderer_Color3D.h"
 
-GL_Renderer_Color3D::GL_Renderer_Color3D(GL_Pipeline* pipeline){
+/**GL_Renderer_Color3D::GL_Renderer_Color3D(GL_Pipeline* pipeline) {
 	m_pipeline = pipeline;
 }
 
@@ -22,4 +22,4 @@ void GL_Renderer_Color3D::render() {
 		mesh->render();
 	}
 	m_pipeline->unbind();
-}
+}*/

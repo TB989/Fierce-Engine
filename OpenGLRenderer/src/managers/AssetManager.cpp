@@ -3,13 +3,11 @@
 AssetManager::AssetManager(){
     shaderManager = new ShaderManager(this);
     pipelineManager = new PipelineManager(this);
-    renderersManager = new RenderersManager(this);
     meshManager = new MeshManager(this);
 }
 
 AssetManager::~AssetManager(){
     delete meshManager;
-    delete renderersManager;
     delete pipelineManager;
     delete shaderManager;
 }
@@ -19,6 +17,11 @@ void AssetManager::loadShaders(){
     vertexShader->addSourceCode("C:/Users/tmbal/Desktop/Fierce-Engine/OpenGLRenderer/res/shaders/Shader_Color2D.vert");
     vertexShader->create();
     shaderManager->addShader("Shader_Color2D.vert", vertexShader);
+
+    GL_Shader* vertexShader3D = new GL_Shader(GL_VERTEX_SHADER);
+    vertexShader3D->addSourceCode("C:/Users/tmbal/Desktop/Fierce-Engine/OpenGLRenderer/res/shaders/Shader_Color3D.vert");
+    vertexShader3D->create();
+    shaderManager->addShader("Shader_Color3D.vert", vertexShader3D);
 
     GL_Shader* fragmentShader = new GL_Shader(GL_FRAGMENT_SHADER);
     fragmentShader->addSourceCode("C:/Users/tmbal/Desktop/Fierce-Engine/OpenGLRenderer/res/shaders/Shader_Color.frag");
@@ -30,9 +33,14 @@ void AssetManager::loadShaders(){
 
 void AssetManager::loadPipelines(){
     GL_Shader* vertexShader = shaderManager->getShader("Shader_Color2D.vert");
+    GL_Shader* vertexShader3D = shaderManager->getShader("Shader_Color3D.vert");
     GL_Shader* fragmentShader = shaderManager->getShader("Shader_Color.frag");
 
     if (vertexShader == nullptr) {
+        LOGGER->error("Failed to find vertex shader.");
+        return;
+    }
+    if (vertexShader3D == nullptr) {
         LOGGER->error("Failed to find vertex shader.");
         return;
     }
@@ -48,20 +56,18 @@ void AssetManager::loadPipelines(){
     simpleColorPipeline->create();
     pipelineManager->addPipeline("SimpleColor", simpleColorPipeline);
 
+    GL_Pipeline* simpleColorPipeline3D = new GL_Pipeline(vertexShader3D, fragmentShader);
+    simpleColorPipeline3D->addUniformLocation("modelMatrix");
+    simpleColorPipeline3D->addUniformLocation("viewMatrix");
+    simpleColorPipeline3D->addUniformLocation("projectionMatrix");
+    simpleColorPipeline3D->addUniformLocation("color");
+    simpleColorPipeline3D->create();
+    pipelineManager->addPipeline("SimpleColor3D", simpleColorPipeline3D);
+
     LOGGER->info("Done loading pipelines.");
 }
 
 void AssetManager::loadRenderers(){
-    GL_Pipeline* pipeline = pipelineManager->getPipeline("SimpleColor");
-
-    if(pipeline == nullptr) {
-        LOGGER->error("Failed to find pipeline.");
-        return;
-    }
-
-    GL_Renderer_Color2D* simpleColorRenderer2D = new GL_Renderer_Color2D(pipeline);
-    renderersManager->addRenderer(RenderType::SIMPLE_COLOR_2D, simpleColorRenderer2D);
-
     LOGGER->info("Done loading renderers.");
 }
 

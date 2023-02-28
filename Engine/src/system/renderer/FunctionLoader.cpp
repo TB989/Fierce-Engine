@@ -10,6 +10,8 @@ PFN_RENDERER_CLEAN_UP_PROC renderer_cleanUp;
 PFN_RENDERER_SET_ORTHOGRAPHIC_PROJECTION_PROC renderer_setOrthographicProjection;
 PFN_RENDERER_SET_PERSPECTIVE_PROJECTION_PROC renderer_setPerspectiveProjection;
 
+PFN_RENDERER_SET_VIEW_MATRIX_PROC renderer_setViewMatrix;
+
 PFN_RENDERER_LOAD_MESH_PROC renderer_loadMesh;
 
 void* getFunctionPointer(HINSTANCE renderer,const char* name) {
@@ -30,6 +32,8 @@ void loadAllFunctions(HINSTANCE renderer) {
 
 	renderer_setOrthographicProjection = (PFN_RENDERER_SET_ORTHOGRAPHIC_PROJECTION_PROC)getFunctionPointer(renderer,"renderer_setOrthographicProjection");
 	renderer_setPerspectiveProjection = (PFN_RENDERER_SET_PERSPECTIVE_PROJECTION_PROC)getFunctionPointer(renderer, "renderer_setPerspectiveProjection");
+
+	renderer_setViewMatrix=(PFN_RENDERER_SET_VIEW_MATRIX_PROC)getFunctionPointer(renderer, "renderer_setViewMatrix");
 
 	renderer_loadMesh = (PFN_RENDERER_LOAD_MESH_PROC)getFunctionPointer(renderer, "renderer_loadMesh");
 }

@@ -25,12 +25,14 @@ enum RenderType {
 #ifdef DLL_IMPORT
 	typedef void (*PFN_RENDERER_INIT_PROC)(HWND dummyWindowHandle, HWND windowHandle);
 	typedef void (*PFN_RENDERER_START_FRAME_PROC)();
-	typedef void (*PFN_RENDERER_ADD_ENTITY_PROC)(RenderType renderType,float &modelMatrix,int meshID,float &color);
+	typedef void (*PFN_RENDERER_ADD_ENTITY_PROC)(RenderType renderType,float* modelMatrix,int meshID,float* color);
 	typedef void (*PFN_RENDERER_END_FRAME_PROC)();
 	typedef void (*PFN_RENDERER_CLEAN_UP_PROC)();
 
 	typedef void (*PFN_RENDERER_SET_ORTHOGRAPHIC_PROJECTION_PROC)(float width,float height,float n,float f);
 	typedef void (*PFN_RENDERER_SET_PERSPECTIVE_PROJECTION_PROC)(float aspect,float fov,float n,float f);
+
+	typedef void (*PFN_RENDERER_SET_VIEW_MATRIX_PROC)(float* viewMatrix);
 
 	typedef int (*PFN_RENDERER_LOAD_MESH_PROC)(MeshSettings settings,int numVertices, float *vertices, int numIndices, unsigned int *indices);
 
@@ -43,6 +45,8 @@ enum RenderType {
 
 	extern PFN_RENDERER_SET_ORTHOGRAPHIC_PROJECTION_PROC renderer_setOrthographicProjection;
 	extern PFN_RENDERER_SET_PERSPECTIVE_PROJECTION_PROC renderer_setPerspectiveProjection;
+
+	extern PFN_RENDERER_SET_VIEW_MATRIX_PROC renderer_setViewMatrix;
 
 	extern PFN_RENDERER_LOAD_MESH_PROC renderer_loadMesh;
 #endif // DLL_IMPORT

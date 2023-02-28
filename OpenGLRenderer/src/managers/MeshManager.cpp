@@ -56,7 +56,9 @@ void Mesh::bind(){
 }
 
 void Mesh::render(){
+    vao->bind();
     vao->draw();
+    vao->unbind();
 }
 
 void Mesh::unbind(){

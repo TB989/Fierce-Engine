@@ -1,6 +1,6 @@
 #pragma once
 
-#include "src/Common.h"
+/**#include "src/Common.h"
 #include "src/GL_Include.h"
 
 #include "MathLibrary.h"
@@ -47,4 +47,4 @@ private:
 	std::vector<GL_Renderbatch_Color2D*> renderbatches;
 
 	GL_Renderbatch_Color2D* findRenderbatch(int meshId, float* color);
-};
+};*/

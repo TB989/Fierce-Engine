@@ -1,6 +1,6 @@
 #include "GL_Renderer_Geometry2D.h"
 
-GL_Renderer_Geometry2D::GL_Renderer_Geometry2D(GL_Pipeline* pipeline) {
+/**GL_Renderer_Geometry2D::GL_Renderer_Geometry2D(GL_Pipeline* pipeline) {
 	m_pipeline = pipeline;
 }
 
@@ -67,4 +67,4 @@ void GL_Renderer_Geometry2D::renderEntity(Entity2D* entity) {
 		}
 		break;
 	}
-}
+}*/
