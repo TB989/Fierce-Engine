@@ -20,6 +20,11 @@ public:
 
 	Core* getCore() { return m_core; }
 
+	template<typename EventType>
+	void postEvent(EventType* evnt) {
+		m_core->eventSystem->postEvent(evnt);
+	}
+
 private:
 	FIERCE_ERROR registerWindowClass(LPCWSTR className, WNDPROC wndProc);
 	FIERCE_ERROR unregisterWindowClass(LPCWSTR className);

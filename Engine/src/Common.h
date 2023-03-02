@@ -1,5 +1,6 @@
 #pragma once
 
+#include <list>
 #include <map>
 #include <vector>
 #include <Windows.h>

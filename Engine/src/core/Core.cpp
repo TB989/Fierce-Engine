@@ -17,6 +17,7 @@ Core::~Core() {
 	FreeLibrary(m_renderer);
 
 	delete windowSystem;
+	delete eventSystem;
 }
 
 void Core::run() {
@@ -40,6 +41,12 @@ void Core::run() {
 }
 
 void Core::coreInit() {
+	//Start event system
+	eventSystem = new EventSystem();
+	eventSystem->addListener(this, &Core::onMouseMoved);
+	eventSystem->addListener(this, &Core::onKeyDown);
+	eventSystem->addListener(this, &Core::onKeyUp);
+
 	//Load Window
 	windowSystem = new WindowSystem(&m_settings,this);
 	dummyWindow = windowSystem->getDummyWindow();
@@ -88,4 +95,16 @@ void Core::loadRenderer(){
 
 	//Load render functions
 	loadAllFunctions(m_renderer);
+}
+
+void Core::onMouseMoved(MouseMoveEvent* event) {
+	
+}
+
+void Core::onKeyDown(KeyDownEvent* event) {
+	LOGGER->info("Key down");
+}
+
+void Core::onKeyUp(KeyUpEvent* event) {
+	LOGGER->info("Key up");
 }

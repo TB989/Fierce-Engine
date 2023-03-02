@@ -26,37 +26,40 @@ LRESULT CALLBACK wndProcFierceWindow(HWND hWnd, UINT message, WPARAM wParam, LPA
 			core = windowSystem->getCore();
 			core->stop();
 		}
+		else {
+			windowSystem->postEvent(new KeyDownEvent(wParam));
+		}
 		return 0;
 	case WM_KEYUP:
-		//windowSystem->postEvent(new KeyUpEvent(wParam));
+		windowSystem->postEvent(new KeyUpEvent(wParam));
 		return 0;
 	case WM_CHAR:
-		//windowSystem->postEvent(new CharEvent(wParam));
+		windowSystem->postEvent(new CharEvent(wParam));
 		return 0;
 		//*** Mouse ***//
 	case WM_LBUTTONDOWN:
-		//windowSystem->postEvent(new ButtonDownEvent(MOUSE_BUTTON::LEFT, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
+		windowSystem->postEvent(new ButtonDownEvent(MOUSE_BUTTON::LEFT, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 		return 0;
 	case WM_RBUTTONDOWN:
-		//windowSystem->postEvent(new ButtonDownEvent(MOUSE_BUTTON::RIGHT, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
+		windowSystem->postEvent(new ButtonDownEvent(MOUSE_BUTTON::RIGHT, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 		return 0;
 	case WM_MBUTTONDOWN:
-		//windowSystem->postEvent(new ButtonDownEvent(MOUSE_BUTTON::MIDDLE, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
+		windowSystem->postEvent(new ButtonDownEvent(MOUSE_BUTTON::MIDDLE, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 		return 0;
 	case WM_LBUTTONUP:
-		//windowSystem->postEvent(new ButtonUpEvent(MOUSE_BUTTON::LEFT, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
+		windowSystem->postEvent(new ButtonUpEvent(MOUSE_BUTTON::LEFT, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 		return 0;
 	case WM_RBUTTONUP:
-		//windowSystem->postEvent(new ButtonUpEvent(MOUSE_BUTTON::RIGHT, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
+		windowSystem->postEvent(new ButtonUpEvent(MOUSE_BUTTON::RIGHT, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 		return 0;
 	case WM_MBUTTONUP:
-		//windowSystem->postEvent(new ButtonUpEvent(MOUSE_BUTTON::MIDDLE, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
+		windowSystem->postEvent(new ButtonUpEvent(MOUSE_BUTTON::MIDDLE, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 		return 0;
 	case WM_MOUSEMOVE:
-		//windowSystem->postEvent(new MouseMoveEvent(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
+		windowSystem->postEvent(new MouseMoveEvent(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 		return 0;
 	case WM_MOUSEWHEEL:
-		//windowSystem->postEvent(new MouseScrollEvent(GET_WHEEL_DELTA_WPARAM(wParam), GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
+		windowSystem->postEvent(new MouseScrollEvent(GET_WHEEL_DELTA_WPARAM(wParam), GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 		return 0;
 		//****************//
 	default:

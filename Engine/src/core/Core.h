@@ -4,6 +4,7 @@
 
 #include "EngineSettings.h"
 #include "src/system/window/WindowSystem.h"
+#include "src/system/event/EventSystem.h"
 #include "src/system/renderer/FunctionLoader.h"
 
 class Core {
@@ -16,6 +17,10 @@ private:
 	void loadRenderer();
 
 	bool running = false;
+
+	void onMouseMoved(MouseMoveEvent* event);
+	void onKeyDown(KeyDownEvent* event);
+	void onKeyUp(KeyUpEvent* event);
 
 protected:
 	virtual void init()=0;
@@ -36,6 +41,9 @@ public:
 	WindowSystem* windowSystem=nullptr;
 	FierceWindow* dummyWindow=nullptr;
 	FierceWindow* window=nullptr;
+
+	//Event system
+	EventSystem* eventSystem=nullptr;
 
 	//Renderer
 	HINSTANCE m_renderer = NULL;
