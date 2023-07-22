@@ -1,10 +1,12 @@
 #pragma once
 
+#include "WindowSystem.h"
+#include "EventSystem.h"
+#include "InputSystem.h"
+
 #include "src/Common.h"
 
 #include "EngineSettings.h"
-#include "src/system/window/WindowSystem.h"
-#include "src/system/event/EventSystem.h"
 #include "src/system/renderer/FunctionLoader.h"
 
 class Core {
@@ -14,13 +16,12 @@ private:
 	void coreRender();
 	void coreCleanUp();
 
+	void onWindowClosed(WindowCloseEvent* event);
+	void onKeyDown(KeyDownEvent* event);
+
 	void loadRenderer();
 
 	bool running = false;
-
-	void onMouseMoved(MouseMoveEvent* event);
-	void onKeyDown(KeyDownEvent* event);
-	void onKeyUp(KeyUpEvent* event);
 
 protected:
 	virtual void init()=0;
@@ -44,6 +45,9 @@ public:
 
 	//Event system
 	EventSystem* eventSystem=nullptr;
+
+	//InputSystem
+	InputSystem* inputSystem = nullptr;
 
 	//Renderer
 	HINSTANCE m_renderer = NULL;

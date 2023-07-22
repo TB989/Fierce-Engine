@@ -1,17 +1,12 @@
 #pragma once
 
+#include "WindowSystem.h"
 #include "src/Common.h"
 
 enum API {
 	VULKAN,
 	OPEN_GL,
 	DIRECT_X
-};
-
-enum WINDOW_MODE {
-	HEADLESS,
-	WINDOWED,
-	FULLSCREEN
 };
 
 struct EngineSettings {

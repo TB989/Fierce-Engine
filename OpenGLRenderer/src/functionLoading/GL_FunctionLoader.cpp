@@ -49,6 +49,14 @@ PFNGLUNIFORM4FPROC glUniform4f;
 PFNGLUNIFORMMATRIX4FVPROC glUniformMatrix4fv;
 //*************************************************
 
+//**********Textures*******************************
+//PFNGLGENTEXTURESEXTPROC glGenTextures;
+//PFNGLDELETETEXTURESEXTPROC glDeleteTextures;
+//PFNGLBINDTEXTUREEXTPROC glBindTexture;
+//PFNGLTEXIMAGE2DEXTPROC glTextImage2D;
+PFNGLACTIVETEXTUREPROC glActiveTexture;
+//*************************************************
+
 void* getGLFunctionPointer(const char* name) {
 	void* p = (void*)wglGetProcAddress(name);
 	if (p == 0 || (p == (void*)0x1) || (p == (void*)0x2) || (p == (void*)0x3) || (p == (void*)-1)) {
@@ -97,4 +105,10 @@ void loadAllGLFunctions() {
 	glUniform3f = (PFNGLUNIFORM3FPROC)getGLFunctionPointer("glUniform3f");
 	glUniform4f = (PFNGLUNIFORM4FPROC)getGLFunctionPointer("glUniform4f");
 	glUniformMatrix4fv = (PFNGLUNIFORMMATRIX4FVPROC)getGLFunctionPointer("glUniformMatrix4fv");
+
+	//glGenTextures= (PFNGLGENTEXTURESEXTPROC)getGLFunctionPointer("glGenTexturesExt");
+	//glDeleteTextures = (PFNGLDELETETEXTURESEXTPROC)getGLFunctionPointer("glDeleteTexturesExt");
+	//glBindTexture= (PFNGLBINDTEXTUREEXTPROC)getGLFunctionPointer("glBindTextureExt");
+	//glTextImage2D= (PFNGLTEXIMAGE2DEXTPROC)getGLFunctionPointer("glTexImage2DExt");
+	glActiveTexture = (PFNGLACTIVETEXTUREPROC)getGLFunctionPointer("glActiveTexture");
 }

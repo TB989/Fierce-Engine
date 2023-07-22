@@ -18,6 +18,7 @@ Core::~Core() {
 
 	delete windowSystem;
 	delete eventSystem;
+	delete inputSystem;
 }
 
 void Core::run() {
@@ -41,16 +42,21 @@ void Core::run() {
 }
 
 void Core::coreInit() {
+	//InputSystem
+	inputSystem = new InputSystem();
+
 	//Start event system
 	eventSystem = new EventSystem();
-	eventSystem->addListener(this, &Core::onMouseMoved);
+	eventSystem->addListener(this, &Core::onWindowClosed);
 	eventSystem->addListener(this, &Core::onKeyDown);
-	eventSystem->addListener(this, &Core::onKeyUp);
 
 	//Load Window
-	windowSystem = new WindowSystem(&m_settings,this);
-	dummyWindow = windowSystem->getDummyWindow();
+	windowSystem = new WindowSystem(inputSystem);
+	windowSystem->createWindow(m_settings.windowMode,m_settings.width,m_settings.height);
+	windowSystem->createDummyWindow(m_settings.windowMode, m_settings.width, m_settings.height);
 	window = windowSystem->getWindow();
+	window->registerForRawInput();
+	dummyWindow = windowSystem->getDummyWindow();
 
 	//Load renderer
 	loadRenderer();
@@ -73,7 +79,20 @@ void Core::coreRender() {
 
 void Core::coreCleanUp() {
 	renderer_cleanUp();
+	//delete windowSystem;
+	//delete eventSystem;
 	cleanUp();
+}
+
+
+void Core::onWindowClosed(WindowCloseEvent* event) {
+	stop();
+}
+
+void Core::onKeyDown(KeyDownEvent* event) {
+	if (event->m_key == VK_ESCAPE) {
+		stop();
+	}
 }
 
 void Core::loadRenderer(){
@@ -95,16 +114,4 @@ void Core::loadRenderer(){
 
 	//Load render functions
 	loadAllFunctions(m_renderer);
-}
-
-void Core::onMouseMoved(MouseMoveEvent* event) {
-	
-}
-
-void Core::onKeyDown(KeyDownEvent* event) {
-	LOGGER->info("Key down");
-}
-
-void Core::onKeyUp(KeyUpEvent* event) {
-	LOGGER->info("Key up");
 }

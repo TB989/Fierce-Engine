@@ -1,17 +1,19 @@
 #pragma once
 
-#include "src/Common.h"
-
 struct Event {};
+
+//********** Window events ********/ /
+struct WindowCloseEvent : public Event {};
+//*********************************//
 
 //********** Keyboard events ******//
 struct KeyDownEvent : public Event {
-	KeyDownEvent(WPARAM key) :m_key{ key } {}
-	WPARAM m_key;
+	KeyDownEvent(int key) :m_key{ key } {}
+	int m_key;
 };
 struct KeyUpEvent : public Event {
-	KeyUpEvent(WPARAM key) :m_key{ key } {}
-	WPARAM m_key;
+	KeyUpEvent(int key) :m_key{ key } {}
+	int m_key;
 };
 struct CharEvent : public Event {
 	CharEvent(char character) :m_character{ character } {}

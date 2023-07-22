@@ -6,11 +6,11 @@ project "Engine"
 
 	targetdir ("%{wks.location}/bin/")
 	objdir ("%{wks.location}/bin-int/")
+
+	dpiawareness "High"
 	
 	defines
 	{
-		"WIN32_LEAN_AND_MEAN",
-		"NOMINMAX",
 		"DLL_IMPORT"
 	}
 
@@ -19,7 +19,8 @@ project "Engine"
 		"%{prj.location}/**.h",
 		"%{prj.location}/**.cpp",
 		"premake5.lua",
-		"Engine.ini"
+		"Engine.ini",
+		"res/**"
 	}
 
 	includedirs
@@ -28,7 +29,10 @@ project "Engine"
 		"%{IncludeDir.GeometryLibrary}",
 		"%{IncludeDir.Logger}",
 		"%{IncludeDir.MathLibrary}",
-		"%{IncludeDir.RendererBase}"
+		"%{IncludeDir.WindowSystem}",
+		"%{IncludeDir.RendererBase}",
+		"%{IncludeDir.EventSystem}",
+		"%{IncludeDir.InputSystem}"
 	}
 	
 	libdirs 
@@ -40,7 +44,8 @@ project "Engine"
 	{
 		"%{Library.GeometryLibrary}",
 		"%{Library.Logger}",
-		"%{Library.MathLibrary}"
+		"%{Library.MathLibrary}",
+		"%{Library.WindowSystem}"
 	}
 	
 	filter "system:windows"

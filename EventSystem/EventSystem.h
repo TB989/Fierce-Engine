@@ -1,9 +1,10 @@
 #pragma once
 
-#include "src/Common.h"
 #include "Event.h"
 
 #include <typeindex>
+#include <list>
+#include <map>
 
 class HandlerFunctionBase {
 public:

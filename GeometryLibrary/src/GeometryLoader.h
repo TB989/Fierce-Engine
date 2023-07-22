@@ -9,7 +9,7 @@ class ComponentGeometry;
 
 class GeometryLoader{
 public:
-	void loadGeometry(GeometrySettings geometry,std::vector<float> &vertices,std::vector<unsigned int> &indices);
+	void loadGeometry(GeometrySettings geometry,bool loadTextureCoordinates,bool loadNormals,std::vector<float> &vertices,std::vector<unsigned int> &indices);
 	void registerGeometry(GeometryType type, Geometry* geometry);
 	void unregisterGeometry(GeometryType type);
 private:

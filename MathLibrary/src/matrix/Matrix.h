@@ -45,17 +45,17 @@ public:
 	void setToScale(float scaleX,float scaleY,float scaleZ);
 	void setToOrthographicProjection(float width, float height,float n,float f);
 	void setToPerspectiveProjection(float aspect, float FOV, float n, float f);
-	void setToTransform(Transform2D transform);
-	void setToTransform(Transform3D transform);
-	void setToView(Transform3D transform);
+	void setToTransform(Transform2D* transform);
+	void setToTransform(Transform3D* transform);
+	void setToView(Transform3D* transform);
 
 	Mat4* translate(float x,float y,float z);
 	Mat4* rotateX(float angle);
 	Mat4* rotateY(float angle);
 	Mat4* rotateZ(float angle);
 	Mat4* scale(float scaleX, float scaleY, float scaleZ);
-	Mat4* transform(Transform2D transform);
-	Mat4* transform(Transform3D transform);
+	Mat4* transform(Transform2D* transform);
+	Mat4* transform(Transform3D* transform);
 
 public:
 	Mat4& operator=(const Mat4 matrix);

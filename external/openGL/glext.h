@@ -8475,7 +8475,7 @@ extern "C" {
 #define GL_EXT_texture_mirror_clamp 1
 #define GL_MIRROR_CLAMP_EXT               0x8742
 #define GL_MIRROR_CLAMP_TO_EDGE_EXT       0x8743
-#define GL_MIRROR_CLAMP_TO_BORDER_EXT     0x8912
+#define GL_MIRROR_CLAMP_TO_BORDER_EXT     0x8912TEXIMAGE2D
 #endif /* GL_EXT_texture_mirror_clamp */
 
 #ifndef GL_EXT_texture_object

@@ -21,7 +21,8 @@ project "RendererBase"
 
 	includedirs
 	{
-		"%{prj.location}"
+		"%{prj.location}",
+		"%{IncludeDir.GeometryLibrary}"
 	}
 	
 	libdirs 

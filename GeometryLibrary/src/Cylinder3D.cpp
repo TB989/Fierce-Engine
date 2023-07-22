@@ -1,10 +1,20 @@
 #include "Geometry.h"
 
-void Cylinder3D::getVertices(std::vector<float>& vertices, int numPoints, float angle, float innerRadius, int numRings) {
-	addVertex3D(vertices, 0.0f, 0.0f,-0.5f);
-	addCircleVertices3D(vertices, 0.0f, 0.0f, -0.5f, numPoints, 0.5f, angle);
-	addVertex3D(vertices, 0.0f, 0.0f, 0.5f);
-	addCircleVertices3D(vertices, 0.0f, 0.0f, 0.5f, numPoints, 0.5f, angle);
+void Cylinder3D::getVertices(std::vector<float>& vertices, bool loadTextureCoordinates, bool loadNormals, int numPoints, float angle, float innerRadius, int numRings) {
+	if (loadTextureCoordinates) {
+		addVertex3D(vertices, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f);
+	}
+	else {
+		addVertex3D(vertices, 0.0f, 0.0f, -0.5f);
+	}
+	addCircleVertices3D(vertices, loadTextureCoordinates, 0.0f, 0.0f, -0.5f, numPoints, 0.5f, angle);
+	if (loadTextureCoordinates) {
+		addVertex3D(vertices, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f);
+	}
+	else {
+		addVertex3D(vertices, 0.0f, 0.0f, 0.5f);
+	}
+	addCircleVertices3D(vertices, loadTextureCoordinates, 0.0f, 0.0f, 0.5f, numPoints, 0.5f, angle);
 }
 
 void Cylinder3D::getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings) {

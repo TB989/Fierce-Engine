@@ -1,9 +1,9 @@
 #include "GeometryLoader.h"
 
-void GeometryLoader::loadGeometry(GeometrySettings geometry, std::vector<float> &vertices, std::vector<unsigned int> &indices){
+void GeometryLoader::loadGeometry(GeometrySettings geometry, bool loadTextureCoordinates, bool loadNormals, std::vector<float> &vertices, std::vector<unsigned int> &indices){
 	Geometry* geom = geometries[geometry.type];
 
-	geom->getVertices(vertices,geometry.numPoints,geometry.angle,geometry.innerRadius,geometry.numRings);
+	geom->getVertices(vertices,loadTextureCoordinates,loadNormals,geometry.numPoints,geometry.angle,geometry.innerRadius,geometry.numRings);
 	geom->getIndices(indices, geometry.numPoints, geometry.angle,geometry.innerRadius, geometry.numRings);
 }
 

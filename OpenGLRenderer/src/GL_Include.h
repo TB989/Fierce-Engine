@@ -50,3 +50,11 @@ extern PFNGLUNIFORM3FPROC glUniform3f;
 extern PFNGLUNIFORM4FPROC glUniform4f;
 extern PFNGLUNIFORMMATRIX4FVPROC glUniformMatrix4fv;
 //*************************************************
+
+//**********Textures*******************************
+//extern PFNGLGENTEXTURESEXTPROC glGenTextures;
+//extern PFNGLDELETETEXTURESEXTPROC glDeleteTextures;
+//extern PFNGLBINDTEXTUREEXTPROC glBindTexture;
+//extern PFNGLTEXIMAGE2DEXTPROC glTextImage2D;
+extern PFNGLACTIVETEXTUREPROC glActiveTexture;
+//*************************************************

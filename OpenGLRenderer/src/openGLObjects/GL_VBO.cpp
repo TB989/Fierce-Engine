@@ -18,7 +18,7 @@ void GL_VBO::bind() {
 
 void GL_VBO::unbind() {
 	glBindBuffer(m_type, 0);
-	CHECK_GL(glGetError(), "Failed to bind buffer.");
+	CHECK_GL(glGetError(), "Failed to unbind buffer.");
 }
 
 void GL_VBO::loadData(GLsizeiptr size, const void* data, GLenum usage) {
@@ -28,5 +28,5 @@ void GL_VBO::loadData(GLsizeiptr size, const void* data, GLenum usage) {
 	glBufferData(m_type, size, data, usage);
 	CHECK_GL(glGetError(), "Failed to buffer data.");
 	glBindBuffer(m_type, 0);
-	CHECK_GL(glGetError(), "Failed to bind buffer.");
+	CHECK_GL(glGetError(), "Failed to unbind buffer.");
 }

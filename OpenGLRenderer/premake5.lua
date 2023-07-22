@@ -26,7 +26,8 @@ project "OpenGLRenderer"
 		"%{wks.location}/external",
 		"%{IncludeDir.Logger}",
 		"%{IncludeDir.MathLibrary}",
-		"%{IncludeDir.RendererBase}"
+		"%{IncludeDir.RendererBase}",
+		"%{IncludeDir.GeometryLibrary}"
 	}
 	
 	libdirs 

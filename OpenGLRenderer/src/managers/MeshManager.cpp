@@ -61,6 +61,12 @@ void Mesh::render(){
     vao->unbind();
 }
 
+void Mesh::render(GLsizei first, GLsizei count){
+    vao->bind();
+    vao->draw(first,count);
+    vao->unbind();
+}
+
 void Mesh::unbind(){
     vao->unbind();
 }

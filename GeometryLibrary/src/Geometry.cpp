@@ -1,11 +1,19 @@
 #include "Geometry.h"
 
-void Geometry2D::addVertex2D(std::vector<float>& vertices,float x,float y){
+void Geometry2D::addVertex2D(std::vector<float>& vertices, float x,float y){
 	vertices.push_back(x);
 	vertices.push_back(y);
 }
 
-void Geometry2D::addCircleVertices2D(std::vector<float>& vertices, float x, float y,int numPoints,float radius,float angle){
+void Geometry2D::addVertex2D(std::vector<float>& vertices, float x, float y, float u, float v) {
+	vertices.push_back(x);
+	vertices.push_back(y);
+
+	vertices.push_back(u);
+	vertices.push_back(v);
+}
+
+void Geometry2D::addCircleVertices2D(std::vector<float>& vertices, bool loadTextureCoordinates, float x, float y,int numPoints,float radius,float angle){
 	float da = 0;
 	if (angle == 360.0f) {
 		da = angle / numPoints;
@@ -17,6 +25,11 @@ void Geometry2D::addCircleVertices2D(std::vector<float>& vertices, float x, floa
 	for (int i = 0; i < numPoints; i++) {
 		vertices.push_back(x + radius * sin(M_PI / 180.0f * i * da));
 		vertices.push_back(y + radius * cos(M_PI / 180.0f * i * da));
+
+		if (loadTextureCoordinates) {
+			vertices.push_back(x + radius*sin(M_PI / 180.0f * i * da));
+			vertices.push_back(y + radius*cos(M_PI / 180.0f * i * da));
+		}
 	}
 }
 
@@ -140,7 +153,16 @@ void Geometry3D::addVertex3D(std::vector<float>& vertices, float x, float y,floa
 	vertices.push_back(z);
 }
 
-void Geometry3D::addCircleVertices3D(std::vector<float>& vertices, float x, float y,float z, int numPoints, float radius, float angle) {
+void Geometry3D::addVertex3D(std::vector<float>& vertices, float x, float y, float z, float u, float v) {
+	vertices.push_back(x);
+	vertices.push_back(y);
+	vertices.push_back(z);
+
+	vertices.push_back(u);
+	vertices.push_back(v);
+}
+
+void Geometry3D::addCircleVertices3D(std::vector<float>& vertices, bool loadTextureCoordinates, float x, float y,float z, int numPoints, float radius, float angle) {
 	float da = 0;
 	if (angle == 360.0f) {
 		da = angle / numPoints;
@@ -153,5 +175,10 @@ void Geometry3D::addCircleVertices3D(std::vector<float>& vertices, float x, floa
 		vertices.push_back(x + radius * sin(M_PI / 180.0f * i * da));
 		vertices.push_back(y + radius * cos(M_PI / 180.0f * i * da));
 		vertices.push_back(z);
+
+		if (loadTextureCoordinates) {
+			vertices.push_back(x + radius * sin(M_PI / 180.0f * i * da));
+			vertices.push_back(y + radius * cos(M_PI / 180.0f * i * da));
+		}
 	}
 }

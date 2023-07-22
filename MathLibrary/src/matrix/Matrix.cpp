@@ -269,26 +269,26 @@ void Mat4::setToPerspectiveProjection(float aspect, float FOV, float n, float f)
 	M33 = 0;
 }
 
-void Mat4::setToTransform(Transform2D transform){
-	this->setToScale(transform.getScale().getX(), transform.getScale().getY(),1);
-	this->rotateZ(transform.getRotation());
-	this->translate(transform.getPosition().getX(),transform.getPosition().getY(),0);
+void Mat4::setToTransform(Transform2D* transform){
+	this->setToScale(transform->getScale()->getX(), transform->getScale()->getY(),1);
+	this->rotateZ(transform->getRotation());
+	this->translate(transform->getPosition()->getX(),transform->getPosition()->getY(),0);
 }
 
-void Mat4::setToTransform(Transform3D transform){
-	this->setToScale(transform.getScale().getX(), transform.getScale().getY(), transform.getScale().getZ());
-	this->rotateX(transform.getRotation().getX());
-	this->rotateY(transform.getRotation().getY());
-	this->rotateZ(transform.getRotation().getZ());
-	this->translate(transform.getPosition().getX(), transform.getPosition().getY(), transform.getPosition().getZ());
+void Mat4::setToTransform(Transform3D* transform){
+	this->setToScale(transform->getScale()->getX(), transform->getScale()->getY(), transform->getScale()->getZ());
+	this->rotateX(transform->getRotation()->getX());
+	this->rotateY(transform->getRotation()->getY());
+	this->rotateZ(transform->getRotation()->getZ());
+	this->translate(transform->getPosition()->getX(), transform->getPosition()->getY(), transform->getPosition()->getZ());
 }
 
-void Mat4::setToView(Transform3D transform){
-	this->setToTranslation(-transform.getPosition().getX(), -transform.getPosition().getY(), -transform.getPosition().getZ());
-	this->rotateZ(transform.getRotation().getZ());
-	this->rotateY(transform.getRotation().getY());
-	this->rotateX(transform.getRotation().getX());
-	this->scale(transform.getScale().getX(), transform.getScale().getY(), transform.getScale().getZ());
+void Mat4::setToView(Transform3D* transform){
+	this->setToTranslation(-transform->getPosition()->getX(), -transform->getPosition()->getY(), -transform->getPosition()->getZ());
+	this->rotateZ(transform->getRotation()->getZ());
+	this->rotateY(transform->getRotation()->getY());
+	this->rotateX(transform->getRotation()->getX());
+	this->scale(transform->getScale()->getX(), transform->getScale()->getY(), transform->getScale()->getZ());
 }
 
 Mat4* Mat4::translate(float x, float y, float z){
@@ -423,19 +423,19 @@ Mat4* Mat4::scale(float scaleX, float scaleY, float scaleZ){
 	return this;
 }
 
-Mat4* Mat4::transform(Transform2D transform){
-	this->scale(transform.getScale().getX(), transform.getScale().getY(), 1);
-	this->rotateZ(transform.getRotation());
-	this->translate(transform.getPosition().getX(), transform.getPosition().getY(), 0);
+Mat4* Mat4::transform(Transform2D* transform){
+	this->scale(transform->getScale()->getX(), transform->getScale()->getY(), 1);
+	this->rotateZ(transform->getRotation());
+	this->translate(transform->getPosition()->getX(), transform->getPosition()->getY(), 0);
 	return this;
 }
 
-Mat4* Mat4::transform(Transform3D transform){
-	this->scale(transform.getScale().getX(), transform.getScale().getY(), transform.getScale().getZ());
-	this->rotateX(transform.getRotation().getX());
-	this->rotateY(transform.getRotation().getY());
-	this->rotateZ(transform.getRotation().getZ());
-	this->translate(transform.getPosition().getX(), transform.getPosition().getY(), transform.getPosition().getZ());
+Mat4* Mat4::transform(Transform3D* transform){
+	this->scale(transform->getScale()->getX(), transform->getScale()->getY(), transform->getScale()->getZ());
+	this->rotateX(transform->getRotation()->getX());
+	this->rotateY(transform->getRotation()->getY());
+	this->rotateZ(transform->getRotation()->getZ());
+	this->translate(transform->getPosition()->getX(), transform->getPosition()->getY(), transform->getPosition()->getZ());
 	return this;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

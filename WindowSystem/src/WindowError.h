@@ -1,10 +1,9 @@
 #pragma once
 
-#include "src/Common.h"
-
+#include <Windows.h>
 #include <stdexcept>
 
-enum FIERCE_ERROR {
+enum WINDOW_ERROR {
 	FE_NO_ERROR,
 	FE_WINDOW_ERROR,
 	FE_CONTEXT_ERROR,
@@ -17,7 +16,7 @@ public:
 	Fierce_Exception(std::string message) :runtime_error(message) {}
 };
 
-inline void CHECK_FIERCE(FIERCE_ERROR result, std::string message) {
+inline void CHECK_FIERCE(WINDOW_ERROR result, std::string message) {
 	std::string errorString;
 	switch (result) {
 	case FE_NO_ERROR:
@@ -43,4 +42,3 @@ inline void CHECK_FIERCE(FIERCE_ERROR result, std::string message) {
 	MessageBox(NULL, temp1.c_str(), temp2.c_str(), MB_ICONERROR);
 	throw Fierce_Exception(message.c_str());
 }
-

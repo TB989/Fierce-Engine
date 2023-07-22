@@ -19,6 +19,7 @@ public:
 
 	void bind();
 	void render();
+	void render(GLsizei first, GLsizei count);
 	void unbind();
 
 private:
