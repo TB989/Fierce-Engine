@@ -31,7 +31,8 @@ WINDOW_ERROR FierceWindow::createWindow(LPCWSTR className, LPCWSTR title, WINDOW
 		style = WS_POPUP;
 		r.right = GetSystemMetrics(SM_CXSCREEN);
 		r.bottom = GetSystemMetrics(SM_CYSCREEN);
-		LOGGER->info("Width: %d, Height: %d", GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
+		m_width= GetSystemMetrics(SM_CXSCREEN);
+		m_height= GetSystemMetrics(SM_CYSCREEN);
 	}
 
 	if (!AdjustWindowRectEx(&r, style, FALSE, exStyle)) {

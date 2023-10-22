@@ -10,6 +10,6 @@ void Circle2D::getVertices(std::vector<float>& vertices, bool loadTextureCoordin
 	addCircleVertices2D(vertices,loadTextureCoordinates,0.5f,0.5f,numPoints,0.5f,angle);
 }
 
-void Circle2D::getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings) {
+void Circle2D::getIndices(std::vector<unsigned int>& indices, bool loadTextureCoordinates, bool loadNormals, int numPoints, float angle, float innerRadius, int numRings) {
 	addCircleIndices(indices, numPoints, angle, 0, 1,false);
 }

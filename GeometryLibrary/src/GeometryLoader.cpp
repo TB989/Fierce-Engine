@@ -4,7 +4,7 @@ void GeometryLoader::loadGeometry(GeometrySettings geometry, bool loadTextureCoo
 	Geometry* geom = geometries[geometry.type];
 
 	geom->getVertices(vertices,loadTextureCoordinates,loadNormals,geometry.numPoints,geometry.angle,geometry.innerRadius,geometry.numRings);
-	geom->getIndices(indices, geometry.numPoints, geometry.angle,geometry.innerRadius, geometry.numRings);
+	geom->getIndices(indices, loadTextureCoordinates, loadNormals, geometry.numPoints, geometry.angle,geometry.innerRadius, geometry.numRings);
 }
 
 void GeometryLoader::registerGeometry(GeometryType type, Geometry* geometry){

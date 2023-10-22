@@ -7,6 +7,8 @@ project "WindowSystem"
 	targetdir ("%{wks.location}/bin/")
 	objdir ("%{wks.location}/bin-int/")
 	
+	dependson ("Logger")
+
 	defines
 	{
 		"WIN32_LEAN_AND_MEAN",

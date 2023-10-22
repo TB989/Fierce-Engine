@@ -7,6 +7,8 @@ project "MathLibrary"
 	targetdir ("%{wks.location}/bin/")
 	objdir ("%{wks.location}/bin-int/")
 	
+	dependson ("Logger")
+
 	defines
 	{
 		

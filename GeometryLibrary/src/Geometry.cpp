@@ -27,8 +27,8 @@ void Geometry2D::addCircleVertices2D(std::vector<float>& vertices, bool loadText
 		vertices.push_back(y + radius * cos(M_PI / 180.0f * i * da));
 
 		if (loadTextureCoordinates) {
-			vertices.push_back(x + radius*sin(M_PI / 180.0f * i * da));
-			vertices.push_back(y + radius*cos(M_PI / 180.0f * i * da));
+			vertices.push_back(0.5f + radius*sin(M_PI / 180.0f * i * da));
+			vertices.push_back(0.5f + radius*cos(M_PI / 180.0f * i * da));
 		}
 	}
 }
@@ -177,8 +177,8 @@ void Geometry3D::addCircleVertices3D(std::vector<float>& vertices, bool loadText
 		vertices.push_back(z);
 
 		if (loadTextureCoordinates) {
-			vertices.push_back(x + radius * sin(M_PI / 180.0f * i * da));
-			vertices.push_back(y + radius * cos(M_PI / 180.0f * i * da));
+			vertices.push_back(0.5f+radius * sin(M_PI / 180.0f * i * da));
+			vertices.push_back(0.5f-radius * cos(M_PI / 180.0f * i * da));
 		}
 	}
 }

@@ -7,6 +7,8 @@ project "Engine"
 	targetdir ("%{wks.location}/bin/")
 	objdir ("%{wks.location}/bin-int/")
 
+	dependson ("Logger","MathLibrary","WindowSystem","GeometryLibrary")
+
 	dpiawareness "High"
 	
 	defines

@@ -7,6 +7,8 @@ project "OpenGLRenderer"
 	targetdir ("%{wks.location}/bin/")
 	objdir ("%{wks.location}/bin-int/")
 	
+	dependson ("Logger","MathLibrary")
+
 	defines
 	{
 		"DLL_EXPORT"

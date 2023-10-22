@@ -83,6 +83,8 @@ void Test_GeometryLibrary::init() {
 	int width, height, nrChannels;
 	unsigned char* data = stbi_load("C:/Users/tmbal/Desktop/Fierce-Engine/Engine/res/TestTexture.png", &width, &height, &nrChannels, 3);
 	texture=renderer_loadTexture(width,height,data);
+	unsigned char* data2 = stbi_load("C:/Users/tmbal/Desktop/Fierce-Engine/Engine/res/TestTexture1.png", &width, &height, &nrChannels, 3);
+	textureFloor = renderer_loadTexture(width, height, data2);
 
 	inputSystem->addAction(MAPPING::KEY_ESC, new Action_StopEngine(this));
 	inputSystem->addAction(MAPPING::MOUSE_AXIS_LR, new Action_LookRightLeft(camera, 0.3f));
@@ -90,7 +92,8 @@ void Test_GeometryLibrary::init() {
 	inputSystem->addAction(MAPPING::KEY_W, new Action_MoveForward(camera, 0.3f));
 	inputSystem->addAction(MAPPING::KEY_S, new Action_MoveBackward(camera, 0.3f));
 
-	renderer_setOrthographicProjection((float)window->getWidth(), (float)window->getHeight(),-1,1);
+	//LOGGER->info("width: %d height: %d", window->getWidth(), window->getHeight());
+	renderer_setOrthographicProjection((float)window->getWidth(), (float)window->getHeight(),-1.0f,1.0f);//1920x1080
 	renderer_setPerspectiveProjection(((float)window->getWidth())/((float)window->getHeight()), 60.0f, 0.1f, 1000.0f);
 
 	loader = new GeometryLoader();
@@ -117,7 +120,7 @@ void Test_GeometryLibrary::init() {
 	rectangle_modelMatrix->scale(100.0f, 100.0f, 0.0f);
 	rectangle_modelMatrix->translate(10.0f, 10.0f, 0.0f);
 	rectangle_modelMatrixTexture = new Mat4();
-	rectangle_modelMatrixTexture->scale(100.0f, 100.0f, 0.0f);
+	rectangle_modelMatrixTexture->scale(100.0f, 100.0f,0.0f);
 	rectangle_modelMatrixTexture->translate(10.0f, 120.0f, 0.0f);
 
 	vertices.clear();
@@ -149,7 +152,7 @@ void Test_GeometryLibrary::init() {
 	vertices.clear();
 	indices.clear();
 
-	loader->loadGeometry(GeometrySettings{ CIRCLE_RING,32,360.0f,0.25f,0 }, true,false,vertices, indices);
+	loader->loadGeometry(GeometrySettings{ CIRCLE_RING,32,360.0f,0.1f,0 }, true,false,vertices, indices);
 	circleRing_meshId = renderer_loadMesh(MeshSettings{ true,false,true,false }, vertices.size(), vertices.data(), indices.size(), indices.data());
 	circleRing_color = new Color3f(1.0f, 1.0f, 0.0f);
 	circleRing_modelMatrix = new Mat4();
@@ -168,6 +171,9 @@ void Test_GeometryLibrary::init() {
 	plane_modelMatrix = new Mat4();
 	plane_modelMatrix->scale(1000.0f, 1.0f, 1000.0f);
 	plane_modelMatrix->translate(0.0f, -2.0f, 0.0f);
+	plane_modelMatrixTexture = new Mat4();
+	plane_modelMatrixTexture->scale(1000.0f, 1.0f, 1000.0f);
+	plane_modelMatrixTexture->translate(0.0f, -2.0f, 0.0f);
 
 	vertices.clear();
 	indices.clear();
@@ -178,46 +184,61 @@ void Test_GeometryLibrary::init() {
 	cube_modelMatrix = new Mat4();
 	cube_modelMatrix->scale(2.0f, 2.0f, 2.0f);
 	cube_modelMatrix->translate(0.0f, 0.0f, -10.0f);
+	cube_modelMatrixTexture = new Mat4();
+	cube_modelMatrixTexture->scale(2.0f, 2.0f, 2.0f);
+	cube_modelMatrixTexture->translate(0.0f, 0.0f, -15.0f);
 
 	vertices.clear();
 	indices.clear();
 
-	loader->loadGeometry(GeometrySettings{ CYLINDER,16,360.0f,0.0f,0 }, true, false, vertices, indices);
+	loader->loadGeometry(GeometrySettings{ CYLINDER,16,260.0f,0.0f,0 }, true, false, vertices, indices);
 	cylinder_meshId = renderer_loadMesh(MeshSettings{ false,false,true,false }, vertices.size(), vertices.data(), indices.size(), indices.data());
 	cylinder_color = new Color3f(1.0f, 0.0f, 0.0f);
 	cylinder_modelMatrix = new Mat4();
 	cylinder_modelMatrix->scale(2.0f, 2.0f, 2.0f);
 	cylinder_modelMatrix->translate(5.0f, 0.0f, -10.0f);
+	cylinder_modelMatrixTexture = new Mat4();
+	cylinder_modelMatrixTexture->scale(2.0f, 2.0f, 2.0f);
+	cylinder_modelMatrixTexture->translate(5.0f, 0.0f, -15.0f);
 
 	vertices.clear();
 	indices.clear();
 
-	loader->loadGeometry(GeometrySettings{ HOLLOW_CYLINDER,16,360.0f,0.25f,0 }, true, false, vertices, indices);
+	loader->loadGeometry(GeometrySettings{ HOLLOW_CYLINDER,16,260.0f,0.1f,0 }, true, false, vertices, indices);
 	hollowCylinder_meshId = renderer_loadMesh(MeshSettings{ false,false,true,false }, vertices.size(), vertices.data(), indices.size(), indices.data());
 	hollowCylinder_color = new Color3f(1.0f, 0.0f, 0.0f);
 	hollowCylinder_modelMatrix = new Mat4();
 	hollowCylinder_modelMatrix->scale(2.0f, 2.0f, 2.0f);
 	hollowCylinder_modelMatrix->translate(10.0f, 0.0f, -10.0f);
+	hollowCylinder_modelMatrixTexture = new Mat4();
+	hollowCylinder_modelMatrixTexture->scale(2.0f, 2.0f, 2.0f);
+	hollowCylinder_modelMatrixTexture->translate(10.0f, 0.0f, -15.0f);
 
 	vertices.clear();
 	indices.clear();
 
-	loader->loadGeometry(GeometrySettings{ CONE,16,360.0f,0.0f,0 }, true, false, vertices, indices);
+	loader->loadGeometry(GeometrySettings{ CONE,16,260.0f,0.0f,0 }, true, false, vertices, indices);
 	cone_meshId = renderer_loadMesh(MeshSettings{ false,false,true,false }, vertices.size(), vertices.data(), indices.size(), indices.data());
 	cone_color = new Color3f(1.0f, 0.0f, 0.0f);
 	cone_modelMatrix = new Mat4();
 	cone_modelMatrix->scale(2.0f, 2.0f, 2.0f);
 	cone_modelMatrix->translate(-5.0f, 0.0f, -10.0f);
+	cone_modelMatrixTexture = new Mat4();
+	cone_modelMatrixTexture->scale(2.0f, 2.0f, 2.0f);
+	cone_modelMatrixTexture->translate(-5.0f, 0.0f, -15.0f);
 
 	vertices.clear();
 	indices.clear();
 
-	loader->loadGeometry(GeometrySettings{ SPHERE,32,360.0f,0.0f,16 }, true, false, vertices, indices);
+	loader->loadGeometry(GeometrySettings{ SPHERE,32,260.0f,0.0f,16 }, true, false, vertices, indices);
 	sphere_meshId = renderer_loadMesh(MeshSettings{ false,false,true,false }, vertices.size(), vertices.data(), indices.size(), indices.data());
 	sphere_color = new Color3f(1.0f, 0.0f, 0.0f);
 	sphere_modelMatrix = new Mat4();
 	sphere_modelMatrix->scale(2.0f, 2.0f, 2.0f);
 	sphere_modelMatrix->translate(-10.0f, 0.0f, -10.0f);
+	sphere_modelMatrixTexture = new Mat4();
+	sphere_modelMatrixTexture->scale(2.0f, 2.0f, 2.0f);
+	sphere_modelMatrixTexture->translate(-10.0f, 0.0f, -15.0f);
 }
 
 void Test_GeometryLibrary::update() {
@@ -243,17 +264,24 @@ void Test_GeometryLibrary::doRender() {
 	renderer_addEntityColor(RenderType::SIMPLE_COLOR_2D, triangle_modelMatrix->get(), triangle_meshId, triangle_color->get());
 	renderer_addEntityColor(RenderType::SIMPLE_COLOR_2D, circleRing_modelMatrix->get(), circleRing_meshId, circleRing_color->get());
 
-	renderer_addEntityColor(RenderType::SIMPLE_COLOR_3D, plane_modelMatrix->get(), plane_meshId, plane_color->get());
+	//renderer_addEntityColor(RenderType::SIMPLE_COLOR_3D, plane_modelMatrix->get(), plane_meshId, plane_color->get());
 	renderer_addEntityGeometry(RenderType::GEOMETRY_3D, GeometrySettings{ CUBE,0,0.0f,0.0f,0 }, cube_modelMatrix->get(), cube_meshId, 6, colors);
-	renderer_addEntityGeometry(RenderType::GEOMETRY_3D, GeometrySettings{ CYLINDER,16,360.0f,0.0f,0 }, cylinder_modelMatrix->get(), cylinder_meshId, 6, colors);
-	renderer_addEntityGeometry(RenderType::GEOMETRY_3D, GeometrySettings{ HOLLOW_CYLINDER,16,360.0f,0.25f,0 }, hollowCylinder_modelMatrix->get(), hollowCylinder_meshId, 6, colors);
-	renderer_addEntityGeometry(RenderType::GEOMETRY_3D, GeometrySettings{ CONE,16,360.0f,0.0f,0 }, cone_modelMatrix->get(), cone_meshId, 6, colors);
-	renderer_addEntityGeometry(RenderType::GEOMETRY_3D, GeometrySettings{ SPHERE,32,360.0f,0.0f,16 }, sphere_modelMatrix->get(), sphere_meshId, 6, colors);
+	renderer_addEntityGeometry(RenderType::GEOMETRY_3D, GeometrySettings{ CYLINDER,16,260.0f,0.0f,0 }, cylinder_modelMatrix->get(), cylinder_meshId, 6, colors);
+	renderer_addEntityGeometry(RenderType::GEOMETRY_3D, GeometrySettings{ HOLLOW_CYLINDER,16,260.0f,0.25f,0 }, hollowCylinder_modelMatrix->get(), hollowCylinder_meshId, 6, colors);
+	renderer_addEntityGeometry(RenderType::GEOMETRY_3D, GeometrySettings{ CONE,16,260.0f,0.0f,0 }, cone_modelMatrix->get(), cone_meshId, 6, colors);
+	renderer_addEntityGeometry(RenderType::GEOMETRY_3D, GeometrySettings{ SPHERE,32,260.0f,0.0f,16 }, sphere_modelMatrix->get(), sphere_meshId, 6, colors);
 
 	renderer_addEntityTexture(RenderType::SIMPLE_TEXTURE_2D, rectangle_modelMatrixTexture->get(), rectangle_meshId, texture);
 	renderer_addEntityTexture(RenderType::SIMPLE_TEXTURE_2D, circle_modelMatrixTexture->get(), circle_meshId, texture);
 	renderer_addEntityTexture(RenderType::SIMPLE_TEXTURE_2D, triangle_modelMatrixTexture->get(), triangle_meshId, texture);
 	renderer_addEntityTexture(RenderType::SIMPLE_TEXTURE_2D, circleRing_modelMatrixTexture->get(), circleRing_meshId, texture);
+
+	renderer_addEntityTexture(RenderType::SIMPLE_TEXTURE_3D, plane_modelMatrixTexture->get(), plane_meshId, textureFloor);
+	renderer_addEntityTexture(RenderType::SIMPLE_TEXTURE_3D, cube_modelMatrixTexture->get(), cube_meshId, texture);
+	renderer_addEntityTexture(RenderType::SIMPLE_TEXTURE_3D, cylinder_modelMatrixTexture->get(), cylinder_meshId, texture);
+	renderer_addEntityTexture(RenderType::SIMPLE_TEXTURE_3D, hollowCylinder_modelMatrixTexture->get(), hollowCylinder_meshId, texture);
+	renderer_addEntityTexture(RenderType::SIMPLE_TEXTURE_3D, cone_modelMatrixTexture->get(), cone_meshId, texture);
+	renderer_addEntityTexture(RenderType::SIMPLE_TEXTURE_3D, sphere_modelMatrixTexture->get(), sphere_meshId, texture);
 }
 
 void Test_GeometryLibrary::cleanUp() {

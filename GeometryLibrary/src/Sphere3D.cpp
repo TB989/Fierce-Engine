@@ -4,7 +4,7 @@ void Sphere3D::getVertices(std::vector<float>& vertices, bool loadTextureCoordin
 	float da = 180.0f / (numRings+1);
 
 	if (loadTextureCoordinates) {
-		addVertex3D(vertices, 0.0f, 0.0f, -0.5f,0.0f,0.0f);
+		addVertex3D(vertices, 0.0f, 0.0f, -0.5f,0.5f,0.5f);
 	}
 	else {
 		addVertex3D(vertices, 0.0f, 0.0f, -0.5f);
@@ -15,17 +15,17 @@ void Sphere3D::getVertices(std::vector<float>& vertices, bool loadTextureCoordin
 		addCircleVertices3D(vertices, loadTextureCoordinates, 0.0f, 0.0f, height, numPoints, radius, 360.0f);
 	}
 	if (loadTextureCoordinates) {
-		addVertex3D(vertices, 0.0f, 0.0f, 0.5f,0.0f,0.0f);
+		addVertex3D(vertices, 0.0f, 0.0f, 0.5f,0.5f,0.5f);
 	}
 	else {
 		addVertex3D(vertices, 0.0f, 0.0f, 0.5f);
 	}
 }
 
-void Sphere3D::getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings) {
-	addCircleIndices(indices, numPoints, angle, 0, 1, false);
+void Sphere3D::getIndices(std::vector<unsigned int>& indices, bool loadTextureCoordinates, bool loadNormals, int numPoints, float angle, float innerRadius, int numRings) {
+	addCircleIndices(indices, numPoints, 360.0f, 0, 1, false);
 	for (int i = 0; i < numRings-1; i++) {
-		addCircleRingIndices(indices, numPoints, angle, i * numPoints + 1, (i+1)*numPoints + 1,false);
+		addCircleRingIndices(indices, numPoints, 360.0f, i * numPoints + 1, (i+1)*numPoints + 1,false);
 	}
-	addCircleIndices(indices, numPoints, angle, numRings*numPoints + 1, (numRings-1)*numPoints+1, true);
+	addCircleIndices(indices, numPoints, 360.0f, numRings*numPoints + 1, (numRings-1)*numPoints+1, true);
 }

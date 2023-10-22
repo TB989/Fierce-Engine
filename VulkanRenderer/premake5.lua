@@ -7,6 +7,8 @@ project "VulkanRenderer"
 	targetdir ("%{wks.location}/bin/")
 	objdir ("%{wks.location}/bin-int/")
 	
+	dependson ("Logger","MathLibrary")
+
 	defines
 	{
 		"VK_USE_PLATFORM_WIN32_KHR",
@@ -27,7 +29,8 @@ project "VulkanRenderer"
 		"%{IncludeDir.Vulkan}",
 		"%{IncludeDir.Logger}",
 		"%{IncludeDir.MathLibrary}",
-		"%{IncludeDir.RendererBase}"
+		"%{IncludeDir.RendererBase}",
+		"%{IncludeDir.GeometryLibrary}"
 	}
 	
 	libdirs 

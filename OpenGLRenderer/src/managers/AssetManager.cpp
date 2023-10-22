@@ -106,7 +106,7 @@ void AssetManager::loadPipelines(){
     simpleTexturePipeline2D->create();
     pipelineManager->addPipeline("SimpleTexture2D", simpleTexturePipeline2D);
 
-    GL_Pipeline* simpleTexturePipeline3D = new GL_Pipeline(vertexShaderColor3D, fragmentShaderColor);
+    GL_Pipeline* simpleTexturePipeline3D = new GL_Pipeline(vertexShaderTexture3D, fragmentShaderTexture);
     simpleTexturePipeline3D->addUniformLocation("modelMatrix");
     simpleTexturePipeline3D->addUniformLocation("viewMatrix");
     simpleTexturePipeline3D->addUniformLocation("projectionMatrix");

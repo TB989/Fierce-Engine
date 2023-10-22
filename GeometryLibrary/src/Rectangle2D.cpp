@@ -15,6 +15,6 @@ void Rectangle2D::getVertices(std::vector<float> &vertices, bool loadTextureCoor
 	}
 }
 
-void Rectangle2D::getIndices(std::vector<unsigned int> &indices, int numPoints, float angle, float innerRadius, int numRings){
+void Rectangle2D::getIndices(std::vector<unsigned int> &indices, bool loadTextureCoordinates, bool loadNormals, int numPoints, float angle, float innerRadius, int numRings){
 	addQuadIndices(indices, 0, 1, 2, 3,false);
 }

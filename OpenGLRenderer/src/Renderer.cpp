@@ -1,4 +1,4 @@
-#include "Renderer.h"
+﻿#include "Renderer.h"
 
 #include "RendererBase.h"
 #include "MathLibrary.h"
@@ -20,6 +20,8 @@ RENDERER_API void renderer_init(HWND dummyWindowHandle,HWND windowHandle) {
     context = new GL_Context(dummyWindowHandle,windowHandle);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
+    glFrontFace(GL_CCW);
+    glCullFace(GL_BACK);
 
     orthographicProjectionMatrix = new Mat4();
     perspectiveProjectionMatrix = new Mat4();
@@ -150,7 +152,7 @@ RENDERER_API void renderer_addEntityGeometry(RenderType renderType, GeometrySett
                 count = geometry.numPoints;
             }
             else {
-                count = geometry.numPoints - 1;
+                count = geometry.numPoints-1;
             }
 
             pipeline->loadUniform("color", colors[activeColor * 3], colors[activeColor * 3 + 1], colors[activeColor * 3 + 2]);
@@ -255,7 +257,7 @@ RENDERER_API void renderer_addEntityGeometry(RenderType renderType, GeometrySett
                 count = geometry.numPoints;
             }
             else {
-                count = geometry.numPoints - 1;
+                count = geometry.numPoints;
             }
 
             //Circle
@@ -320,7 +322,7 @@ RENDERER_API void renderer_addEntityTexture(RenderType renderType, float* modelM
         pipeline->unbind();
         break;
     case SIMPLE_TEXTURE_3D:
-        pipeline = assetManager->getPipelineManager()->getPipeline("SimpleColor3D");
+        pipeline = assetManager->getPipelineManager()->getPipeline("SimpleTexture3D");
         if (pipeline == nullptr) {
             LOGGER->error("Failed to find pipeline.");
         }
@@ -364,6 +366,7 @@ RENDERER_API void renderer_cleanUp() {
 
 RENDERER_API void renderer_setOrthographicProjection(float width,float height,float n,float f) {
     orthographicProjectionMatrix->setToOrthographicProjection(width,height,n,f);
+    glViewport(0,0,1920,1080);
 }
 
 RENDERER_API void renderer_setPerspectiveProjection(float aspect, float fov, float n, float f) {

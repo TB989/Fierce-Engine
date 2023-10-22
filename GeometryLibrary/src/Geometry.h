@@ -29,8 +29,8 @@ struct GeometrySettings {
 
 class Geometry {
 public:
-	virtual void getVertices(std::vector<float>& vertices, bool loadTextureCoordinates,bool loadNormals,int numPoints, float angle, float innerRadius,int numRings) = 0;
-	virtual void getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius,int numRings) = 0;
+	virtual void getVertices(std::vector<float>& vertices, bool loadTextureCoordinates, bool loadNormals,int numPoints, float angle, float innerRadius,int numRings) = 0;
+	virtual void getIndices(std::vector<unsigned int>& indices, bool loadTextureCoordinates, bool loadNormals, int numPoints, float angle, float innerRadius,int numRings) = 0;
 protected:
 	void addTriangleIndices(std::vector<unsigned int>& indices, int i1, int i2, int i3,bool flip);
 	void addQuadIndices(std::vector<unsigned int>& indices, int i1, int i2, int i3, int i4, bool flip);
@@ -48,25 +48,25 @@ protected:
 class Rectangle2D :public Geometry2D {
 public:
 	void getVertices(std::vector<float>& vertices, bool loadTextureCoordinates, bool loadNormals,int numPoints, float angle, float innerRadius, int numRings);
-	void getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings);
+	void getIndices(std::vector<unsigned int>& indices, bool loadTextureCoordinates, bool loadNormals, int numPoints, float angle, float innerRadius, int numRings);
 };
 
 class Circle2D :public Geometry2D {
 public:
 	void getVertices(std::vector<float>& vertices, bool loadTextureCoordinates, bool loadNormals,int numPoints, float angle, float innerRadius, int numRings);
-	void getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings);
+	void getIndices(std::vector<unsigned int>& indices, bool loadTextureCoordinates, bool loadNormals, int numPoints, float angle, float innerRadius, int numRings);
 };
 
 class CircleRing2D :public Geometry2D {
 public:
 	void getVertices(std::vector<float>& vertices, bool loadTextureCoordinates, bool loadNormals,int numPoints, float angle, float innerRadius, int numRings);
-	void getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings);
+	void getIndices(std::vector<unsigned int>& indices, bool loadTextureCoordinates, bool loadNormals, int numPoints, float angle, float innerRadius, int numRings);
 };
 
 class Triangle2D :public Geometry2D {
 public:
 	void getVertices(std::vector<float>& vertices, bool loadTextureCoordinates, bool loadNormals,int numPoints, float angle, float innerRadius, int numRings);
-	void getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings);
+	void getIndices(std::vector<unsigned int>& indices, bool loadTextureCoordinates, bool loadNormals, int numPoints, float angle, float innerRadius, int numRings);
 };
 
 class Geometry3D :public Geometry {
@@ -79,35 +79,35 @@ protected:
 class Plane3D :public Geometry3D {
 public:
 	void getVertices(std::vector<float>& vertices, bool loadTextureCoordinates, bool loadNormals,int numPoints, float angle, float innerRadius, int numRings);
-	void getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings);
+	void getIndices(std::vector<unsigned int>& indices, bool loadTextureCoordinates, bool loadNormals, int numPoints, float angle, float innerRadius, int numRings);
 };
 
 class Cube3D :public Geometry3D {
 public:
 	void getVertices(std::vector<float>& vertices, bool loadTextureCoordinates, bool loadNormals,int numPoints, float angle, float innerRadius, int numRings);
-	void getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings);
+	void getIndices(std::vector<unsigned int>& indices, bool loadTextureCoordinates, bool loadNormals, int numPoints, float angle, float innerRadius, int numRings);
 };
 
 class Cylinder3D :public Geometry3D {
 public:
 	void getVertices(std::vector<float>& vertices, bool loadTextureCoordinates, bool loadNormals,int numPoints, float angle, float innerRadius, int numRings);
-	void getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings);
+	void getIndices(std::vector<unsigned int>& indices, bool loadTextureCoordinates, bool loadNormals, int numPoints, float angle, float innerRadius, int numRings);
 };
 
 class HollowCylinder3D :public Geometry3D {
 public:
 	void getVertices(std::vector<float>& vertices, bool loadTextureCoordinates, bool loadNormals,int numPoints, float angle, float innerRadius, int numRings);
-	void getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings);
+	void getIndices(std::vector<unsigned int>& indices, bool loadTextureCoordinates, bool loadNormals, int numPoints, float angle, float innerRadius, int numRings);
 };
 
 class Cone3D :public Geometry3D {
 public:
 	void getVertices(std::vector<float>& vertices, bool loadTextureCoordinates, bool loadNormals,int numPoints, float angle, float innerRadius, int numRings);
-	void getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings);
+	void getIndices(std::vector<unsigned int>& indices, bool loadTextureCoordinates, bool loadNormals, int numPoints, float angle, float innerRadius, int numRings);
 };
 
 class Sphere3D :public Geometry3D {
 public:
 	void getVertices(std::vector<float>& vertices, bool loadTextureCoordinates, bool loadNormals,int numPoints, float angle, float innerRadius, int numRings);
-	void getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings);
+	void getIndices(std::vector<unsigned int>& indices, bool loadTextureCoordinates, bool loadNormals, int numPoints, float angle, float innerRadius, int numRings);
 };

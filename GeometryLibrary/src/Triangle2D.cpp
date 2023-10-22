@@ -13,6 +13,6 @@ void Triangle2D::getVertices(std::vector<float>& vertices, bool loadTextureCoord
 	}
 }
 
-void Triangle2D::getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings) {
+void Triangle2D::getIndices(std::vector<unsigned int>& indices, bool loadTextureCoordinates, bool loadNormals, int numPoints, float angle, float innerRadius, int numRings) {
 	addTriangleIndices(indices,0, 1, 2,false);
 }

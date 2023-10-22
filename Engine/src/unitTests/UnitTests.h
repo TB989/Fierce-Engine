@@ -50,6 +50,7 @@ private:
 	int sphere_meshId;
 
 	int texture;
+	int textureFloor;
 
 	Mat4* rectangle_modelMatrix;
 	Mat4* rectangle_modelMatrixTexture;
@@ -61,11 +62,17 @@ private:
 	Mat4* circleRing_modelMatrixTexture;
 
 	Mat4* plane_modelMatrix;
+	Mat4* plane_modelMatrixTexture;
 	Mat4* cube_modelMatrix;
+	Mat4* cube_modelMatrixTexture;
 	Mat4* cylinder_modelMatrix;
+	Mat4* cylinder_modelMatrixTexture;
 	Mat4* hollowCylinder_modelMatrix;
+	Mat4* hollowCylinder_modelMatrixTexture;
 	Mat4* cone_modelMatrix;
+	Mat4* cone_modelMatrixTexture;
 	Mat4* sphere_modelMatrix;
+	Mat4* sphere_modelMatrixTexture;
 
 	Color3f* rectangle_color;
 	Color3f* circle_color;
