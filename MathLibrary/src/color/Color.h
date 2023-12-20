@@ -1,5 +1,7 @@
 #pragma once
 
+#include "src/utils/Logging.h"
+
 #define R c[0]
 #define G c[1]
 #define B c[2]
@@ -7,23 +9,10 @@
 
 class Color3f{
 public:
-	Color3f(float r, float g, float b) {
-		c=new float[3];
-		R = r;
-		G = g;
-		B = b;
-	}
-
-	Color3f(float* values) {
-		c = new float[3];
-		R = values[0];
-		G = values[1];
-		B = values[2];
-	}
-
-	~Color3f() {
-		delete[] c;
-	}
+	Color3f(float r, float g, float b);
+	Color3f(float* values);
+	Color3f();
+	~Color3f();
 
 	float getR() { return R; }
 	float getG() { return G; }
@@ -34,30 +23,15 @@ public:
 	void setG(float g) { G = g; }
 	void setB(float b) { B = b; }
 private:
-	float* c;
+	float* c=nullptr;
 };
 
 class Color4f {
 public:
-	Color4f(float r, float g, float b, float a) {
-		c = new float[4];
-		R = r;
-		G = g;
-		B = b;
-		A = a;
-	}
-
-	Color4f(float* values) {
-		c = new float[4];
-		R = values[0];
-		G = values[1];
-		B = values[2];
-		A = values[3];
-	}
-
-	~Color4f() {
-		delete[] c;
-	}
+	Color4f(float r, float g, float b, float a);
+	Color4f(float* values);
+	Color4f();
+	~Color4f();
 
 	float getR() { return R; }
 	float getG() { return G; }
@@ -70,5 +44,5 @@ public:
 	void setB(float b) { B = b; }
 	void setA(float a) { A = a; }
 private:
-	float* c;
+	float* c=nullptr;
 };

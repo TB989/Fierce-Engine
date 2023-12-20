@@ -5,6 +5,7 @@
 #include "ComponentArray.h"
 
 #include <unordered_map>
+#include <typeinfo>
 
 using Entity = int;
 
@@ -12,9 +13,9 @@ class ComponentManager{
 public:
 	~ComponentManager() {
 		if (!m_componentArrays.empty()) {
-			LOGGER->warn("The following components have not been unregistered:");
+			LOGGER123->warn("The following components have not been unregistered:");
 			for (auto& it : m_componentArrays) {
-				LOGGER->warn("%s",it.first);
+				LOGGER123->warn("%s",it.first);
 			}
 		}
 	}
@@ -24,7 +25,7 @@ public:
 		const char* typeName = typeid(T).name();
 
 		if (m_componentArrays.find(typeName)!= m_componentArrays.end()) {
-			LOGGER->warn("Trying to register component %s more than once.", typeName);
+			LOGGER123->warn("Trying to register component %s more than once.", typeName);
 			return;
 		}
 
@@ -36,7 +37,7 @@ public:
 		const char* typeName = typeid(T).name();
 
 		if (m_componentArrays.find(typeName) == m_componentArrays.end()) {
-			LOGGER->warn("Trying to unregister component %s, which has never been registered, or already has been unregistered.", typeName);
+			LOGGER123->warn("Trying to unregister component %s, which has never been registered, or already has been unregistered.", typeName);
 			return;
 		}
 
@@ -47,14 +48,14 @@ public:
 
 	template<typename T>
 	void addComponent(Entity entity, T component){
+		LOGGER123->warn("Start of add comp");
 		const char* typeName = typeid(T).name();
-
 		if (m_componentArrays.find(typeName) == m_componentArrays.end()) {
-			LOGGER->warn("Cannot add component %s, as component has never been registered.", typeName);
+			LOGGER123->warn("Cannot add component %s, as component has never been registered.", typeName);
 			return;
 		}
-
 		GetComponentArray<T>()->insertComponent(entity,component);
+		LOGGER123->warn("End of add comp");
 	}
 
 	template<typename T>
@@ -62,7 +63,7 @@ public:
 		const char* typeName = typeid(T).name();
 
 		if (m_componentArrays.find(typeName) == m_componentArrays.end()) {
-			LOGGER->warn("Cannot remove component %s, as component has never been registered.", typeName);
+			LOGGER123->warn("Cannot remove component %s, as component has never been registered.", typeName);
 			return;
 		}
 
@@ -74,7 +75,7 @@ public:
 		const char* typeName = typeid(T).name();
 
 		if (m_componentArrays.find(typeName) == m_componentArrays.end()) {
-			LOGGER->warn("Cannot get component %s, as component has never been registered.", typeName);
+			LOGGER123->warn("Cannot get component %s, as component has never been registered.", typeName);
 			return T();
 		}
 

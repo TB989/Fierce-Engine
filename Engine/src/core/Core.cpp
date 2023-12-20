@@ -62,7 +62,9 @@ void Core::coreInit() {
 	loadRenderer();
 	renderer_init(dummyWindow->getHandle(), window->getHandle());
 
-	init();
+	world = new World();
+
+	init(world);
 
 	window->show();
 }
@@ -79,6 +81,7 @@ void Core::coreRender() {
 
 void Core::coreCleanUp() {
 	renderer_cleanUp();
+	delete world;
 	//delete windowSystem;
 	//delete eventSystem;
 	cleanUp();

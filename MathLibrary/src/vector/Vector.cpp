@@ -58,8 +58,8 @@ void Vector2f::normalize() {
 }
 
 void Vector2f::print(std::string name){
-	LOGGER->info("[Vector %s]:", name.c_str());
-	LOGGER->info("%1.3f %1.3f",VX,VY);
+	LOGGER124->info("[Vector %s]:", name.c_str());
+	LOGGER124->info("%1.3f %1.3f",VX,VY);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Vector2f& Vector2f::operator=(const Vector2f vector) {
@@ -219,8 +219,8 @@ void Vector3f::normalize() {
 }
 
 void Vector3f::print(std::string name){
-	LOGGER->info("[Vector %s]:", name.c_str());
-	LOGGER->info("%1.3f %1.3f %1.3f", VX, VY, VZ);
+	LOGGER124->info("[Vector %s]:", name.c_str());
+	LOGGER124->info("%1.3f %1.3f %1.3f", VX, VY, VZ);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Vector3f Vector3f::cross(const Vector3f& v1, const Vector3f& v2){
@@ -394,8 +394,8 @@ void Vector4f::normalize() {
 }
 
 void Vector4f::print(std::string name){
-	LOGGER->info("[Vector %s]:", name.c_str());
-	LOGGER->info("%1.3f %1.3f %1.3f %1.3f", VX, VY, VZ, VW);
+	LOGGER124->info("[Vector %s]:", name.c_str());
+	LOGGER124->info("%1.3f %1.3f %1.3f %1.3f", VX, VY, VZ, VW);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Vector4f& Vector4f::operator=(const Vector4f vector) {

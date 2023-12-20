@@ -11,7 +11,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "src/io/textures/stb_image.h"
 
-void Test_GeometryLibrary::onKeyDown(KeyDownEvent* event) {
+/**void Test_GeometryLibrary::onKeyDown(KeyDownEvent* event) {
 	if (event->m_key == 'W') {
 		Vector3f* angles = camera->getRotation();
 		Vector3f* position = camera->getPosition();
@@ -66,37 +66,49 @@ void Test_GeometryLibrary::onMouseMoved(MouseMoveEvent* event) {
 	m_y_alt = event->m_y;
 
 	//LOGGER->info("New rotations: %1.3f %1.3f %1.3f", angles->getX(), angles->getY(), angles->getZ());
-}
+}*/
 
 
 Test_GeometryLibrary::Test_GeometryLibrary() {
 	
 }
 
-void Test_GeometryLibrary::init() {
-	camera = new Transform3D();
-	camera->getPosition()->setY(2.0f);
-
+void Test_GeometryLibrary::init(World* world) {
 	//eventSystem->addListener(this, &Test_GeometryLibrary::onKeyDown);
 	//eventSystem->addListener(this, &Test_GeometryLibrary::onMouseMoved);
 
-	int width, height, nrChannels;
-	unsigned char* data = stbi_load("C:/Users/tmbal/Desktop/Fierce-Engine/Engine/res/TestTexture.png", &width, &height, &nrChannels, 3);
-	texture=renderer_loadTexture(width,height,data);
-	unsigned char* data2 = stbi_load("C:/Users/tmbal/Desktop/Fierce-Engine/Engine/res/TestTexture1.png", &width, &height, &nrChannels, 3);
-	textureFloor = renderer_loadTexture(width, height, data2);
+	LOGGER->error("Start init");
+	setupCamera();
+	loadTextures();
+	addActions();
+	setProjectionMatrices();
 
-	inputSystem->addAction(MAPPING::KEY_ESC, new Action_StopEngine(this));
-	inputSystem->addAction(MAPPING::MOUSE_AXIS_LR, new Action_LookRightLeft(camera, 0.3f));
-	inputSystem->addAction(MAPPING::MOUSE_AXIS_UD, new Action_LookUpDown(camera, 0.3f));
-	inputSystem->addAction(MAPPING::KEY_W, new Action_MoveForward(camera, 0.3f));
-	inputSystem->addAction(MAPPING::KEY_S, new Action_MoveBackward(camera, 0.3f));
+	Mat4 matrix;
 
-	//LOGGER->info("width: %d height: %d", window->getWidth(), window->getHeight());
-	renderer_setOrthographicProjection((float)window->getWidth(), (float)window->getHeight(),-1.0f,1.0f);//1920x1080
-	renderer_setPerspectiveProjection(((float)window->getWidth())/((float)window->getHeight()), 60.0f, 0.1f, 1000.0f);
+	planeColored = world->createEntity();
+	//world->addComponent(planeColored, GeometrySettings{RECTANGLE,0,0.0f,0.0f,0});
+	//world->addComponent(planeColored, MeshSettings{true,false,true,false});
 
-	loader = new GeometryLoader();
+	Color3f tempColor = { 0.0f, 1.0f, 0.0f };
+	LOGGER->error("Before add");
+	world->addComponent(planeColored, tempColor);
+
+	matrix = Mat4();
+	matrix.scale(100.0f, 100.0f, 0.0f);
+	matrix.translate(10.0f, 10.0f, 0.0f);
+	//world->addComponent(planeColored, matrix);
+
+	world->removeComponent<GeometrySettings>(planeColored);
+	world->removeComponent<MeshSettings>(planeColored);
+	world->removeComponent<Mat4>(planeColored);
+	world->removeComponent<Color3f>(planeColored);
+	world->destroyEntity(planeColored);
+
+
+	LOGGER->error("End of init");
+
+
+	/**loader = new GeometryLoader();
 
 	loader->registerGeometry(RECTANGLE, new Rectangle2D());
 	loader->registerGeometry(TRIANGLE, new Triangle2D());
@@ -165,21 +177,21 @@ void Test_GeometryLibrary::init() {
 	vertices.clear();
 	indices.clear();
 
-	loader->loadGeometry(GeometrySettings{ PLANE,0,0.0f,0.0f,0 }, true,false,vertices, indices);
-	plane_meshId = renderer_loadMesh(MeshSettings{ false,false,true,false }, vertices.size(), vertices.data(), indices.size(), indices.data());
+	loader->loadGeometry(GeometrySettings{ PLANE,0,0.0f,0.0f,0 }, true,true,vertices, indices);
+	plane_meshId = renderer_loadMesh(MeshSettings{ false,false,true,true }, vertices.size(), vertices.data(), indices.size(), indices.data());
 	plane_color = new Color3f(1.0f, 1.0f, 1.0f);
 	plane_modelMatrix = new Mat4();
 	plane_modelMatrix->scale(1000.0f, 1.0f, 1000.0f);
 	plane_modelMatrix->translate(0.0f, -2.0f, 0.0f);
 	plane_modelMatrixTexture = new Mat4();
-	plane_modelMatrixTexture->scale(1000.0f, 1.0f, 1000.0f);
-	plane_modelMatrixTexture->translate(0.0f, -2.0f, 0.0f);
+	plane_modelMatrixTexture->scale(10.0f, 1.0f, 10.0f);
+	plane_modelMatrixTexture->translate(0.0f, -2.0f, 5.0f);
 
 	vertices.clear();
 	indices.clear();
 
-	loader->loadGeometry(GeometrySettings{ CUBE,0,0.0f,0.0f,0 }, true,false,vertices, indices);
-	cube_meshId = renderer_loadMesh(MeshSettings{ false,false,true,false }, vertices.size(), vertices.data(), indices.size(), indices.data());
+	loader->loadGeometry(GeometrySettings{ CUBE,0,0.0f,0.0f,0 }, true,true,vertices, indices);
+	cube_meshId = renderer_loadMesh(MeshSettings{ false,false,true,true }, vertices.size(), vertices.data(), indices.size(), indices.data());
 	cube_color = new Color3f(1.0f, 0.0f, 0.0f);
 	cube_modelMatrix = new Mat4();
 	cube_modelMatrix->scale(2.0f, 2.0f, 2.0f);
@@ -191,8 +203,8 @@ void Test_GeometryLibrary::init() {
 	vertices.clear();
 	indices.clear();
 
-	loader->loadGeometry(GeometrySettings{ CYLINDER,16,260.0f,0.0f,0 }, true, false, vertices, indices);
-	cylinder_meshId = renderer_loadMesh(MeshSettings{ false,false,true,false }, vertices.size(), vertices.data(), indices.size(), indices.data());
+	loader->loadGeometry(GeometrySettings{ CYLINDER,16,260.0f,0.0f,0 }, true, true, vertices, indices);
+	cylinder_meshId = renderer_loadMesh(MeshSettings{ false,false,true,true }, vertices.size(), vertices.data(), indices.size(), indices.data());
 	cylinder_color = new Color3f(1.0f, 0.0f, 0.0f);
 	cylinder_modelMatrix = new Mat4();
 	cylinder_modelMatrix->scale(2.0f, 2.0f, 2.0f);
@@ -204,8 +216,8 @@ void Test_GeometryLibrary::init() {
 	vertices.clear();
 	indices.clear();
 
-	loader->loadGeometry(GeometrySettings{ HOLLOW_CYLINDER,16,260.0f,0.1f,0 }, true, false, vertices, indices);
-	hollowCylinder_meshId = renderer_loadMesh(MeshSettings{ false,false,true,false }, vertices.size(), vertices.data(), indices.size(), indices.data());
+	loader->loadGeometry(GeometrySettings{ HOLLOW_CYLINDER,16,260.0f,0.1f,0 }, true, true, vertices, indices);
+	hollowCylinder_meshId = renderer_loadMesh(MeshSettings{ false,false,true,true }, vertices.size(), vertices.data(), indices.size(), indices.data());
 	hollowCylinder_color = new Color3f(1.0f, 0.0f, 0.0f);
 	hollowCylinder_modelMatrix = new Mat4();
 	hollowCylinder_modelMatrix->scale(2.0f, 2.0f, 2.0f);
@@ -217,8 +229,8 @@ void Test_GeometryLibrary::init() {
 	vertices.clear();
 	indices.clear();
 
-	loader->loadGeometry(GeometrySettings{ CONE,16,260.0f,0.0f,0 }, true, false, vertices, indices);
-	cone_meshId = renderer_loadMesh(MeshSettings{ false,false,true,false }, vertices.size(), vertices.data(), indices.size(), indices.data());
+	loader->loadGeometry(GeometrySettings{ CONE,16,260.0f,0.0f,0 }, true, true, vertices, indices);
+	cone_meshId = renderer_loadMesh(MeshSettings{ false,false,true,true }, vertices.size(), vertices.data(), indices.size(), indices.data());
 	cone_color = new Color3f(1.0f, 0.0f, 0.0f);
 	cone_modelMatrix = new Mat4();
 	cone_modelMatrix->scale(2.0f, 2.0f, 2.0f);
@@ -230,8 +242,8 @@ void Test_GeometryLibrary::init() {
 	vertices.clear();
 	indices.clear();
 
-	loader->loadGeometry(GeometrySettings{ SPHERE,32,260.0f,0.0f,16 }, true, false, vertices, indices);
-	sphere_meshId = renderer_loadMesh(MeshSettings{ false,false,true,false }, vertices.size(), vertices.data(), indices.size(), indices.data());
+	loader->loadGeometry(GeometrySettings{ SPHERE,32,260.0f,0.0f,16 }, true, true, vertices, indices);
+	sphere_meshId = renderer_loadMesh(MeshSettings{ false,false,true,true }, vertices.size(), vertices.data(), indices.size(), indices.data());
 	sphere_color = new Color3f(1.0f, 0.0f, 0.0f);
 	sphere_modelMatrix = new Mat4();
 	sphere_modelMatrix->scale(2.0f, 2.0f, 2.0f);
@@ -239,6 +251,8 @@ void Test_GeometryLibrary::init() {
 	sphere_modelMatrixTexture = new Mat4();
 	sphere_modelMatrixTexture->scale(2.0f, 2.0f, 2.0f);
 	sphere_modelMatrixTexture->translate(-10.0f, 0.0f, -15.0f);
+
+	normal_color = new Color3f(1.0f,0.0f,0.0f);*/
 }
 
 void Test_GeometryLibrary::update() {
@@ -246,7 +260,7 @@ void Test_GeometryLibrary::update() {
 }
 
 void Test_GeometryLibrary::doRender() {
-	Mat4* viewMatrix = new Mat4();
+	/**Mat4* viewMatrix = new Mat4();
 	viewMatrix->setToView(camera);
 	renderer_setViewMatrix(viewMatrix->get());
 
@@ -282,10 +296,17 @@ void Test_GeometryLibrary::doRender() {
 	renderer_addEntityTexture(RenderType::SIMPLE_TEXTURE_3D, hollowCylinder_modelMatrixTexture->get(), hollowCylinder_meshId, texture);
 	renderer_addEntityTexture(RenderType::SIMPLE_TEXTURE_3D, cone_modelMatrixTexture->get(), cone_meshId, texture);
 	renderer_addEntityTexture(RenderType::SIMPLE_TEXTURE_3D, sphere_modelMatrixTexture->get(), sphere_meshId, texture);
+
+	renderer_addEntityNormal(RenderType::NORMAL, plane_modelMatrixTexture->get(), plane_meshId, normal_color->get());
+	renderer_addEntityNormal(RenderType::NORMAL, cube_modelMatrixTexture->get(), cube_meshId, normal_color->get());
+	renderer_addEntityNormal(RenderType::NORMAL, cylinder_modelMatrixTexture->get(), cylinder_meshId, normal_color->get());
+	renderer_addEntityNormal(RenderType::NORMAL, hollowCylinder_modelMatrixTexture->get(), hollowCylinder_meshId, normal_color->get());
+	renderer_addEntityNormal(RenderType::NORMAL, cone_modelMatrixTexture->get(), cone_meshId, normal_color->get());
+	renderer_addEntityNormal(RenderType::NORMAL, sphere_modelMatrixTexture->get(), sphere_meshId, normal_color->get());*/
 }
 
 void Test_GeometryLibrary::cleanUp() {
-	loader->unregisterGeometry(RECTANGLE);
+	/**loader->unregisterGeometry(RECTANGLE);
 	loader->unregisterGeometry(TRIANGLE);
 	loader->unregisterGeometry(CIRCLE);
 	loader->unregisterGeometry(CIRCLE_RING);
@@ -297,5 +318,31 @@ void Test_GeometryLibrary::cleanUp() {
 	loader->unregisterGeometry(HOLLOW_CYLINDER);
 	loader->unregisterGeometry(SPHERE);
 
-	delete loader;
+	delete loader;*/
+}
+
+void Test_GeometryLibrary::setupCamera(){
+	camera = new Transform3D();
+	camera->getPosition()->setY(2.0f);
+}
+
+void Test_GeometryLibrary::loadTextures(){
+	int width, height, nrChannels;
+	unsigned char* data = stbi_load("C:/Users/tmbal/Desktop/Fierce-Engine/Engine/res/TestTexture.png", &width, &height, &nrChannels, 3);
+	texture = renderer_loadTexture(width, height, data);
+	unsigned char* data2 = stbi_load("C:/Users/tmbal/Desktop/Fierce-Engine/Engine/res/TestTexture1.png", &width, &height, &nrChannels, 3);
+	textureFloor = renderer_loadTexture(width, height, data2);
+}
+
+void Test_GeometryLibrary::addActions(){
+	inputSystem->addAction(MAPPING::KEY_ESC, new Action_StopEngine(this));
+	inputSystem->addAction(MAPPING::MOUSE_AXIS_LR, new Action_LookRightLeft(camera, 0.3f));
+	inputSystem->addAction(MAPPING::MOUSE_AXIS_UD, new Action_LookUpDown(camera, 0.3f));
+	inputSystem->addAction(MAPPING::KEY_W, new Action_MoveForward(camera, 0.3f));
+	inputSystem->addAction(MAPPING::KEY_S, new Action_MoveBackward(camera, 0.3f));
+}
+
+void Test_GeometryLibrary::setProjectionMatrices(){
+	renderer_setOrthographicProjection((float)window->getWidth(), (float)window->getHeight(), -1.0f, 1.0f);//1920x1080
+	renderer_setPerspectiveProjection(((float)window->getWidth()) / ((float)window->getHeight()), 60.0f, 0.1f, 1000.0f);
 }

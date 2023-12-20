@@ -2,4 +2,4 @@
 
 #include "Logger.h"
 
-static Logger* LOGGER = new Logger("ECS");
+static Logger* LOGGER123 = new Logger("ECS");

@@ -9,6 +9,8 @@
 #include "EngineSettings.h"
 #include "src/system/renderer/FunctionLoader.h"
 
+#include "src/world/World.h"
+
 class Core {
 private:
 	void coreInit();
@@ -24,7 +26,7 @@ private:
 	bool running = false;
 
 protected:
-	virtual void init()=0;
+	virtual void init(World* world)=0;
 	virtual void update() = 0;
 	virtual void doRender() = 0;
 	virtual void cleanUp()=0;
@@ -54,4 +56,5 @@ public:
 
 protected:
 	EngineSettings m_settings = {};
+	World* world=nullptr;
 };

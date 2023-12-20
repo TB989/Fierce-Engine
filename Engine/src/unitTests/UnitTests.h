@@ -12,7 +12,7 @@ public:
 	Test_EngineConfig();
 
 protected:
-	void init() override;
+	void init(World* world) override;
 	void update() override;
 	void doRender() override;
 	void cleanUp() override;
@@ -22,14 +22,20 @@ class Test_GeometryLibrary : public Core {
 public:
 	Test_GeometryLibrary();
 
-	void onMouseMoved(MouseMoveEvent* event);
-	void onKeyDown(KeyDownEvent* event);
+	//void onMouseMoved(MouseMoveEvent* event);
+	//void onKeyDown(KeyDownEvent* event);
 
 protected:
-	void init() override;
+	void init(World* world) override;
 	void update() override;
 	void doRender() override;
 	void cleanUp() override;
+
+private:
+	void setupCamera();
+	void loadTextures();
+	void addActions();
+	void setProjectionMatrices();
 
 private:
 	int m_x_alt=0;
@@ -86,5 +92,11 @@ private:
 	Color3f* cone_color;
 	Color3f* sphere_color;
 
+	Color3f* normal_color;
+
 	GeometryLoader* loader;
+
+	//Entities
+	Entity planeColored;
+	Entity planeTexture;
 };

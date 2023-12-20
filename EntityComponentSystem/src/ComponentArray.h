@@ -19,20 +19,23 @@ public:
 
 	~ComponentArray() {
 		if (pointer != 0) {
-			LOGGER->warn("%d components have not been removed.", pointer);
+			LOGGER123->warn("%d components have not been removed.", pointer);
 		}
 
 		delete[] components;
 	}
 
 	void insertComponent(Entity entity, T component){
+
+		LOGGER123->error("Start of insert comp");
+
 		if (entityToIndexMap.find(entity)!= entityToIndexMap.end()) {
-			LOGGER->warn("Trying to insert component more than once for entity %i.",entity);
+			LOGGER123->warn("Trying to insert component more than once for entity %i.",entity);
 			return;
 		}
 
 		if (pointer > m_maxComponents - 1) {
-			LOGGER->warn("Cannot add component, component array is full.");
+			LOGGER123->warn("Cannot add component, component array is full.");
 			return;
 		}
 
@@ -41,16 +44,18 @@ public:
 		indexToEntityMap[newIndex] = entity;
 		components[newIndex] = component;
 		pointer++;
+
+		LOGGER123->error("End of insert comp");
 	}
 
 	void removeComponent(Entity entity){
 		if (entityToIndexMap.find(entity) == entityToIndexMap.end()) {
-			LOGGER->warn("Trying to remove nonexistent component for entity %i.", entity);
+			LOGGER123->warn("Trying to remove nonexistent component for entity %i.", entity);
 			return;
 		}
 
 		if (pointer < 1) {
-			LOGGER->warn("Cannot remove component for entity %i.",entity);
+			LOGGER123->warn("Cannot remove component for entity %i.",entity);
 			return;
 		}
 
@@ -70,7 +75,7 @@ public:
 
 	T& getComponent(Entity entity){
 		if (entityToIndexMap.find(entity) == entityToIndexMap.end()) {
-			LOGGER->warn("Component does not exist for entity %i.", entity);
+			LOGGER123->warn("Component does not exist for entity %i.", entity);
 			return T();
 		}
 

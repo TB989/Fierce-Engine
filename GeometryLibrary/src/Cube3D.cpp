@@ -1,42 +1,101 @@
 #include "Geometry.h"
 
 void Cube3D::getVertices(std::vector<float>& vertices, bool loadTextureCoordinates, bool loadNormals, int numPoints, float angle, float innerRadius, int numRings) {
-	if (loadTextureCoordinates) {
+	if (loadTextureCoordinates && loadNormals) {
 		//Bottom
-		addVertex3D(vertices, 0.5f, -0.5f, 0.5f, 0.0f, 1.0f);
-		addVertex3D(vertices, -0.5f, -0.5f, 0.5f, 1.0f, 1.0f);
-		addVertex3D(vertices, -0.5f, -0.5f, -0.5f, 1.0f, 0.0f);
-		addVertex3D(vertices, 0.5f, -0.5f, -0.5f, 0.0f, 0.0f);
-
+		addVertex3D(vertices,  0.5f, -0.5f,  0.5f); addTextureCoordinate(vertices, 0.0f, 1.0f); addNormal(vertices, NEG_Y, 0.0f, 0.0f);
+		addVertex3D(vertices, -0.5f, -0.5f,  0.5f); addTextureCoordinate(vertices, 1.0f, 1.0f); addNormal(vertices, NEG_Y, 0.0f, 0.0f);
+		addVertex3D(vertices, -0.5f, -0.5f, -0.5f); addTextureCoordinate(vertices, 1.0f, 0.0f); addNormal(vertices, NEG_Y, 0.0f, 0.0f);
+		addVertex3D(vertices,  0.5f, -0.5f, -0.5f); addTextureCoordinate(vertices, 0.0f, 0.0f); addNormal(vertices, NEG_Y, 0.0f, 0.0f);
 		//Front
-		addVertex3D(vertices, -0.5f, -0.5f, 0.5f, 0.0f, 1.0f);
-		addVertex3D(vertices, 0.5f, -0.5f, 0.5f, 1.0f, 1.0f);
-		addVertex3D(vertices, 0.5f, 0.5f, 0.5f, 1.0f, 0.0f);
-		addVertex3D(vertices, -0.5f, 0.5f, 0.5f, 0.0f, 0.0f);
-
+		addVertex3D(vertices, -0.5f, -0.5f,  0.5f); addTextureCoordinate(vertices, 0.0f, 1.0f); addNormal(vertices, POS_Z, 0.0f, 0.0f);
+		addVertex3D(vertices,  0.5f, -0.5f,  0.5f); addTextureCoordinate(vertices, 1.0f, 1.0f); addNormal(vertices, POS_Z, 0.0f, 0.0f);
+		addVertex3D(vertices,  0.5f,  0.5f,  0.5f); addTextureCoordinate(vertices, 1.0f, 0.0f); addNormal(vertices, POS_Z, 0.0f, 0.0f);
+		addVertex3D(vertices, -0.5f,  0.5f,  0.5f); addTextureCoordinate(vertices, 0.0f, 0.0f); addNormal(vertices, POS_Z, 0.0f, 0.0f);
 		//Right
-		addVertex3D(vertices, 0.5f, -0.5f, 0.5f, 0.0f, 1.0f);
-		addVertex3D(vertices, 0.5f, -0.5f, -0.5f, 1.0f, 1.0f);
-		addVertex3D(vertices, 0.5f, 0.5f, -0.5f, 1.0f, 0.0f);
-		addVertex3D(vertices, 0.5f, 0.5f, 0.5f, 0.0f, 0.0f);
-
+		addVertex3D(vertices,  0.5f, -0.5f,  0.5f); addTextureCoordinate(vertices, 0.0f, 1.0f); addNormal(vertices, POS_X, 0.0f, 0.0f);
+		addVertex3D(vertices,  0.5f, -0.5f, -0.5f); addTextureCoordinate(vertices, 1.0f, 1.0f); addNormal(vertices, POS_X, 0.0f, 0.0f);
+		addVertex3D(vertices,  0.5f,  0.5f, -0.5f); addTextureCoordinate(vertices, 1.0f, 0.0f); addNormal(vertices, POS_X, 0.0f, 0.0f);
+		addVertex3D(vertices,  0.5f,  0.5f,  0.5f); addTextureCoordinate(vertices, 0.0f, 0.0f); addNormal(vertices, POS_X, 0.0f, 0.0f);
 		//Back
-		addVertex3D(vertices, 0.5f, -0.5f, -0.5f, 0.0f, 1.0f);
-		addVertex3D(vertices, -0.5f, -0.5f, -0.5f, 1.0f, 1.0f);
-		addVertex3D(vertices, -0.5f, 0.5f, -0.5f, 1.0f, 0.0f);
-		addVertex3D(vertices, 0.5f, 0.5f, -0.5f, 0.0f, 0.0f);
-
+		addVertex3D(vertices,  0.5f, -0.5f, -0.5f); addTextureCoordinate(vertices, 0.0f, 1.0f); addNormal(vertices, NEG_Z, 0.0f, 0.0f);
+		addVertex3D(vertices, -0.5f, -0.5f, -0.5f); addTextureCoordinate(vertices, 1.0f, 1.0f); addNormal(vertices, NEG_Z, 0.0f, 0.0f);
+		addVertex3D(vertices, -0.5f,  0.5f, -0.5f); addTextureCoordinate(vertices, 1.0f, 0.0f); addNormal(vertices, NEG_Z, 0.0f, 0.0f);
+		addVertex3D(vertices,  0.5f,  0.5f, -0.5f); addTextureCoordinate(vertices, 0.0f, 0.0f); addNormal(vertices, NEG_Z, 0.0f, 0.0f);
 		//Left
-		addVertex3D(vertices, -0.5f, -0.5f, -0.5f, 0.0f, 1.0f);
-		addVertex3D(vertices, -0.5f, -0.5f, 0.5f, 1.0f, 1.0f);
-		addVertex3D(vertices, -0.5f, 0.5f, 0.5f, 1.0f, 0.0f);
-		addVertex3D(vertices, -0.5f, 0.5f, -0.5f, 0.0f, 0.0f);
-
+		addVertex3D(vertices, -0.5f, -0.5f, -0.5f); addTextureCoordinate(vertices, 0.0f, 1.0f); addNormal(vertices, NEG_X, 0.0f, 0.0f);
+		addVertex3D(vertices, -0.5f, -0.5f,  0.5f); addTextureCoordinate(vertices, 1.0f, 1.0f); addNormal(vertices, NEG_X, 0.0f, 0.0f);
+		addVertex3D(vertices, -0.5f,  0.5f,  0.5f); addTextureCoordinate(vertices, 1.0f, 0.0f); addNormal(vertices, NEG_X, 0.0f, 0.0f);
+		addVertex3D(vertices, -0.5f,  0.5f, -0.5f); addTextureCoordinate(vertices, 0.0f, 0.0f); addNormal(vertices, NEG_X, 0.0f, 0.0f);
 		//Top
-		addVertex3D(vertices, -0.5f, 0.5f, 0.5f, 0.0f, 1.0f);
-		addVertex3D(vertices, 0.5f, 0.5f, 0.5f, 1.0f, 1.0f);
-		addVertex3D(vertices, 0.5f, 0.5f, -0.5f, 1.0f, 0.0f);
-		addVertex3D(vertices, -0.5f, 0.5f, -0.5f, 0.0f, 0.0f);
+		addVertex3D(vertices, -0.5f,  0.5f,  0.5f); addTextureCoordinate(vertices, 0.0f, 1.0f); addNormal(vertices, POS_Y, 0.0f, 0.0f);
+		addVertex3D(vertices,  0.5f,  0.5f,  0.5f); addTextureCoordinate(vertices, 1.0f, 1.0f); addNormal(vertices, POS_Y, 0.0f, 0.0f);
+		addVertex3D(vertices,  0.5f,  0.5f, -0.5f); addTextureCoordinate(vertices, 1.0f, 0.0f); addNormal(vertices, POS_Y, 0.0f, 0.0f);
+		addVertex3D(vertices, -0.5f,  0.5f, -0.5f); addTextureCoordinate(vertices, 0.0f, 0.0f); addNormal(vertices, POS_Y, 0.0f, 0.0f);
+	}
+	else if (loadTextureCoordinates) {
+		//Bottom
+		addVertex3D(vertices, 0.5f, -0.5f, 0.5f); addTextureCoordinate(vertices, 0.0f, 1.0f);
+		addVertex3D(vertices, -0.5f, -0.5f, 0.5f); addTextureCoordinate(vertices, 1.0f, 1.0f);
+		addVertex3D(vertices, -0.5f, -0.5f, -0.5f); addTextureCoordinate(vertices, 1.0f, 0.0f);
+		addVertex3D(vertices, 0.5f, -0.5f, -0.5f); addTextureCoordinate(vertices, 0.0f, 0.0f);
+		//Front
+		addVertex3D(vertices, -0.5f, -0.5f, 0.5f); addTextureCoordinate(vertices, 0.0f, 1.0f);
+		addVertex3D(vertices, 0.5f, -0.5f, 0.5f); addTextureCoordinate(vertices, 1.0f, 1.0f);
+		addVertex3D(vertices, 0.5f, 0.5f, 0.5f); addTextureCoordinate(vertices, 1.0f, 0.0f);
+		addVertex3D(vertices, -0.5f, 0.5f, 0.5f); addTextureCoordinate(vertices, 0.0f, 0.0f);
+		//Right
+		addVertex3D(vertices, 0.5f, -0.5f, 0.5f); addTextureCoordinate(vertices, 0.0f, 1.0f);
+		addVertex3D(vertices, 0.5f, -0.5f, -0.5f); addTextureCoordinate(vertices, 1.0f, 1.0f);
+		addVertex3D(vertices, 0.5f, 0.5f, -0.5f); addTextureCoordinate(vertices, 1.0f, 0.0f);
+		addVertex3D(vertices, 0.5f, 0.5f, 0.5f); addTextureCoordinate(vertices, 0.0f, 0.0f);
+		//Back
+		addVertex3D(vertices, 0.5f, -0.5f, -0.5f); addTextureCoordinate(vertices, 0.0f, 1.0f);
+		addVertex3D(vertices, -0.5f, -0.5f, -0.5f); addTextureCoordinate(vertices, 1.0f, 1.0f);
+		addVertex3D(vertices, -0.5f, 0.5f, -0.5f); addTextureCoordinate(vertices, 1.0f, 0.0f);
+		addVertex3D(vertices, 0.5f, 0.5f, -0.5f); addTextureCoordinate(vertices, 0.0f, 0.0f);
+		//Left
+		addVertex3D(vertices, -0.5f, -0.5f, -0.5f); addTextureCoordinate(vertices, 0.0f, 1.0f);
+		addVertex3D(vertices, -0.5f, -0.5f, 0.5f); addTextureCoordinate(vertices, 1.0f, 1.0f);
+		addVertex3D(vertices, -0.5f, 0.5f, 0.5f); addTextureCoordinate(vertices, 1.0f, 0.0f);
+		addVertex3D(vertices, -0.5f, 0.5f, -0.5f); addTextureCoordinate(vertices, 0.0f, 0.0f);
+		//Top
+		addVertex3D(vertices, -0.5f, 0.5f, 0.5f); addTextureCoordinate(vertices, 0.0f, 1.0f);
+		addVertex3D(vertices, 0.5f, 0.5f, 0.5f); addTextureCoordinate(vertices, 1.0f, 1.0f);
+		addVertex3D(vertices, 0.5f, 0.5f, -0.5f); addTextureCoordinate(vertices, 1.0f, 0.0f);
+		addVertex3D(vertices, -0.5f, 0.5f, -0.5f); addTextureCoordinate(vertices, 0.0f, 0.0f);
+	}
+	else if (loadNormals) {
+		//Bottom
+		addVertex3D(vertices, 0.5f, -0.5f, 0.5f); addNormal(vertices, NEG_Y, 0.0f, 0.0f);
+		addVertex3D(vertices, -0.5f, -0.5f, 0.5f); addNormal(vertices, NEG_Y, 0.0f, 0.0f);
+		addVertex3D(vertices, -0.5f, -0.5f, -0.5f); addNormal(vertices, NEG_Y, 0.0f, 0.0f);
+		addVertex3D(vertices, 0.5f, -0.5f, -0.5f); addNormal(vertices, NEG_Y, 0.0f, 0.0f);
+		//Front
+		addVertex3D(vertices, -0.5f, -0.5f, 0.5f); addNormal(vertices, POS_Z, 0.0f, 0.0f);
+		addVertex3D(vertices, 0.5f, -0.5f, 0.5f); addNormal(vertices, POS_Z, 0.0f, 0.0f);
+		addVertex3D(vertices, 0.5f, 0.5f, 0.5f); addNormal(vertices, POS_Z, 0.0f, 0.0f);
+		addVertex3D(vertices, -0.5f, 0.5f, 0.5f); addNormal(vertices, POS_Z, 0.0f, 0.0f);
+		//Right
+		addVertex3D(vertices, 0.5f, -0.5f, 0.5f); addNormal(vertices, POS_X, 0.0f, 0.0f);
+		addVertex3D(vertices, 0.5f, -0.5f, -0.5f); addNormal(vertices, POS_X, 0.0f, 0.0f);
+		addVertex3D(vertices, 0.5f, 0.5f, -0.5f); addNormal(vertices, POS_X, 0.0f, 0.0f);
+		addVertex3D(vertices, 0.5f, 0.5f, 0.5f); addNormal(vertices, POS_X, 0.0f, 0.0f);
+		//Back
+		addVertex3D(vertices, 0.5f, -0.5f, -0.5f); addNormal(vertices, NEG_Z, 0.0f, 0.0f);
+		addVertex3D(vertices, -0.5f, -0.5f, -0.5f); addNormal(vertices, NEG_Z, 0.0f, 0.0f);
+		addVertex3D(vertices, -0.5f, 0.5f, -0.5f); addNormal(vertices, NEG_Z, 0.0f, 0.0f);
+		addVertex3D(vertices, 0.5f, 0.5f, -0.5f); addNormal(vertices, NEG_Z, 0.0f, 0.0f);
+		//Left
+		addVertex3D(vertices, -0.5f, -0.5f, -0.5f); addNormal(vertices, NEG_X, 0.0f, 0.0f);
+		addVertex3D(vertices, -0.5f, -0.5f, 0.5f); addNormal(vertices, NEG_X, 0.0f, 0.0f);
+		addVertex3D(vertices, -0.5f, 0.5f, 0.5f); addNormal(vertices, NEG_X, 0.0f, 0.0f);
+		addVertex3D(vertices, -0.5f, 0.5f, -0.5f); addNormal(vertices, NEG_X, 0.0f, 0.0f);
+		//Top
+		addVertex3D(vertices, -0.5f, 0.5f, 0.5f); addNormal(vertices, POS_Y, 0.0f, 0.0f);
+		addVertex3D(vertices, 0.5f, 0.5f, 0.5f); addNormal(vertices, POS_Y, 0.0f, 0.0f);
+		addVertex3D(vertices, 0.5f, 0.5f, -0.5f); addNormal(vertices, POS_Y, 0.0f, 0.0f);
+		addVertex3D(vertices, -0.5f, 0.5f, -0.5f); addNormal(vertices, POS_Y, 0.0f, 0.0f);
 	}
 	else {
 		addVertex3D(vertices, -0.5f, -0.5f, 0.5f);
@@ -52,7 +111,7 @@ void Cube3D::getVertices(std::vector<float>& vertices, bool loadTextureCoordinat
 }
 
 void Cube3D::getIndices(std::vector<unsigned int>& indices, bool loadTextureCoordinates, bool loadNormals, int numPoints, float angle, float innerRadius, int numRings) {
-	if (loadTextureCoordinates) {
+	if (loadTextureCoordinates||loadNormals) {
 		//Bottom
 		addQuadIndices(indices, 0, 1, 2, 3, false);
 

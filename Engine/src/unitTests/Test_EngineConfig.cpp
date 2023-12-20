@@ -6,7 +6,7 @@ Test_EngineConfig::Test_EngineConfig() {
     
 }
 
-void Test_EngineConfig::init() {
+void Test_EngineConfig::init(World* world) {
 
 }
 

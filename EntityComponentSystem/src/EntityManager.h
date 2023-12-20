@@ -17,7 +17,7 @@ public:
 
 	~EntityManager() {
 		if (pointer != 0) {
-			LOGGER->warn("%d entities have not been destroyed.",pointer);
+			LOGGER123->warn("%d entities have not been destroyed.",pointer);
 		}
 
 		delete[] entityIDs;
@@ -25,7 +25,7 @@ public:
 
 	Entity createEntity() {
 		if (pointer> m_maxEntities-1) {
-			LOGGER->warn("Cannot create entity, no entity IDs left.");
+			LOGGER123->warn("Cannot create entity, no entity IDs left.");
 			return -1;
 		}
 
@@ -36,7 +36,7 @@ public:
 
 	void destroyEntity(Entity entity) {
 		if (pointer < 1) {
-			LOGGER->warn("Cannot destroy entity, no space left to return ID.");
+			LOGGER123->warn("Cannot destroy entity, no space left to return ID.");
 			return;
 		}
 

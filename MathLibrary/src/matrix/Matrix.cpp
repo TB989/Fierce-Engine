@@ -53,11 +53,11 @@ float* Mat4::get(){
 }
 
 void Mat4::print(std::string name){
-	LOGGER->info("[Matrix %s]:", name.c_str());
-	LOGGER->info("%1.3f %1.3f %1.3f %1.3f", M00, M10, M20, M30);
-	LOGGER->info("%1.3f %1.3f %1.3f %1.3f", M01, M11, M21, M31);
-	LOGGER->info("%1.3f %1.3f %1.3f %1.3f", M02, M12, M22, M32);
-	LOGGER->info("%1.3f %1.3f %1.3f %1.3f", M03, M13, M23, M33);
+	LOGGER124->info("[Matrix %s]:", name.c_str());
+	LOGGER124->info("%1.3f %1.3f %1.3f %1.3f", M00, M10, M20, M30);
+	LOGGER124->info("%1.3f %1.3f %1.3f %1.3f", M01, M11, M21, M31);
+	LOGGER124->info("%1.3f %1.3f %1.3f %1.3f", M02, M12, M22, M32);
+	LOGGER124->info("%1.3f %1.3f %1.3f %1.3f", M03, M13, M23, M33);
 }
 
 void Mat4::setToIdentity(){

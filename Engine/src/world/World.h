@@ -1,7 +1,6 @@
 #pragma once
 
-#include "EntityManager.h"
-#include "ComponentManager.h"
+#include "EntityComponentSystem.h"
 
 #include <vector>
 
@@ -17,7 +16,9 @@ public:
 	void destroyEntity(Entity entity) { entityManager->destroyEntity(entity); }
 
 	template<typename T>
-	void addComponent(Entity entity, T component) { componentManager->addComponent<T>(entity, component); }
+	void addComponent(Entity entity, T component) { 
+		componentManager->addComponent<T>(entity, component); 
+	}
 
 	template<typename T>
 	void removeComponent(Entity entity) { componentManager->removeComponent<T>(entity); }

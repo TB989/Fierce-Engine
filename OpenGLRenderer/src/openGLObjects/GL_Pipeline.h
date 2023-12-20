@@ -13,6 +13,7 @@ class GL_VertexAttribute;
 class GL_Pipeline : public OpenGLObject{
 public:
 	GL_Pipeline(GL_Shader* shader1, GL_Shader* shader2);
+	GL_Pipeline(GL_Shader* shader1, GL_Shader* shader2, GL_Shader* shader3);
 	~GL_Pipeline();
 
 	void create();

@@ -2,4 +2,4 @@
 
 #include "Logger.h"
 
-static Logger* LOGGER = new Logger("MATH");
+static Logger* LOGGER124 = new Logger("MATH");

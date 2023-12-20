@@ -19,7 +19,8 @@ enum RenderType {
 	SIMPLE_TEXTURE_2D,
 	SIMPLE_TEXTURE_3D,
 	GEOMETRY_2D,
-	GEOMETRY_3D
+	GEOMETRY_3D,
+	NORMAL
 };
 
 #ifdef DLL_EXPORT
@@ -28,6 +29,7 @@ enum RenderType {
 
 #ifdef DLL_IMPORT
 	typedef void (*PFN_RENDERER_ADD_ENTITY_COLOR_PROC)(RenderType renderType,float* modelMatrix,int meshID,float* color);
+	typedef void (*PFN_RENDERER_ADD_ENTITY_NORMAL_PROC)(RenderType renderType, float* modelMatrix, int meshID, float* color);
 	typedef void (*PFN_RENDERER_ADD_ENTITY_TEXTURE_PROC)(RenderType renderType, float* modelMatrix, int meshID, int textureID);
 	typedef void (*PFN_RENDERER_ADD_ENTITY_GEOMETRY_PROC)(RenderType renderType, GeometrySettings geometry, float* modelMatrix, int meshID, int numColors, float* color);
 
@@ -52,6 +54,7 @@ enum RenderType {
 	extern PFN_RENDERER_INIT_PROC renderer_init;
 	extern PFN_RENDERER_START_FRAME_PROC renderer_startFrame;
 	extern PFN_RENDERER_ADD_ENTITY_COLOR_PROC renderer_addEntityColor;
+	extern PFN_RENDERER_ADD_ENTITY_NORMAL_PROC renderer_addEntityNormal;
 	extern PFN_RENDERER_ADD_ENTITY_TEXTURE_PROC renderer_addEntityTexture;
 	extern PFN_RENDERER_ADD_ENTITY_GEOMETRY_PROC renderer_addEntityGeometry;
 	extern PFN_RENDERER_END_FRAME_PROC renderer_endFrame;

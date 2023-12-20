@@ -83,6 +83,35 @@ RENDERER_API void renderer_addEntityColor(RenderType renderType,float* modelMatr
     }
 }
 
+RENDERER_API void renderer_addEntityNormal(RenderType renderType, float* modelMatrix, int meshId, float* color) {
+    GL_Pipeline* pipeline = nullptr;
+    Mesh* mesh = nullptr;
+    Mat4* m_modelMatrix = nullptr;
+    switch (renderType) {
+    case NORMAL:
+        pipeline = assetManager->getPipelineManager()->getPipeline("SimpleNormal");
+        if (pipeline == nullptr) {
+            LOGGER->error("Failed to find pipeline.");
+        }
+        mesh = assetManager->getMeshManager()->getMesh(meshId);
+        if (mesh == nullptr) {
+            LOGGER->error("Failed to find mesh.");
+        }
+        pipeline->bind();
+        pipeline->loadUniform("color", color[0], color[1], color[2]);
+        m_modelMatrix = new Mat4(modelMatrix);
+        pipeline->loadUniform("modelMatrix", m_modelMatrix);
+        pipeline->loadUniform("viewMatrix", m_viewMatrix);
+        pipeline->loadUniform("projectionMatrix", perspectiveProjectionMatrix);
+        pipeline->loadUniform("normal_length",0.05f);
+        mesh->render();
+        pipeline->unbind();
+        break;
+    default:
+        break;
+    }
+}
+
 RENDERER_API void renderer_addEntityGeometry(RenderType renderType, GeometrySettings geometry, float* modelMatrix, int meshId, int numColors, float* colors) {
     GL_Pipeline* pipeline = nullptr;
     Mesh* mesh = nullptr;

@@ -34,7 +34,8 @@ project "Engine"
 		"%{IncludeDir.WindowSystem}",
 		"%{IncludeDir.RendererBase}",
 		"%{IncludeDir.EventSystem}",
-		"%{IncludeDir.InputSystem}"
+		"%{IncludeDir.InputSystem}",
+		"%{IncludeDir.EntityComponentSystem}"
 	}
 	
 	libdirs 

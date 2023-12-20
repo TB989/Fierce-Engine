@@ -16,6 +16,22 @@ GL_Pipeline::GL_Pipeline(GL_Shader* shader1, GL_Shader* shader2) {
 	CHECK_GL(glGetError(), "Failed to create shader.");
 }
 
+GL_Pipeline::GL_Pipeline(GL_Shader* shader1, GL_Shader* shader2, GL_Shader* shader3) {
+	id = glCreateProgram();
+	CHECK_GL(glGetError(), "Failed to create shader proram.");
+
+	//Attach shaders
+	shaderList.push_back(shader1);
+	glAttachShader(id, shader1->getId());
+	CHECK_GL(glGetError(), "Failed to attach shader.");
+	shaderList.push_back(shader2);
+	glAttachShader(id, shader2->getId());
+	CHECK_GL(glGetError(), "Failed to create shader.");
+	shaderList.push_back(shader3);
+	glAttachShader(id, shader3->getId());
+	CHECK_GL(glGetError(), "Failed to attach shader.");
+}
+
 GL_Pipeline::~GL_Pipeline() {
 	glUseProgram(0);
 	CHECK_GL(glGetError(), "Failed to use program.");

@@ -4,6 +4,7 @@
 PFN_RENDERER_INIT_PROC renderer_init;
 PFN_RENDERER_START_FRAME_PROC renderer_startFrame;
 PFN_RENDERER_ADD_ENTITY_COLOR_PROC renderer_addEntityColor;
+PFN_RENDERER_ADD_ENTITY_NORMAL_PROC renderer_addEntityNormal;
 PFN_RENDERER_ADD_ENTITY_TEXTURE_PROC renderer_addEntityTexture;
 PFN_RENDERER_ADD_ENTITY_GEOMETRY_PROC renderer_addEntityGeometry;
 PFN_RENDERER_END_FRAME_PROC renderer_endFrame;
@@ -31,6 +32,7 @@ void loadAllFunctions(HINSTANCE renderer) {
 	renderer_init = (PFN_RENDERER_INIT_PROC)getFunctionPointer(renderer,"renderer_init");
 	renderer_startFrame = (PFN_RENDERER_START_FRAME_PROC)getFunctionPointer(renderer,"renderer_startFrame");
 	renderer_addEntityColor = (PFN_RENDERER_ADD_ENTITY_COLOR_PROC)getFunctionPointer(renderer, "renderer_addEntityColor");
+	renderer_addEntityNormal = (PFN_RENDERER_ADD_ENTITY_NORMAL_PROC)getFunctionPointer(renderer, "renderer_addEntityNormal");
 	renderer_addEntityTexture = (PFN_RENDERER_ADD_ENTITY_TEXTURE_PROC)getFunctionPointer(renderer, "renderer_addEntityTexture");
 	renderer_addEntityGeometry = (PFN_RENDERER_ADD_ENTITY_GEOMETRY_PROC)getFunctionPointer(renderer, "renderer_addEntityGeometry");
 	renderer_endFrame = (PFN_RENDERER_END_FRAME_PROC)getFunctionPointer(renderer, "renderer_endFrame");

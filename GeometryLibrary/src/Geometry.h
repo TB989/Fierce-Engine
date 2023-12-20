@@ -19,6 +19,22 @@ enum GeometryType {
 	SPHERE
 };
 
+enum NormalMode {
+	NONE,
+
+	POS_X,
+	NEG_X,
+	POS_Y,
+	NEG_Y,
+	POS_Z,
+	NEG_Z,
+
+	CIRCLE_X_Y,
+	CIRCLE_X_Y_INVERTED,
+	CIRCLE_X_Y_90,
+	CIRCLE_X_Y_90_INVERTED,
+};
+
 struct GeometrySettings {
 	GeometryType type;
 	int numPoints;
@@ -32,6 +48,7 @@ public:
 	virtual void getVertices(std::vector<float>& vertices, bool loadTextureCoordinates, bool loadNormals,int numPoints, float angle, float innerRadius,int numRings) = 0;
 	virtual void getIndices(std::vector<unsigned int>& indices, bool loadTextureCoordinates, bool loadNormals, int numPoints, float angle, float innerRadius,int numRings) = 0;
 protected:
+	void addTextureCoordinate(std::vector<float>& vertices, float u, float v);
 	void addTriangleIndices(std::vector<unsigned int>& indices, int i1, int i2, int i3,bool flip);
 	void addQuadIndices(std::vector<unsigned int>& indices, int i1, int i2, int i3, int i4, bool flip);
 	void addCircleIndices(std::vector<unsigned int>& indices, int numPoints, float angle, int center, int start, bool flip);
@@ -41,8 +58,7 @@ protected:
 class Geometry2D:public Geometry{
 protected:
 	void addVertex2D(std::vector<float>& vertices, float x, float y);
-	void addVertex2D(std::vector<float>& vertices, float x, float y,float u, float v);
-	void addCircleVertices2D(std::vector<float>& vertices, bool loadTextureCoordinates, float x, float y, int numPoints, float radius, float angle);
+	void addCircleVertices2D(std::vector<float>& vertices, bool loadTextureCoordinates, int numPoints, float radius, float angle);
 };
 
 class Rectangle2D :public Geometry2D {
@@ -72,8 +88,10 @@ public:
 class Geometry3D :public Geometry {
 protected:
 	void addVertex3D(std::vector<float>& vertices, float x, float y,float z);
-	void addVertex3D(std::vector<float>& vertices, float x, float y, float z, float u, float v);
-	void addCircleVertices3D(std::vector<float>& vertices, bool loadTextureCoordinates, float x, float y,float z, int numPoints, float radius, float angle);
+	void addNormal(std::vector<float>& vertices, NormalMode normalMode,float angle,float z);
+	void addQuadVertices3D(std::vector<float>& vertices, bool loadTextureCoordinates, bool loadNormals, float z1, float z2, int numPoints, float innerRadius, float angle,bool flipNormals);
+	void addTriangleVertices3D(std::vector<float>& vertices, bool loadTextureCoordinates, bool loadNormals, float z1, float z2, int numPoints, float innerRadius, float angle, bool flipNormals);
+	void addCircleVertices3D(std::vector<float>& vertices, bool loadTextureCoordinates, float z, int numPoints, float radius, float angle, NormalMode normalMode,float normalZ);
 };
 
 class Plane3D :public Geometry3D {

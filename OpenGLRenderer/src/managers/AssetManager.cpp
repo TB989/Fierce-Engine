@@ -47,6 +47,21 @@ void AssetManager::loadShaders(){
     shader->create();
     shaderManager->addShader("Shader_Texture.frag", shader);
 
+    shader = new GL_Shader(GL_VERTEX_SHADER);
+    shader->addSourceCode("C:/Users/tmbal/Desktop/Fierce-Engine/OpenGLRenderer/res/shaders/Shader_Normals.vert");
+    shader->create();
+    shaderManager->addShader("Shader_Normal.vert", shader);
+
+    shader = new GL_Shader(GL_GEOMETRY_SHADER);
+    shader->addSourceCode("C:/Users/tmbal/Desktop/Fierce-Engine/OpenGLRenderer/res/shaders/Shader_Normals.geom");
+    shader->create();
+    shaderManager->addShader("Shader_Normal.geom", shader);
+
+    shader = new GL_Shader(GL_FRAGMENT_SHADER);
+    shader->addSourceCode("C:/Users/tmbal/Desktop/Fierce-Engine/OpenGLRenderer/res/shaders/Shader_Normals.frag");
+    shader->create();
+    shaderManager->addShader("Shader_Normal.frag", shader);
+
     LOGGER->info("Done loading shaders.");
 }
 
@@ -112,6 +127,32 @@ void AssetManager::loadPipelines(){
     simpleTexturePipeline3D->addUniformLocation("projectionMatrix");
     simpleTexturePipeline3D->create();
     pipelineManager->addPipeline("SimpleTexture3D", simpleTexturePipeline3D);
+
+    GL_Shader* vertexShaderNormal = shaderManager->getShader("Shader_Normal.vert");
+    GL_Shader* geometryShaderNormal = shaderManager->getShader("Shader_Normal.geom");
+    GL_Shader* fragmentShaderNormal = shaderManager->getShader("Shader_Normal.frag");
+
+    if (vertexShaderNormal == nullptr) {
+        LOGGER->error("Failed to find vertex shader.");
+        return;
+    }
+    if (geometryShaderNormal == nullptr) {
+        LOGGER->error("Failed to find geometry shader.");
+        return;
+    }
+    if (fragmentShaderNormal == nullptr) {
+        LOGGER->error("Failed to find fragment shader.");
+        return;
+    }
+
+    GL_Pipeline* simpleNormalPipeline = new GL_Pipeline(vertexShaderNormal, geometryShaderNormal, fragmentShaderNormal);
+    simpleNormalPipeline->addUniformLocation("modelMatrix");
+    simpleNormalPipeline->addUniformLocation("viewMatrix");
+    simpleNormalPipeline->addUniformLocation("projectionMatrix");
+    simpleNormalPipeline->addUniformLocation("color");
+    simpleNormalPipeline->addUniformLocation("normal_length");
+    simpleNormalPipeline->create();
+    pipelineManager->addPipeline("SimpleNormal", simpleNormalPipeline);
 
     LOGGER->info("Done loading pipelines.");
 }
