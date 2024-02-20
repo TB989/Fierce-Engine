@@ -16,8 +16,8 @@ public:
 	void destroyEntity(Entity entity) { entityManager->destroyEntity(entity); }
 
 	template<typename T>
-	void addComponent(Entity entity, T component) { 
-		componentManager->addComponent<T>(entity, component); 
+	void addComponent(Entity entity, T component) {
+		componentManager->addComponent<T>(entity, component);
 	}
 
 	template<typename T>

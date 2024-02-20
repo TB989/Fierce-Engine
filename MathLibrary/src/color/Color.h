@@ -23,7 +23,7 @@ public:
 	void setG(float g) { G = g; }
 	void setB(float b) { B = b; }
 private:
-	float* c=nullptr;
+	float c[];
 };
 
 class Color4f {

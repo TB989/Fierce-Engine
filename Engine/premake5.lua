@@ -35,7 +35,8 @@ project "Engine"
 		"%{IncludeDir.RendererBase}",
 		"%{IncludeDir.EventSystem}",
 		"%{IncludeDir.InputSystem}",
-		"%{IncludeDir.EntityComponentSystem}"
+		"%{IncludeDir.EntityComponentSystem}",
+		"%{wks.location}/external/entt/src/entt"
 	}
 	
 	libdirs 

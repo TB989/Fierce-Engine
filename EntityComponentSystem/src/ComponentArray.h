@@ -25,7 +25,7 @@ public:
 		delete[] components;
 	}
 
-	void insertComponent(Entity entity, T component){
+	void insertComponent(Entity entity, T& component){
 
 		LOGGER123->error("Start of insert comp");
 
@@ -73,7 +73,7 @@ public:
 		pointer--;
 	}
 
-	T& getComponent(Entity entity){
+	T* getComponent(Entity entity){
 		if (entityToIndexMap.find(entity) == entityToIndexMap.end()) {
 			LOGGER123->warn("Component does not exist for entity %i.", entity);
 			return T();

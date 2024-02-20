@@ -3,7 +3,6 @@
 #include "src/utils/Logging.h"
 
 Color3f::Color3f(float r, float g, float b) {
-	LOGGER124->warn("Calling 3f constructor.");
 	c = new float[3];
 	R = r;
 	G = g;
@@ -11,7 +10,6 @@ Color3f::Color3f(float r, float g, float b) {
 }
 
 Color3f::Color3f(float* values) {
-	LOGGER124->warn("Calling float* constructor.");
 	c = new float[3];
 	R = values[0];
 	G = values[1];
@@ -19,7 +17,6 @@ Color3f::Color3f(float* values) {
 }
 
 Color3f::Color3f() {
-	LOGGER124->warn("Calling empty constructor.");
 	c = new float[3];
 	R = 0.0f;
 	G = 0.0f;
@@ -27,8 +24,7 @@ Color3f::Color3f() {
 }
 
 Color3f::~Color3f() {
-	LOGGER124->warn("Calling delete.");
-	//delete[] c;
+	delete[] c;
 }
 
 Color4f::Color4f(float r, float g, float b, float a) {

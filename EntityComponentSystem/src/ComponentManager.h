@@ -47,7 +47,7 @@ public:
 	}
 
 	template<typename T>
-	void addComponent(Entity entity, T component){
+	void addComponent(Entity entity, T& component){
 		LOGGER123->warn("Start of add comp");
 		const char* typeName = typeid(T).name();
 		if (m_componentArrays.find(typeName) == m_componentArrays.end()) {
@@ -71,7 +71,7 @@ public:
 	}
 
 	template<typename T>
-	T& getComponent(Entity entity){
+	T* getComponent(Entity entity){
 		const char* typeName = typeid(T).name();
 
 		if (m_componentArrays.find(typeName) == m_componentArrays.end()) {

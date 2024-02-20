@@ -96,7 +96,5 @@ private:
 
 	GeometryLoader* loader;
 
-	//Entities
-	Entity planeColored;
-	Entity planeTexture;
+	int planeColored;
 };

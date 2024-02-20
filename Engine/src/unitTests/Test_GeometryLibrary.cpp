@@ -77,36 +77,29 @@ void Test_GeometryLibrary::init(World* world) {
 	//eventSystem->addListener(this, &Test_GeometryLibrary::onKeyDown);
 	//eventSystem->addListener(this, &Test_GeometryLibrary::onMouseMoved);
 
-	LOGGER->error("Start init");
 	setupCamera();
 	loadTextures();
 	addActions();
 	setProjectionMatrices();
 
-	Mat4 matrix;
-
+	//Colored rectangle
 	planeColored = world->createEntity();
-	//world->addComponent(planeColored, GeometrySettings{RECTANGLE,0,0.0f,0.0f,0});
-	//world->addComponent(planeColored, MeshSettings{true,false,true,false});
+	world->addComponent<GeometrySettings>(planeColored, GeometrySettings{ RECTANGLE,0,0.0f,0.0f,0 });
+	world->addComponent<MeshSettings>(planeColored, MeshSettings{ true,false,true,false });
+	world->addComponent<Color3f>(planeColored, Color3f(0.0f, 1.0f, 0.0f));
+	/**Mat4 rectangle_modelMatrixColor = Mat4();
+	rectangle_modelMatrixColor.scale(100.0f, 100.0f, 0.0f);
+	rectangle_modelMatrixColor.translate(10.0f, 10.0f, 0.0f);
+	world->addComponent<Mat4>(planeColored, rectangle_modelMatrixColor);*/
 
-	Color3f tempColor = { 0.0f, 1.0f, 0.0f };
-	LOGGER->error("Before add");
-	world->addComponent(planeColored, tempColor);
-
-	matrix = Mat4();
-	matrix.scale(100.0f, 100.0f, 0.0f);
-	matrix.translate(10.0f, 10.0f, 0.0f);
-	//world->addComponent(planeColored, matrix);
-
-	world->removeComponent<GeometrySettings>(planeColored);
-	world->removeComponent<MeshSettings>(planeColored);
-	world->removeComponent<Mat4>(planeColored);
-	world->removeComponent<Color3f>(planeColored);
-	world->destroyEntity(planeColored);
-
-
-	LOGGER->error("End of init");
-
+	//Textured rectangle
+	/**planeTexture = world->createEntity();
+	world->addComponent<GeometrySettings>(planeTexture, RECTANGLE, 0, 0.0f, 0.0f, 0);
+	world->addComponent<MeshSettings>(planeTexture, true, false, true, false);
+	Mat4 rectangle_modelMatrixTexture = Mat4();
+	rectangle_modelMatrixTexture.scale(100.0f, 100.0f, 0.0f);
+	rectangle_modelMatrixTexture.translate(10.0f, 120.0f, 0.0f);
+	world->addComponent<Mat4>(planeTexture, rectangle_modelMatrixTexture);/*
 
 	/**loader = new GeometryLoader();
 
