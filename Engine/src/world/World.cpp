@@ -1,23 +1,33 @@
 #include "World.h"
 
+#include "MathLibrary.h"
 #include "GeometryLibrary.h"
 #include "RendererBase.h"
-#include "MathLibrary.h"
+#include "src/camera/Camera.h"
 
 World::World() {
-	//Init ECS
-	entityManager = new EntityManager(50);
-	componentManager = new ComponentManager();
-	componentManager->registerComponent<GeometrySettings>(50);
-	componentManager->registerComponent<MeshSettings>(50);
-	componentManager->registerComponent<Color3f>(1);
+	ecs = new ECS();
+	ecs->registerComponent<GeometrySettings>(0);
+	ecs->registerComponent<MeshSettings>(1);
+	ecs->registerComponent<Color3f>(2);
+	ecs->registerComponent<Transform2D>(3);
+	ecs->registerComponent<Transform3D>(4);
+	ecs->registerComponent<Camera>(5);
+
+	loader = new GeometryLoaderSystem();
+	ecs->registerSystem<GeometryLoaderSystem>(loader);
+	ecs->systemAddComponent<GeometryLoaderSystem, GeometrySettings>();
+	ecs->systemAddComponent<GeometryLoaderSystem, MeshSettings>();
 }
 
 World::~World() {
-	//Delete ECS
-	componentManager->unregisterComponent<GeometrySettings>();
-	componentManager->unregisterComponent<MeshSettings>();
-	componentManager->unregisterComponent<Color3f>();
-	delete componentManager;
-	delete entityManager;
+	ecs->unregisterSystem<GeometryLoaderSystem>();
+
+	ecs->unregisterComponent<GeometrySettings>();
+	ecs->unregisterComponent<MeshSettings>();
+	ecs->unregisterComponent<Color3f>();
+	ecs->unregisterComponent<Transform2D>();
+	ecs->unregisterComponent<Transform3D>();
+	ecs->unregisterComponent<Camera>();
+	delete ecs;
 }

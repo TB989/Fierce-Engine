@@ -8,6 +8,8 @@
 #include "src/actions/Action_MoveForward.h"
 #include "src/actions/Action_MoveBackward.h"
 
+#include "src/system/geometryLoader/GeometryLoaderSystem.h"
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "src/io/textures/stb_image.h"
 
@@ -73,179 +75,196 @@ Test_GeometryLibrary::Test_GeometryLibrary() {
 	
 }
 
+void Test_GeometryLibrary::loadEntities2D(World* world) {
+	ArchetypeId archetypeId;
+	Archetype* archetype;
+
+	//####### Colored 2D ###########
+	archetypeId = ECS::IdGenerator<GeometrySettings, MeshSettings, Color3f, Transform2D>::getArchetypeId();
+
+	//Colored rectangle
+	rectangleColored = world->ecs->createEntity(archetypeId);
+	archetype = world->ecs->getOrCreateArchetype(rectangleColored, archetypeId);
+	archetype->addComponent(rectangleColored, GeometrySettings{ RECTANGLE,0,0.0f,0.0f,0 });
+	archetype->addComponent(rectangleColored, MeshSettings{ true,false,true,false });
+	archetype->addComponent(rectangleColored, Color3f(0.0f, 1.0f, 0.0f));
+	archetype->addComponent(rectangleColored, Transform2D(10.0f, 10.0f, 100.0f, 100.0f, 0.0f));
+
+	//Colored circle
+	circleColored = world->ecs->createEntity(archetypeId);
+	archetype = world->ecs->getOrCreateArchetype(circleColored, archetypeId);
+	archetype->addComponent(circleColored, GeometrySettings{ CIRCLE,5,360.0f,0.0f,0 });
+	archetype->addComponent(circleColored, MeshSettings{ true,false,true,false });
+	archetype->addComponent(circleColored, Color3f(1.0f, 0.0f, 0.0f));
+	archetype->addComponent(circleColored, Transform2D(120.0f, 10.0f, 100.0f, 100.0f, 0.0f));
+
+	//Colored triangle
+	triangleColored = world->ecs->createEntity(archetypeId);
+	archetype = world->ecs->getOrCreateArchetype(triangleColored, archetypeId);
+	archetype->addComponent(triangleColored, GeometrySettings{ TRIANGLE,0,0.0f,0.0f,0 });
+	archetype->addComponent(triangleColored, MeshSettings{ true,false,true,false });
+	archetype->addComponent(triangleColored, Color3f(1.0f, 0.0f, 1.0f));
+	archetype->addComponent(triangleColored, Transform2D(230.0f, 10.0f, 100.0f, 100.0f, 0.0f));
+
+	//Colored circle ring
+	circleRingColored = world->ecs->createEntity(archetypeId);
+	archetype = world->ecs->getOrCreateArchetype(circleRingColored, archetypeId);
+	archetype->addComponent(circleRingColored, GeometrySettings{ CIRCLE_RING,32,360.0f,0.1f,0 });
+	archetype->addComponent(circleRingColored, MeshSettings{ true,false,true,false });
+	archetype->addComponent(circleRingColored, Color3f(1.0f, 1.0f, 0.0f));
+	archetype->addComponent(circleRingColored, Transform2D(340.0f, 10.0f, 100.0f, 100.0f, 0.0f));
+
+	//####### Textured 2D ###########
+	archetypeId = ECS::IdGenerator<GeometrySettings, MeshSettings, Transform2D>::getArchetypeId();
+
+	//Textured rectangle
+	rectangleTextured = world->ecs->createEntity(archetypeId);
+	archetype = world->ecs->getOrCreateArchetype(rectangleTextured, archetypeId);
+	archetype->addComponent(rectangleTextured, GeometrySettings{ RECTANGLE,0,0.0f,0.0f,0 });
+	archetype->addComponent(rectangleTextured, MeshSettings{ true,false,true,false });
+	archetype->addComponent(rectangleTextured, Transform2D(10.0f, 120.0f, 100.0f, 100.0f, 0.0f));
+
+	//Textured circle
+	circleTextured = world->ecs->createEntity(archetypeId);
+	archetype = world->ecs->getOrCreateArchetype(circleTextured, archetypeId);
+	archetype->addComponent(circleTextured, GeometrySettings{ CIRCLE,5,360.0f,0.0f,0 });
+	archetype->addComponent(circleTextured, MeshSettings{ true,false,true,false });
+	archetype->addComponent(circleTextured, Transform2D(120.0f, 120.0f, 100.0f, 100.0f, 0.0f));
+
+	//Textured triangle
+	triangleTextured = world->ecs->createEntity(archetypeId);
+	archetype = world->ecs->getOrCreateArchetype(triangleTextured, archetypeId);
+	archetype->addComponent(triangleTextured, GeometrySettings{ TRIANGLE,0,0.0f,0.0f,0 });
+	archetype->addComponent(triangleTextured, MeshSettings{ true,false,true,false });
+	archetype->addComponent(triangleTextured, Transform2D(230.0f, 120.0f, 100.0f, 100.0f, 0.0f));
+
+	//Textured circle ring
+	circleRingTextured = world->ecs->createEntity(archetypeId);
+	archetype = world->ecs->getOrCreateArchetype(circleRingTextured, archetypeId);
+	archetype->addComponent(circleRingTextured, GeometrySettings{ CIRCLE_RING,32,360.0f,0.1f,0 });
+	archetype->addComponent(circleRingTextured, MeshSettings{ true,false,true,false });
+	archetype->addComponent(circleRingTextured, Transform2D(340.0f, 120.0f, 100.0f, 100.0f, 0.0f));
+}
+
+void Test_GeometryLibrary::loadEntities3D(World* world) {
+	ArchetypeId archetypeId;
+	Archetype* archetype;
+
+	//####### Colored 3D ###########
+	archetypeId = ECS::IdGenerator<GeometrySettings, MeshSettings, Color3f, Transform3D>::getArchetypeId();
+
+	//Colored plane
+	planeColored = world->ecs->createEntity(archetypeId);
+	archetype = world->ecs->getOrCreateArchetype(planeColored, archetypeId);
+	archetype->addComponent(planeColored, GeometrySettings{ PLANE,0,0.0f,0.0f,0 });
+	archetype->addComponent(planeColored, MeshSettings{ false,false,true,true });
+	archetype->addComponent(planeColored, Color3f(1.0f, 1.0f, 1.0f));
+	archetype->addComponent(planeColored, Transform3D(0.0f, -2.0f, 0.0f, 1000.0f, 1.0f, 1000.0f,0.0f, 0.0f, 0.0f));
+
+	//Colored cube
+	cubeColored = world->ecs->createEntity(archetypeId);
+	archetype = world->ecs->getOrCreateArchetype(cubeColored, archetypeId);
+	archetype->addComponent(cubeColored, GeometrySettings{ CUBE,0,0.0f,0.0f,0 });
+	archetype->addComponent(cubeColored, MeshSettings{ false,false,true,true });
+	archetype->addComponent(cubeColored, Color3f(1.0f, 0.0f, 0.0f));
+	archetype->addComponent(cubeColored, Transform3D(0.0f, 0.0f, -10.0f, 2.0f, 2.0f, 2.0f, 0.0f, 0.0f, 0.0f));
+
+	//Colored cylinder
+	cylinderColored = world->ecs->createEntity(archetypeId);
+	archetype = world->ecs->getOrCreateArchetype(cylinderColored, archetypeId);
+	archetype->addComponent(cylinderColored, GeometrySettings{ CYLINDER,16,260.0f,0.0f,0 });
+	archetype->addComponent(cylinderColored, MeshSettings{ false,false,true,true });
+	archetype->addComponent(cylinderColored, Color3f(1.0f, 0.0f, 0.0f));
+	archetype->addComponent(cylinderColored, Transform3D(5.0f, 0.0f, -10.0f, 2.0f, 2.0f, 2.0f, 0.0f, 0.0f, 0.0f));
+
+	//Colored hollow cylinder
+	hollowCylinderColored = world->ecs->createEntity(archetypeId);
+	archetype = world->ecs->getOrCreateArchetype(hollowCylinderColored, archetypeId);
+	archetype->addComponent(hollowCylinderColored, GeometrySettings{ HOLLOW_CYLINDER,16,260.0f,0.1f,0 });
+	archetype->addComponent(hollowCylinderColored, MeshSettings{ false,false,true,true });
+	archetype->addComponent(hollowCylinderColored, Color3f(1.0f, 0.0f, 0.0f));
+	archetype->addComponent(hollowCylinderColored, Transform3D(10.0f, 0.0f, -10.0f, 2.0f, 2.0f, 2.0f, 0.0f, 0.0f, 0.0f));
+
+	//Colored cone
+	coneColored = world->ecs->createEntity(archetypeId);
+	archetype = world->ecs->getOrCreateArchetype(coneColored, archetypeId);
+	archetype->addComponent(coneColored, GeometrySettings{ CONE,16,260.0f,0.0f,0 });
+	archetype->addComponent(coneColored, MeshSettings{ false,false,true,true });
+	archetype->addComponent(coneColored, Color3f(1.0f, 0.0f, 0.0f));
+	archetype->addComponent(coneColored, Transform3D(-5.0f, 0.0f, -10.0f, 2.0f, 2.0f, 2.0f, 0.0f, 0.0f, 0.0f));
+
+	//Colored sphere
+	sphereColored = world->ecs->createEntity(archetypeId);
+	archetype = world->ecs->getOrCreateArchetype(sphereColored, archetypeId);
+	archetype->addComponent(sphereColored, GeometrySettings{ SPHERE,32,260.0f,0.0f,16 });
+	archetype->addComponent(sphereColored, MeshSettings{ false,false,true,true });
+	archetype->addComponent(sphereColored, Color3f(1.0f, 0.0f, 0.0f));
+	archetype->addComponent(sphereColored, Transform3D(-10.0f, 0.0f, -10.0f, 2.0f, 2.0f, 2.0f, 0.0f, 0.0f, 0.0f));
+
+	//####### Textured 3D ###########
+	archetypeId = ECS::IdGenerator<GeometrySettings, MeshSettings, Transform3D>::getArchetypeId();
+
+	//Textured plane
+	planeTextured = world->ecs->createEntity(archetypeId);
+	archetype = world->ecs->getOrCreateArchetype(planeTextured, archetypeId);
+	archetype->addComponent(planeTextured, GeometrySettings{ PLANE,0,0.0f,0.0f,0 });
+	archetype->addComponent(planeTextured, MeshSettings{ false,false,true,true });
+	archetype->addComponent(planeTextured, Transform3D(0.0f, -2.0f, 5.0f, 10.0f, 1.0f, 10.0f, 0.0f, 0.0f, 0.0f));
+
+	//Textured cube
+	cubeTextured = world->ecs->createEntity(archetypeId);
+	archetype = world->ecs->getOrCreateArchetype(cubeTextured, archetypeId);
+	archetype->addComponent(cubeTextured, GeometrySettings{ CUBE,0,0.0f,0.0f,0 });
+	archetype->addComponent(cubeTextured, MeshSettings{ false,false,true,true });
+	archetype->addComponent(cubeTextured, Transform3D(0.0f, 0.0f, -15.0f, 2.0f, 2.0f, 2.0f, 0.0f, 0.0f, 0.0f));
+
+	//Textured cylinder
+	cylinderTextured = world->ecs->createEntity(archetypeId);
+	archetype = world->ecs->getOrCreateArchetype(cylinderTextured, archetypeId);
+	archetype->addComponent(cylinderTextured, GeometrySettings{ CYLINDER,16,260.0f,0.0f,0 });
+	archetype->addComponent(cylinderTextured, MeshSettings{ false,false,true,true });
+	archetype->addComponent(cylinderTextured, Transform3D(5.0f, 0.0f, -15.0f, 2.0f, 2.0f, 2.0f, 0.0f, 0.0f, 0.0f));
+
+	//Textured hollow cylinder
+	hollowCylinderTextured = world->ecs->createEntity(archetypeId);
+	archetype = world->ecs->getOrCreateArchetype(hollowCylinderTextured, archetypeId);
+	archetype->addComponent(hollowCylinderTextured, GeometrySettings{ HOLLOW_CYLINDER,16,260.0f,0.1f,0 });
+	archetype->addComponent(hollowCylinderTextured, MeshSettings{ false,false,true,true });
+	archetype->addComponent(hollowCylinderTextured, Transform3D(10.0f, 0.0f, -15.0f, 2.0f, 2.0f, 2.0f, 0.0f, 0.0f, 0.0f));
+
+	//Textured cone
+	coneTextured = world->ecs->createEntity(archetypeId);
+	archetype = world->ecs->getOrCreateArchetype(coneTextured, archetypeId);
+	archetype->addComponent(coneTextured, GeometrySettings{ CONE,16,260.0f,0.0f,0 });
+	archetype->addComponent(coneTextured, MeshSettings{ false,false,true,true });
+	archetype->addComponent(coneTextured, Transform3D(-5.0f, 0.0f, -15.0f, 2.0f, 2.0f, 2.0f, 0.0f, 0.0f, 0.0f));
+
+	//Textured sphere
+	sphereTextured = world->ecs->createEntity(archetypeId);
+	archetype = world->ecs->getOrCreateArchetype(sphereTextured, archetypeId);
+	archetype->addComponent(sphereTextured, GeometrySettings{ SPHERE,32,260.0f,0.0f,16 });
+	archetype->addComponent(sphereTextured, MeshSettings{ false,false,true,true });
+	archetype->addComponent(sphereTextured, Transform3D(-10.0f, 0.0f, -15.0f, 2.0f, 2.0f, 2.0f, 0.0f, 0.0f, 0.0f));
+}
+
 void Test_GeometryLibrary::init(World* world) {
+	logger = new Logger("MAIN");
+
 	//eventSystem->addListener(this, &Test_GeometryLibrary::onKeyDown);
 	//eventSystem->addListener(this, &Test_GeometryLibrary::onMouseMoved);
 
-	setupCamera();
 	loadTextures();
-	addActions();
-	setProjectionMatrices();
 
-	//Colored rectangle
-	planeColored = world->createEntity();
-	world->addComponent<GeometrySettings>(planeColored, GeometrySettings{ RECTANGLE,0,0.0f,0.0f,0 });
-	world->addComponent<MeshSettings>(planeColored, MeshSettings{ true,false,true,false });
-	world->addComponent<Color3f>(planeColored, Color3f(0.0f, 1.0f, 0.0f));
-	/**Mat4 rectangle_modelMatrixColor = Mat4();
-	rectangle_modelMatrixColor.scale(100.0f, 100.0f, 0.0f);
-	rectangle_modelMatrixColor.translate(10.0f, 10.0f, 0.0f);
-	world->addComponent<Mat4>(planeColored, rectangle_modelMatrixColor);*/
+	setupCamera(world);
+	setProjectionMatrices(world);
+	addActions(world);
 
-	//Textured rectangle
-	/**planeTexture = world->createEntity();
-	world->addComponent<GeometrySettings>(planeTexture, RECTANGLE, 0, 0.0f, 0.0f, 0);
-	world->addComponent<MeshSettings>(planeTexture, true, false, true, false);
-	Mat4 rectangle_modelMatrixTexture = Mat4();
-	rectangle_modelMatrixTexture.scale(100.0f, 100.0f, 0.0f);
-	rectangle_modelMatrixTexture.translate(10.0f, 120.0f, 0.0f);
-	world->addComponent<Mat4>(planeTexture, rectangle_modelMatrixTexture);/*
+	loadEntities2D(world);
+	loadEntities3D(world);
+	world->loader->process();
+	world->ecs->print();
 
-	/**loader = new GeometryLoader();
-
-	loader->registerGeometry(RECTANGLE, new Rectangle2D());
-	loader->registerGeometry(TRIANGLE, new Triangle2D());
-	loader->registerGeometry(CIRCLE, new Circle2D());
-	loader->registerGeometry(CIRCLE_RING, new CircleRing2D());
-
-	loader->registerGeometry(PLANE, new Plane3D());
-	loader->registerGeometry(CUBE, new Cube3D());
-	loader->registerGeometry(CONE, new Cone3D());
-	loader->registerGeometry(CYLINDER, new Cylinder3D());
-	loader->registerGeometry(HOLLOW_CYLINDER, new HollowCylinder3D());
-	loader->registerGeometry(SPHERE, new Sphere3D());
-
-	std::vector<float> vertices;
-	std::vector<unsigned int> indices;
-
-	loader->loadGeometry(GeometrySettings{ RECTANGLE,0,0.0f,0.0f,0 }, true,false,vertices, indices);
-	rectangle_meshId = renderer_loadMesh(MeshSettings{true,false,true,false}, vertices.size(), vertices.data(), indices.size(), indices.data());
-	rectangle_color = new Color3f(0.0f, 1.0f, 0.0f);
-	rectangle_modelMatrix = new Mat4();
-	rectangle_modelMatrix->scale(100.0f, 100.0f, 0.0f);
-	rectangle_modelMatrix->translate(10.0f, 10.0f, 0.0f);
-	rectangle_modelMatrixTexture = new Mat4();
-	rectangle_modelMatrixTexture->scale(100.0f, 100.0f,0.0f);
-	rectangle_modelMatrixTexture->translate(10.0f, 120.0f, 0.0f);
-
-	vertices.clear();
-	indices.clear();
-
-	loader->loadGeometry(GeometrySettings{ CIRCLE,5,360.0f,0.0f,0 }, true,false,vertices, indices);
-	circle_meshId = renderer_loadMesh(MeshSettings{ true,false,true,false }, vertices.size(), vertices.data(), indices.size(), indices.data());
-	circle_color = new Color3f(1.0f, 0.0f, 0.0f);
-	circle_modelMatrix = new Mat4();
-	circle_modelMatrix->scale(100.0f, 100.0f, 0.0f);
-	circle_modelMatrix->translate(120.0f, 10.0f, 0.0f);
-	circle_modelMatrixTexture = new Mat4();
-	circle_modelMatrixTexture->scale(100.0f, 100.0f, 0.0f);
-	circle_modelMatrixTexture->translate(120.0f, 120.0f, 0.0f);
-
-	vertices.clear();
-	indices.clear();
-
-	loader->loadGeometry(GeometrySettings{ TRIANGLE,0,0.0f,0.0f,0 }, true,false,vertices, indices);
-	triangle_meshId = renderer_loadMesh(MeshSettings{ true,false,true,false }, vertices.size(), vertices.data(), indices.size(), indices.data());
-	triangle_color = new Color3f(1.0f, 0.0f, 1.0f);
-	triangle_modelMatrix = new Mat4();
-	triangle_modelMatrix->scale(100.0f, 100.0f, 0.0f);
-	triangle_modelMatrix->translate(230.0f, 10.0f, 0.0f);
-	triangle_modelMatrixTexture = new Mat4();
-	triangle_modelMatrixTexture->scale(100.0f, 100.0f, 0.0f);
-	triangle_modelMatrixTexture->translate(230.0f, 120.0f, 0.0f);
-
-	vertices.clear();
-	indices.clear();
-
-	loader->loadGeometry(GeometrySettings{ CIRCLE_RING,32,360.0f,0.1f,0 }, true,false,vertices, indices);
-	circleRing_meshId = renderer_loadMesh(MeshSettings{ true,false,true,false }, vertices.size(), vertices.data(), indices.size(), indices.data());
-	circleRing_color = new Color3f(1.0f, 1.0f, 0.0f);
-	circleRing_modelMatrix = new Mat4();
-	circleRing_modelMatrix->scale(100.0f, 100.0f, 0.0f);
-	circleRing_modelMatrix->translate(340.0f, 10.0f, 0.0f);
-	circleRing_modelMatrixTexture = new Mat4();
-	circleRing_modelMatrixTexture->scale(100.0f, 100.0f, 0.0f);
-	circleRing_modelMatrixTexture->translate(340.0f, 120.0f, 0.0f);
-
-	vertices.clear();
-	indices.clear();
-
-	loader->loadGeometry(GeometrySettings{ PLANE,0,0.0f,0.0f,0 }, true,true,vertices, indices);
-	plane_meshId = renderer_loadMesh(MeshSettings{ false,false,true,true }, vertices.size(), vertices.data(), indices.size(), indices.data());
-	plane_color = new Color3f(1.0f, 1.0f, 1.0f);
-	plane_modelMatrix = new Mat4();
-	plane_modelMatrix->scale(1000.0f, 1.0f, 1000.0f);
-	plane_modelMatrix->translate(0.0f, -2.0f, 0.0f);
-	plane_modelMatrixTexture = new Mat4();
-	plane_modelMatrixTexture->scale(10.0f, 1.0f, 10.0f);
-	plane_modelMatrixTexture->translate(0.0f, -2.0f, 5.0f);
-
-	vertices.clear();
-	indices.clear();
-
-	loader->loadGeometry(GeometrySettings{ CUBE,0,0.0f,0.0f,0 }, true,true,vertices, indices);
-	cube_meshId = renderer_loadMesh(MeshSettings{ false,false,true,true }, vertices.size(), vertices.data(), indices.size(), indices.data());
-	cube_color = new Color3f(1.0f, 0.0f, 0.0f);
-	cube_modelMatrix = new Mat4();
-	cube_modelMatrix->scale(2.0f, 2.0f, 2.0f);
-	cube_modelMatrix->translate(0.0f, 0.0f, -10.0f);
-	cube_modelMatrixTexture = new Mat4();
-	cube_modelMatrixTexture->scale(2.0f, 2.0f, 2.0f);
-	cube_modelMatrixTexture->translate(0.0f, 0.0f, -15.0f);
-
-	vertices.clear();
-	indices.clear();
-
-	loader->loadGeometry(GeometrySettings{ CYLINDER,16,260.0f,0.0f,0 }, true, true, vertices, indices);
-	cylinder_meshId = renderer_loadMesh(MeshSettings{ false,false,true,true }, vertices.size(), vertices.data(), indices.size(), indices.data());
-	cylinder_color = new Color3f(1.0f, 0.0f, 0.0f);
-	cylinder_modelMatrix = new Mat4();
-	cylinder_modelMatrix->scale(2.0f, 2.0f, 2.0f);
-	cylinder_modelMatrix->translate(5.0f, 0.0f, -10.0f);
-	cylinder_modelMatrixTexture = new Mat4();
-	cylinder_modelMatrixTexture->scale(2.0f, 2.0f, 2.0f);
-	cylinder_modelMatrixTexture->translate(5.0f, 0.0f, -15.0f);
-
-	vertices.clear();
-	indices.clear();
-
-	loader->loadGeometry(GeometrySettings{ HOLLOW_CYLINDER,16,260.0f,0.1f,0 }, true, true, vertices, indices);
-	hollowCylinder_meshId = renderer_loadMesh(MeshSettings{ false,false,true,true }, vertices.size(), vertices.data(), indices.size(), indices.data());
-	hollowCylinder_color = new Color3f(1.0f, 0.0f, 0.0f);
-	hollowCylinder_modelMatrix = new Mat4();
-	hollowCylinder_modelMatrix->scale(2.0f, 2.0f, 2.0f);
-	hollowCylinder_modelMatrix->translate(10.0f, 0.0f, -10.0f);
-	hollowCylinder_modelMatrixTexture = new Mat4();
-	hollowCylinder_modelMatrixTexture->scale(2.0f, 2.0f, 2.0f);
-	hollowCylinder_modelMatrixTexture->translate(10.0f, 0.0f, -15.0f);
-
-	vertices.clear();
-	indices.clear();
-
-	loader->loadGeometry(GeometrySettings{ CONE,16,260.0f,0.0f,0 }, true, true, vertices, indices);
-	cone_meshId = renderer_loadMesh(MeshSettings{ false,false,true,true }, vertices.size(), vertices.data(), indices.size(), indices.data());
-	cone_color = new Color3f(1.0f, 0.0f, 0.0f);
-	cone_modelMatrix = new Mat4();
-	cone_modelMatrix->scale(2.0f, 2.0f, 2.0f);
-	cone_modelMatrix->translate(-5.0f, 0.0f, -10.0f);
-	cone_modelMatrixTexture = new Mat4();
-	cone_modelMatrixTexture->scale(2.0f, 2.0f, 2.0f);
-	cone_modelMatrixTexture->translate(-5.0f, 0.0f, -15.0f);
-
-	vertices.clear();
-	indices.clear();
-
-	loader->loadGeometry(GeometrySettings{ SPHERE,32,260.0f,0.0f,16 }, true, true, vertices, indices);
-	sphere_meshId = renderer_loadMesh(MeshSettings{ false,false,true,true }, vertices.size(), vertices.data(), indices.size(), indices.data());
-	sphere_color = new Color3f(1.0f, 0.0f, 0.0f);
-	sphere_modelMatrix = new Mat4();
-	sphere_modelMatrix->scale(2.0f, 2.0f, 2.0f);
-	sphere_modelMatrix->translate(-10.0f, 0.0f, -10.0f);
-	sphere_modelMatrixTexture = new Mat4();
-	sphere_modelMatrixTexture->scale(2.0f, 2.0f, 2.0f);
-	sphere_modelMatrixTexture->translate(-10.0f, 0.0f, -15.0f);
-
-	normal_color = new Color3f(1.0f,0.0f,0.0f);*/
+	normal_color = new Color3f(1.0f, 0.0f, 0.0f);
 }
 
 void Test_GeometryLibrary::update() {
@@ -299,24 +318,19 @@ void Test_GeometryLibrary::doRender() {
 }
 
 void Test_GeometryLibrary::cleanUp() {
-	/**loader->unregisterGeometry(RECTANGLE);
-	loader->unregisterGeometry(TRIANGLE);
-	loader->unregisterGeometry(CIRCLE);
-	loader->unregisterGeometry(CIRCLE_RING);
-
-	loader->unregisterGeometry(PLANE);
-	loader->unregisterGeometry(CUBE);
-	loader->unregisterGeometry(CONE);
-	loader->unregisterGeometry(CYLINDER);
-	loader->unregisterGeometry(HOLLOW_CYLINDER);
-	loader->unregisterGeometry(SPHERE);
-
-	delete loader;*/
+	delete logger;
 }
 
-void Test_GeometryLibrary::setupCamera(){
-	camera = new Transform3D();
-	camera->getPosition()->setY(2.0f);
+void Test_GeometryLibrary::setupCamera(World* world){
+	ArchetypeId archetypeId;
+	Archetype* archetype;
+	archetypeId = ECS::IdGenerator<Transform3D,Camera>::getArchetypeId();
+
+	//Camera
+	camera = world->ecs->createEntity(archetypeId);
+	archetype = world->ecs->getOrCreateArchetype(camera, archetypeId);
+	archetype->addComponent(camera, Transform3D(0.0f, 2.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f));
+	archetype->addComponent(camera, Camera((float)window->getWidth(), (float)window->getHeight(),60.0f,-1.0f,1.0f,0.1f,1000.0f));
 }
 
 void Test_GeometryLibrary::loadTextures(){
@@ -327,15 +341,17 @@ void Test_GeometryLibrary::loadTextures(){
 	textureFloor = renderer_loadTexture(width, height, data2);
 }
 
-void Test_GeometryLibrary::addActions(){
+void Test_GeometryLibrary::addActions(World* world){
 	inputSystem->addAction(MAPPING::KEY_ESC, new Action_StopEngine(this));
-	inputSystem->addAction(MAPPING::MOUSE_AXIS_LR, new Action_LookRightLeft(camera, 0.3f));
-	inputSystem->addAction(MAPPING::MOUSE_AXIS_UD, new Action_LookUpDown(camera, 0.3f));
-	inputSystem->addAction(MAPPING::KEY_W, new Action_MoveForward(camera, 0.3f));
-	inputSystem->addAction(MAPPING::KEY_S, new Action_MoveBackward(camera, 0.3f));
+	inputSystem->addAction(MAPPING::MOUSE_AXIS_LR, new Action_LookRightLeft(world,camera, 0.3f));
+	inputSystem->addAction(MAPPING::MOUSE_AXIS_UD, new Action_LookUpDown(world,camera, 0.3f));
+	inputSystem->addAction(MAPPING::KEY_W, new Action_MoveForward(world,camera, 0.3f));
+	inputSystem->addAction(MAPPING::KEY_S, new Action_MoveBackward(world,camera, 0.3f));
 }
 
-void Test_GeometryLibrary::setProjectionMatrices(){
-	renderer_setOrthographicProjection((float)window->getWidth(), (float)window->getHeight(), -1.0f, 1.0f);//1920x1080
-	renderer_setPerspectiveProjection(((float)window->getWidth()) / ((float)window->getHeight()), 60.0f, 0.1f, 1000.0f);
+void Test_GeometryLibrary::setProjectionMatrices(World* world){
+	Camera* cameraComponent = world->ecs->getComponent<Camera>(camera);
+
+	renderer_setOrthographicProjection(cameraComponent->getWidth(), cameraComponent->getHeight(), cameraComponent->getNearOrtho(), cameraComponent->getFarOrtho());
+	renderer_setPerspectiveProjection(cameraComponent->getAspect(), cameraComponent->getFOV(), cameraComponent->getNearPerspective(), cameraComponent->getFarPerspective());
 }

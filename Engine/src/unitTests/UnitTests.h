@@ -6,6 +6,9 @@
 
 #include "GeometryLibrary.h"
 #include "MathLibrary.h"
+#include "src/camera/Camera.h"
+
+#include "Logger.h"
 
 class Test_EngineConfig : public Core {
 public:
@@ -32,69 +35,48 @@ protected:
 	void cleanUp() override;
 
 private:
-	void setupCamera();
+	void setupCamera(World* world);
 	void loadTextures();
-	void addActions();
-	void setProjectionMatrices();
+	void addActions(World* world);
+	void setProjectionMatrices(World* world);
+	void loadEntities2D(World* world);
+	void loadEntities3D(World* world);
 
 private:
+	Logger* logger;
+
 	int m_x_alt=0;
 	int m_y_alt = 0;
 	bool first=true;
-	Transform3D* camera;
-
-	int rectangle_meshId;
-	int circle_meshId;
-	int triangle_meshId;
-	int circleRing_meshId;
-
-	int plane_meshId;
-	int cube_meshId;
-	int cylinder_meshId;
-	int hollowCylinder_meshId;
-	int cone_meshId;
-	int sphere_meshId;
 
 	int texture;
 	int textureFloor;
 
-	Mat4* rectangle_modelMatrix;
-	Mat4* rectangle_modelMatrixTexture;
-	Mat4* circle_modelMatrix;
-	Mat4* circle_modelMatrixTexture;
-	Mat4* triangle_modelMatrix;
-	Mat4* triangle_modelMatrixTexture;
-	Mat4* circleRing_modelMatrix;
-	Mat4* circleRing_modelMatrixTexture;
-
-	Mat4* plane_modelMatrix;
-	Mat4* plane_modelMatrixTexture;
-	Mat4* cube_modelMatrix;
-	Mat4* cube_modelMatrixTexture;
-	Mat4* cylinder_modelMatrix;
-	Mat4* cylinder_modelMatrixTexture;
-	Mat4* hollowCylinder_modelMatrix;
-	Mat4* hollowCylinder_modelMatrixTexture;
-	Mat4* cone_modelMatrix;
-	Mat4* cone_modelMatrixTexture;
-	Mat4* sphere_modelMatrix;
-	Mat4* sphere_modelMatrixTexture;
-
-	Color3f* rectangle_color;
-	Color3f* circle_color;
-	Color3f* triangle_color;
-	Color3f* circleRing_color;
-
-	Color3f* plane_color;
-	Color3f* cube_color;
-	Color3f* cylinder_color;
-	Color3f* hollowCylinder_color;
-	Color3f* cone_color;
-	Color3f* sphere_color;
-
 	Color3f* normal_color;
 
-	GeometryLoader* loader;
+	EntityId camera;
 
-	int planeColored;
+	EntityId rectangleColored;
+	EntityId circleColored;
+	EntityId triangleColored;
+	EntityId circleRingColored;
+
+	EntityId rectangleTextured;
+	EntityId circleTextured;
+	EntityId triangleTextured;
+	EntityId circleRingTextured;
+
+	EntityId planeColored;
+	EntityId cubeColored;
+	EntityId cylinderColored;
+	EntityId hollowCylinderColored;
+	EntityId coneColored;
+	EntityId sphereColored;
+
+	EntityId planeTextured;
+	EntityId cubeTextured;
+	EntityId cylinderTextured;
+	EntityId hollowCylinderTextured;
+	EntityId coneTextured;
+	EntityId sphereTextured;
 };

@@ -5,8 +5,8 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-Action_MoveBackward::Action_MoveBackward(Transform3D* camera, float speed) {
-	m_camera = camera;
+Action_MoveBackward::Action_MoveBackward(World* world, EntityId camera, float speed) {
+	m_camera = world->ecs->getComponent<Transform3D>(camera);
 	m_speed = speed;
 }
 

@@ -1,7 +1,7 @@
 #include "Action_LookUpDown.h"
 
-Action_LookUpDown::Action_LookUpDown(Transform3D* camera, float speed) {
-	m_camera = camera;
+Action_LookUpDown::Action_LookUpDown(World* world, EntityId camera, float speed) {
+	m_camera = world->ecs->getComponent<Transform3D>(camera);
 	m_speed = speed;
 }
 

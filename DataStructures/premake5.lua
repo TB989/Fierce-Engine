@@ -1,5 +1,5 @@
-project "Tests"
-	kind "ConsoleApp"
+project "DataStructures"
+	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
 	staticruntime "on"

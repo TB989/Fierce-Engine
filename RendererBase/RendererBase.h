@@ -7,6 +7,7 @@
 #include "GeometryLibrary.h"
 
 struct MeshSettings {
+	int meshId;
 	bool is2D;
 	bool hasColor;
 	bool hasTextureCoordinates;

@@ -35,7 +35,7 @@ project "Engine"
 		"%{IncludeDir.RendererBase}",
 		"%{IncludeDir.EventSystem}",
 		"%{IncludeDir.InputSystem}",
-		"%{IncludeDir.EntityComponentSystem}",
+		"%{IncludeDir.DataStructures}",
 		"%{wks.location}/external/entt/src/entt"
 	}
 	
@@ -49,7 +49,8 @@ project "Engine"
 		"%{Library.GeometryLibrary}",
 		"%{Library.Logger}",
 		"%{Library.MathLibrary}",
-		"%{Library.WindowSystem}"
+		"%{Library.WindowSystem}",
+		"%{Library.DataStructures}"
 	}
 	
 	filter "system:windows"

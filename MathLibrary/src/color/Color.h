@@ -2,10 +2,10 @@
 
 #include "src/utils/Logging.h"
 
-#define R c[0]
-#define G c[1]
-#define B c[2]
-#define A c[3]
+#define R r
+#define G g
+#define B b
+#define A a
 
 class Color3f{
 public:
@@ -17,13 +17,14 @@ public:
 	float getR() { return R; }
 	float getG() { return G; }
 	float getB() { return B; }
-	float* get() { return c; }
 
 	void setR(float r) { R = r; }
 	void setG(float g) { G = g; }
 	void setB(float b) { B = b; }
 private:
-	float c[];
+	float r;
+	float g;
+	float b;
 };
 
 class Color4f {
@@ -37,12 +38,14 @@ public:
 	float getG() { return G; }
 	float getB() { return B; }
 	float getA() { return A; }
-	float* get() { return c; }
 
 	void setR(float r) { R = r; }
 	void setG(float g) { G = g; }
 	void setB(float b) { B = b; }
 	void setA(float a) { A = a; }
 private:
-	float* c=nullptr;
+	float r;
+	float g;
+	float b;
+	float a;
 };

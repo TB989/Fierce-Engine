@@ -1,7 +1,7 @@
 #include "Action_LookRightLeft.h"
 
-Action_LookRightLeft::Action_LookRightLeft(Transform3D* camera, float speed){
-	m_camera = camera;
+Action_LookRightLeft::Action_LookRightLeft(World* world, EntityId camera, float speed){
+	m_camera = world->ecs->getComponent<Transform3D>(camera);
 	m_speed = speed;
 }
 

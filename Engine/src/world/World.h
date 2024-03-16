@@ -1,32 +1,14 @@
 #pragma once
 
-#include "EntityComponentSystem.h"
-
-#include <vector>
-
-using Entity = int;
+#include "src/ECS/ECS.h"
+#include "src/system/geometryLoader/GeometryLoaderSystem.h"
 
 class World {
 public:
 	World();
 	~World();
 
-	//ECS
-	Entity createEntity() { return entityManager->createEntity(); }
-	void destroyEntity(Entity entity) { entityManager->destroyEntity(entity); }
-
-	template<typename T>
-	void addComponent(Entity entity, T component) {
-		componentManager->addComponent<T>(entity, component);
-	}
-
-	template<typename T>
-	void removeComponent(Entity entity) { componentManager->removeComponent<T>(entity); }
-
-	template<typename T>
-	T& getComponent(Entity entity) { return componentManager->getComponent<T>(entity); }
-
-private:
-	EntityManager* entityManager;
-	ComponentManager* componentManager;
+public:
+	ECS* ecs;
+	GeometryLoaderSystem* loader;
 };

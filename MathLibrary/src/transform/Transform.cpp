@@ -1,60 +1,89 @@
 #include "Transform.h"
 
 Transform2D::Transform2D() {
-	m_position = new Vector2f(0, 0);
-	m_scale = new Vector2f(1, 1);
+	x = 0;
+	y = 0;
+	scaleX = 1;
+	scaleY = 1;
 	m_rotation = 0;
 }
 
 Transform2D::Transform2D(Transform2D& transform) {
-	m_position = new Vector2f(*transform.getPosition());
-	m_scale = new Vector2f(*transform.getScale());
+	x = transform.getPosition()->getX();
+	y = transform.getPosition()->getY();
+	scaleX = transform.getScale()->getX();
+	scaleY = transform.getScale()->getY();
 	m_rotation = transform.getRotation();
 }
 
 Transform2D::Transform2D(float x, float y, float scaleX, float scaleY, float rotation) {
-	m_position = new Vector2f(x, y);
-	m_scale = new Vector2f(scaleX, scaleY);
-	m_rotation = rotation;
+	this->x = x;
+	this->y = y;
+	this->scaleX = scaleX;
+	this->scaleY = scaleY;
+	this->m_rotation = rotation;
 }
 
 Transform2D::Transform2D(Vector2f* position, Vector2f* scale, float rotation) {
-	m_position = new Vector2f(*position);
-	m_scale = new Vector2f(*scale);
+	x = position->getX();
+	y = position->getY();
+	scaleX = scale->getX();
+	scaleY = scale->getY();
 	m_rotation = rotation;
 }
 
 Transform2D::~Transform2D() {
-	delete m_position;
-	delete m_scale;
+	
 }
 
 Transform3D::Transform3D() {
-	m_position = new Vector3f(0, 0, 0);
-	m_scale = new Vector3f(1, 1, 1);
-	m_rotation = new Vector3f(0, 0, 0);
+	x = 0;
+	y = 0;
+	z = 0;
+	scaleX = 1;
+	scaleY = 1;
+	scaleZ = 1;
+	rotationX = 0;
+	rotationY = 0;
+	rotationZ = 0;
 }
 
 Transform3D::Transform3D(Transform3D& transform) {
-	m_position = new Vector3f(*transform.getPosition());
-	m_scale = new Vector3f(*transform.getScale());
-	m_rotation = new Vector3f(*transform.getRotation());
+	x = transform.getPosition()->getX();
+	y = transform.getPosition()->getY();
+	z = transform.getPosition()->getZ();
+	scaleX = transform.getScale()->getX();
+	scaleY = transform.getScale()->getY();
+	scaleZ = transform.getScale()->getZ();
+	rotationX = transform.getRotation()->getX();
+	rotationY = transform.getRotation()->getY();
+	rotationZ = transform.getRotation()->getZ();
 }
 
 Transform3D::Transform3D(float x, float y, float z, float scaleX, float scaleY, float scaleZ, float rotationX, float rotationY, float rotationZ) {
-	m_position = new Vector3f(x, y, z);
-	m_scale = new Vector3f(scaleX, scaleY, scaleZ);
-	m_rotation = new Vector3f(rotationX, rotationY, rotationZ);
+	this->x = x;
+	this->y = y;
+	this->z = z;
+	this->scaleX = scaleX;
+	this->scaleY = scaleY;
+	this->scaleZ = scaleZ;
+	this->rotationX = rotationX;
+	this->rotationY = rotationY;
+	this->rotationZ = rotationZ;
 }
 
 Transform3D::Transform3D(Vector3f* position, Vector3f* scale, Vector3f* rotation) {
-	m_position = new Vector3f(*position);
-	m_scale = new Vector3f(*scale);
-	m_rotation = new Vector3f(*rotation);
+	x = position->getX();
+	y = position->getY();
+	z = position->getZ();
+	scaleX = scale->getX();
+	scaleY = scale->getY();
+	scaleZ = scale->getZ();
+	rotationX = rotation->getX();
+	rotationY = rotation->getY();
+	rotationZ = rotation->getZ();
 }
 
 Transform3D::~Transform3D() {
-	delete m_position;
-	delete m_scale;
-	delete m_rotation;
+	
 }
