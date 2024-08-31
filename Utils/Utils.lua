@@ -1,4 +1,4 @@
-project "EngineCore"
+project "Utils"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
@@ -21,18 +21,17 @@ project "EngineCore"
 
 	includedirs
 	{
-		"%{IncludeDir.Logger}",
-		"%{IncludeDir.Utils}"
+		
 	}
 
-	libdirs 
+	libdirs
 	{
-		"%{LibraryDir.Common}"
+
 	}
 
 	links
 	{
-		"%{Library.Logger}"
+		
 	}
 
 	filter "system:windows"

@@ -1,5 +1,5 @@
-project "EngineCore"
-	kind "ConsoleApp"
+project "Logger"
+	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
 	staticruntime "off"
@@ -21,18 +21,17 @@ project "EngineCore"
 
 	includedirs
 	{
-		"%{IncludeDir.Logger}",
 		"%{IncludeDir.Utils}"
 	}
 
-	libdirs 
+	libdirs
 	{
-		"%{LibraryDir.Common}"
+
 	}
 
 	links
 	{
-		"%{Library.Logger}"
+		
 	}
 
 	filter "system:windows"
