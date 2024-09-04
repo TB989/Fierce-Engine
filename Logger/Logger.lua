@@ -9,7 +9,7 @@ project "Logger"
 
 	defines
 	{
-		
+		WIN32_LEAN_AND_MEAN
 	}
 
 	files

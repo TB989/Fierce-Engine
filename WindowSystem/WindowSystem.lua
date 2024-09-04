@@ -1,5 +1,5 @@
-project "EngineCore"
-	kind "ConsoleApp"
+project "WindowSystem"
+	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
 	staticruntime "off"
@@ -9,7 +9,7 @@ project "EngineCore"
 
 	defines
 	{
-		
+		WIN32_LEAN_AND_MEAN
 	}
 
 	files
@@ -21,21 +21,18 @@ project "EngineCore"
 
 	includedirs
 	{
-		"%{wks.location}/EngineCore/src",
 		"%{IncludeDir.Logger}",
-		"%{IncludeDir.Utils}",
-		"%{IncludeDir.WindowSystem}"
+		"%{IncludeDir.Utils}"
 	}
 
-	libdirs 
+	libdirs
 	{
 		"%{LibraryDir.Common}"
 	}
 
 	links
 	{
-		"%{Library.Logger}",
-		"%{Library.WindowSystem}"
+		"%{Library.Logger}"
 	}
 
 	filter "system:windows"
