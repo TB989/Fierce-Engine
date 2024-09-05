@@ -21,6 +21,7 @@ project "Logger"
 
 	includedirs
 	{
+		"%{wks.location}/Logger/src",
 		"%{IncludeDir.Utils}"
 	}
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "src/Logger.h"
+#include "EngineSettings.h"
 #include "src/WindowSystem.h"
 
 namespace Fierce {
@@ -24,7 +26,12 @@ namespace Fierce {
 		void coreRender();
 		void coreCleanUp();
 
+	protected:
+		EngineSettings m_settings = {};
+
 	private:
+		Logger* m_logger=nullptr;
+
 		static bool m_running;
 
 		WindowSystem* m_windowSystem=nullptr;

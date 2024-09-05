@@ -16,7 +16,8 @@ project "EngineCore"
 	{
 		"src/**.h",
 		"src/**.cpp",
-		"**.lua"
+		"**.lua",
+		"**.ini"
 	}
 
 	includedirs
@@ -24,7 +25,9 @@ project "EngineCore"
 		"%{wks.location}/EngineCore/src",
 		"%{IncludeDir.Logger}",
 		"%{IncludeDir.Utils}",
-		"%{IncludeDir.WindowSystem}"
+		"%{IncludeDir.WindowSystem}",
+		"%{IncludeDir.Vulkan}",
+		"%{IncludeDir.VulkanRenderer}"
 	}
 
 	libdirs 
@@ -35,7 +38,8 @@ project "EngineCore"
 	links
 	{
 		"%{Library.Logger}",
-		"%{Library.WindowSystem}"
+		"%{Library.WindowSystem}",
+		"%{Library.VulkanRenderer}"
 	}
 
 	filter "system:windows"

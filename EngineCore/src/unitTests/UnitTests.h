@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/EngineCore.h"
+#include "src/vulkanObjects/VK_Instance.h"
 
 namespace Fierce {
 
@@ -13,6 +14,9 @@ namespace Fierce {
 		void update() override;
 		void render() override;
 		void cleanUp() override;
+
+	private:
+		VK_Instance* m_instance;
 	};
 
 }//end namespace

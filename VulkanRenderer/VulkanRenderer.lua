@@ -1,4 +1,4 @@
-project "Utils"
+project "VulkanRenderer"
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
@@ -21,17 +21,22 @@ project "Utils"
 
 	includedirs
 	{
-		"%{wks.location}/Utils/src"
+		"%{wks.location}/VulkanRenderer/src",
+		"%{IncludeDir.Logger}",
+		"%{IncludeDir.Utils}",
+		"%{IncludeDir.Vulkan}"
 	}
 
 	libdirs
 	{
-
+		"%{LibraryDir.Common}",
+		"%{LibraryDir.Vulkan}"
 	}
 
 	links
 	{
-		
+		"%{Library.Logger}",
+		"%{Library.Vulkan}"
 	}
 
 	filter "system:windows"

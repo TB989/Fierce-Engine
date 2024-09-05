@@ -21,6 +21,7 @@ project "WindowSystem"
 
 	includedirs
 	{
+		"%{wks.location}/WindowSystem/src",
 		"%{IncludeDir.Logger}",
 		"%{IncludeDir.Utils}"
 	}

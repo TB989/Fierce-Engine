@@ -1,6 +1,5 @@
 #include "EngineCore.h"
-
-#include "src/Logger.h"
+#include "io/Parser.h"
 
 namespace Fierce {
 
@@ -8,6 +7,15 @@ namespace Fierce {
 
 	EngineCore::EngineCore(){
 		Logger::init("C:/Users/tmbal/Desktop/Fierce-Engine/logs/");
+		m_logger = new Logger("CORE",true,"ALL_LOGS");
+		m_logger->info("Loading engine settings.");
+		std::map<std::string, std::string> settings = Parser::parsePropertiesFile("Engine.ini");
+		if (settings.empty()) {
+			m_logger->warn("Failed to load engine settings, using default.");
+		}
+		else {
+			m_settings.parse(settings);
+		}
 	}
 
 	EngineCore::~EngineCore(){
@@ -39,7 +47,7 @@ namespace Fierce {
 	void EngineCore::coreInit(){
 		m_windowSystem = new WindowSystem();
 		m_windowSystem->setWindowCloseFunction(stop);
-		m_window= m_windowSystem->createWindow("Fierce Engine", Window::WINDOW_MODE::WINDOWED, 800, 600);
+		m_window= m_windowSystem->createWindow("Fierce Engine", m_settings.windowMode, m_settings.width, m_settings.height);
 	}
 
 	void EngineCore::coreUpdate(){}
