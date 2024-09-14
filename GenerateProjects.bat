@@ -1,2 +1,2 @@
-call extern\premake\premake5.exe vs2022
+call extern\premake\premake5.exe --file=buildScripts/Main.lua vs2022
 PAUSE

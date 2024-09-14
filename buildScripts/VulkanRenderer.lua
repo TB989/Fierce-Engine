@@ -1,45 +1,43 @@
-project "EngineCore"
-	kind "ConsoleApp"
+project "VulkanRenderer"
+	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
 	staticruntime "off"
+	location "%{wks.location}/%{prj.name}/"
 
 	targetdir ("%{wks.location}/bin/")
 	objdir ("%{wks.location}/bin-int/")
 
 	defines
 	{
-		
+		"WIN32_LEAN_AND_MEAN",
+		"VK_USE_PLATFORM_WIN32_KHR"
 	}
 
 	files
 	{
-		"src/**.h",
-		"src/**.cpp",
-		"**.lua",
-		"**.ini"
+		"%{wks.location}/%{prj.name}/src/**.h",
+		"%{wks.location}/%{prj.name}/src/**.cpp"
 	}
 
 	includedirs
 	{
-		"%{wks.location}/EngineCore/src",
+		"%{wks.location}/%{prj.name}/src",
 		"%{IncludeDir.Logger}",
 		"%{IncludeDir.Utils}",
-		"%{IncludeDir.WindowSystem}",
-		"%{IncludeDir.Vulkan}",
-		"%{IncludeDir.VulkanRenderer}"
+		"%{IncludeDir.Vulkan}"
 	}
 
-	libdirs 
+	libdirs
 	{
-		"%{LibraryDir.Common}"
+		"%{LibraryDir.Common}",
+		"%{LibraryDir.Vulkan}"
 	}
 
 	links
 	{
 		"%{Library.Logger}",
-		"%{Library.WindowSystem}",
-		"%{Library.VulkanRenderer}"
+		"%{Library.Vulkan}"
 	}
 
 	filter "system:windows"

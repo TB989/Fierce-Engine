@@ -1,15 +1,16 @@
 #include "Window.h"
 
+#include "src/LoggingSystem.h"
+
 namespace Fierce {
 
-	Window::Window(LPCWSTR className, std::string title, WINDOW_MODE windowMode, int width, int height) {
-		m_logger = new Logger("WIN",true,"ALL_LOGS");
+	Window::Window(Logger* logger, LPCWSTR className, std::string title, WINDOW_MODE windowMode, int width, int height) {
+		m_logger = logger;
 		createWindow(className, title, windowMode, width, height);
 	}
 
 	Window::~Window() {
 		destroyWindow();
-		delete m_logger;
 	}
 
 	void Window::createWindow(LPCWSTR className, std::string title, WINDOW_MODE windowMode, int width, int height) {

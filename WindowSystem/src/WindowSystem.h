@@ -2,18 +2,24 @@
 
 #include <Windows.h>
 #include "Window.h"
-#include "src/Logger.h"
 #include "src/FierceStrings.h"
+#include "src/System.h"
 #include <vector>
 
 namespace Fierce {
 
 	typedef void (*FunctionPtr)();
 
-	class WindowSystem {
+	class LoggingSystem;
+
+	class WindowSystem :public System{
 	public:
-		WindowSystem();
+		WindowSystem(LoggingSystem* loggingSystem);
 		~WindowSystem();
+
+		void initSystem() override;
+		void updateSystem() override;
+		void cleanUpSystem() override;
 
 		void setWindowCloseFunction(FunctionPtr onWindowClosed) { m_onWindowClosed = onWindowClosed; }
 
@@ -29,6 +35,7 @@ namespace Fierce {
 		LPCWSTR m_fierceWindowClassName = L"FierceWindow";
 		std::vector<Window*> m_windows;
 
+		LoggingSystem* m_loggingSystem;
 		Logger* m_logger;
 
 	public:

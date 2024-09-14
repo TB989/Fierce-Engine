@@ -1,39 +1,16 @@
 #include "Logger.h"
 
 #include "time.h"
-#include <filesystem>
 
 namespace Fierce {
 
-    HANDLE Logger::m_handle = GetStdHandle(STD_OUTPUT_HANDLE);
-    std::string Logger::m_logDirectory = "";
-    std::unordered_map<std::string, FILE*> Logger::m_openFiles;
-
-    Logger::Logger(std::string name) {
+    Logger::Logger(std::string name, HANDLE handle, bool logToConsole, bool logToFile, FILE* stream) {
         m_name = name;
-        m_stream = NULL;
+        m_handle = handle;
+        m_stream = stream;
 
-        m_logToFile = false;
-        m_logToConsole = true;
-
-        m_c_useColors = true;
-        m_c_printName = true;
-        m_c_printLogLevel = false;
-        m_c_printDate = false;
-        m_c_printTime = true;
-
-        m_f_printName = true;
-        m_f_printLogLevel = true;
-        m_f_printDate = false;
-        m_f_printTime = true;
-    }
-
-    Logger::Logger(std::string name, bool logToConsole, std::string file) {
-        m_name = name;
-        m_stream = NULL;
-
-        m_logToFile = true;
         m_logToConsole = logToConsole;
+        m_logToFile = logToFile;
 
         m_c_useColors = true;
         m_c_printName = true;
@@ -45,9 +22,6 @@ namespace Fierce {
         m_f_printLogLevel = true;
         m_f_printDate = false;
         m_f_printTime = true;
-
-        std::string fullPath = createFullFilePath(file);
-        fullPath = generateNotExistingFileNameAndOpen(fullPath);
     }
 
     void Logger::log(const char* logLevel, const char* format, ...) {
@@ -237,55 +211,6 @@ namespace Fierce {
             vfprintf(m_stream, format, args);
             va_end(args);
             fprintf(m_stream, "\n");
-        }
-    }
-
-    void Logger::init(std::string logDirectory) {
-        m_logDirectory = logDirectory;
-    }
-
-    void Logger::cleanUp() {
-        for (auto pair : m_openFiles) {
-            fclose(pair.second);
-        }
-    }
-
-    std::string Logger::createFullFilePath(std::string file) {
-        time_t now = time(0);
-        tm* ltm = localtime(&now);
-        std::string fullPath = m_logDirectory;
-        fullPath.append(std::to_string(1900 + ltm->tm_year))
-            .append("_")
-            .append(std::to_string(1 + ltm->tm_mon))
-            .append("_")
-            .append(std::to_string(ltm->tm_mday))
-            .append("_")
-            .append(file);
-
-        return fullPath;
-    }
-
-    std::string Logger::generateNotExistingFileNameAndOpen(std::string fullPath) {
-        std::string temporaryFileName;
-        int counter = 1;
-
-        while (true) {
-            temporaryFileName = fullPath;
-            temporaryFileName.append("_").append(std::to_string(counter)).append(".log");
-
-            if (m_openFiles.find(temporaryFileName) != m_openFiles.end()) {
-                m_stream = m_openFiles[temporaryFileName];
-                return temporaryFileName;
-            }
-
-            if (std::filesystem::exists(temporaryFileName)) {
-                counter++;
-            }
-            else {
-                m_stream = fopen(temporaryFileName.c_str(), "w");
-                m_openFiles[temporaryFileName] = m_stream;
-                return temporaryFileName;
-            }
         }
     }
 

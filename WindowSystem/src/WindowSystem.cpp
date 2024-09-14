@@ -1,5 +1,7 @@
 #include "WindowSystem.h"
 
+#include "src/LoggingSystem.h"
+
 namespace Fierce {
 
 	LRESULT CALLBACK wndProcFierceWindow(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
@@ -53,19 +55,32 @@ namespace Fierce {
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 
-	WindowSystem::WindowSystem() {
-		m_logger = new Logger("WIN", true, "ALL_LOGS");
+	WindowSystem::WindowSystem(LoggingSystem* loggingSystem) {
+		m_loggingSystem = loggingSystem;
+	}
+
+	WindowSystem::~WindowSystem() {
+		m_loggingSystem->deleteLogger(m_logger);
+	}
+
+	void WindowSystem::initSystem(){
+		m_logger = m_loggingSystem->createLogger("WIN", true, "ALL_LOGS");
 		hInstance = GetModuleHandle(NULL);
 		registerWindowClass(m_fierceWindowClassName, wndProcFierceWindow);
 	}
 
-	WindowSystem::~WindowSystem() {
+	void WindowSystem::updateSystem(){
+		for (Window* window:m_windows) {
+			window->pollEvents();
+		}
+	}
+
+	void WindowSystem::cleanUpSystem(){
 		unregisterWindowClass(m_fierceWindowClassName);
-		delete m_logger;
 	}
 
 	Window* WindowSystem::createWindow(std::string title, Window::WINDOW_MODE windowMode, int width, int height){
-		Window* window= new Window(m_fierceWindowClassName,title,windowMode,width,height);
+		Window* window= new Window(m_logger,m_fierceWindowClassName,title,windowMode,width,height);
 		SetProp(window->getHandle(), L"windowSystem", this);
 		m_windows.push_back(window);
 		return window;

@@ -3,25 +3,25 @@ project "Logger"
 	language "C++"
 	cppdialect "C++17"
 	staticruntime "off"
+	location "%{wks.location}/%{prj.name}/"
 
 	targetdir ("%{wks.location}/bin/")
 	objdir ("%{wks.location}/bin-int/")
 
 	defines
 	{
-		WIN32_LEAN_AND_MEAN
+		"WIN32_LEAN_AND_MEAN"
 	}
 
 	files
 	{
-		"src/**.h",
-		"src/**.cpp",
-		"**.lua"
+		"%{wks.location}/%{prj.name}/src/**.h",
+		"%{wks.location}/%{prj.name}/src/**.cpp"
 	}
 
 	includedirs
 	{
-		"%{wks.location}/Logger/src",
+		"%{wks.location}/%{prj.name}/src",
 		"%{IncludeDir.Utils}"
 	}
 

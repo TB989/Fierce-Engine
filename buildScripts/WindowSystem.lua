@@ -1,42 +1,39 @@
-project "VulkanRenderer"
+project "WindowSystem"
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
 	staticruntime "off"
+	location "%{wks.location}/%{prj.name}/"
 
 	targetdir ("%{wks.location}/bin/")
 	objdir ("%{wks.location}/bin-int/")
 
 	defines
 	{
-		
+		"WIN32_LEAN_AND_MEAN"
 	}
 
 	files
 	{
-		"src/**.h",
-		"src/**.cpp",
-		"**.lua"
+		"%{wks.location}/%{prj.name}/src/**.h",
+		"%{wks.location}/%{prj.name}/src/**.cpp"
 	}
 
 	includedirs
 	{
-		"%{wks.location}/VulkanRenderer/src",
+		"%{wks.location}/%{prj.name}/src",
 		"%{IncludeDir.Logger}",
-		"%{IncludeDir.Utils}",
-		"%{IncludeDir.Vulkan}"
+		"%{IncludeDir.Utils}"
 	}
 
 	libdirs
 	{
-		"%{LibraryDir.Common}",
-		"%{LibraryDir.Vulkan}"
+		"%{LibraryDir.Common}"
 	}
 
 	links
 	{
-		"%{Library.Logger}",
-		"%{Library.Vulkan}"
+		"%{Library.Logger}"
 	}
 
 	filter "system:windows"

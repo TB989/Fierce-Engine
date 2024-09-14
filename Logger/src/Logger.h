@@ -8,8 +8,7 @@ namespace Fierce {
 
 	class Logger {
 	public:
-		Logger(std::string name);
-		Logger(std::string name, bool logToConsole, std::string file);
+		Logger(std::string name, HANDLE handle, bool logToConsole, bool logToFile, FILE* stream);
 
 		void log(const char* logLevel, const char* format, ...);
 		void info(const char* format, ...);
@@ -28,21 +27,9 @@ namespace Fierce {
 		void setFilePrintDate(bool printDate) { m_f_printDate = printDate; }
 		void setFilePrintTime(bool printTime) { m_f_printTime = printTime; }
 
-	public:
-		static void init(std::string logDirectory);
-		static void cleanUp();
-
-	private:
-		static HANDLE m_handle;
-		static std::string m_logDirectory;
-		static std::unordered_map<std::string, FILE*> m_openFiles;
-
-	private:
-		std::string createFullFilePath(std::string file);
-		std::string generateNotExistingFileNameAndOpen(std::string fullPath);
-
 	private:
 		std::string m_name;
+		HANDLE m_handle;
 		FILE* m_stream = NULL;
 
 		bool m_logToFile;

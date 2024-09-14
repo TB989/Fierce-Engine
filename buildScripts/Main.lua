@@ -8,10 +8,14 @@ workspace "Fierce-Engine"
 
 	flags { "MultiProcessorCompile" }
 
+	location "../"
+
 	outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
-	include "EngineCore/EngineCore.lua"
-	include "Logger/Logger.lua"
-	include "Utils/Utils.lua"
-	include "WindowSystem/WindowSystem.lua"
-	include "VulkanRenderer/VulkanRenderer.lua"
+	include "BuildScripts.lua"
+	include "EngineCore.lua"
+	include "Logger.lua"
+	include "Utils.lua"
+	include "WindowSystem.lua"
+	include "VulkanRenderer.lua"
+	include "Shaders.lua"

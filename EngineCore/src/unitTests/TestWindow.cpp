@@ -11,8 +11,7 @@ namespace Fierce {
 	}
 
 	void TestWindow::init() {
-		m_instance = new VK_Instance();
-		m_instance->create();
+		
 	}
 
 	void TestWindow::update() {
@@ -24,7 +23,7 @@ namespace Fierce {
 	}
 
 	void TestWindow::cleanUp() {
-		delete m_instance;
+		
 	}
 
 }//end namespace

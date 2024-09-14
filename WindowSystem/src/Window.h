@@ -1,10 +1,11 @@
 #pragma once
 
 #include <Windows.h>
-#include "src/Logger.h"
 #include "src/FierceStrings.h"
 
 namespace Fierce{
+
+	class Logger;
 
 	class Window {
 	public:
@@ -13,7 +14,7 @@ namespace Fierce{
 		};
 
 	public:
-		Window(LPCWSTR className, std::string title, WINDOW_MODE windowMode, int width, int height);
+		Window(Logger* logger,LPCWSTR className, std::string title, WINDOW_MODE windowMode, int width, int height);
 		~Window();
 
 		void pollEvents();

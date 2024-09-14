@@ -1,8 +1,9 @@
 project "Utils"
-	kind "StaticLib"
+	kind "None"
 	language "C++"
 	cppdialect "C++17"
 	staticruntime "off"
+	location "%{wks.location}/%{prj.name}/"
 
 	targetdir ("%{wks.location}/bin/")
 	objdir ("%{wks.location}/bin-int/")
@@ -14,14 +15,13 @@ project "Utils"
 
 	files
 	{
-		"src/**.h",
-		"src/**.cpp",
-		"**.lua"
+		"%{wks.location}/%{prj.name}/src/**.h",
+		"%{wks.location}/%{prj.name}/src/**.cpp"
 	}
 
 	includedirs
 	{
-		"%{wks.location}/Utils/src"
+		"%{wks.location}/%{prj.name}/src",
 	}
 
 	libdirs

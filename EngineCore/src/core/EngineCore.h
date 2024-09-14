@@ -1,10 +1,13 @@
 #pragma once
 
-#include "src/Logger.h"
 #include "EngineSettings.h"
-#include "src/WindowSystem.h"
 
 namespace Fierce {
+
+	class LoggingSystem;
+	class Logger;
+	class WindowSystem;
+	class RenderSystem;
 
 	class EngineCore {
 	public:
@@ -30,12 +33,16 @@ namespace Fierce {
 		EngineSettings m_settings = {};
 
 	private:
-		Logger* m_logger=nullptr;
-
 		static bool m_running;
+
+	protected:
+		LoggingSystem* m_loggingSystem = nullptr;
+		Logger* m_logger = nullptr;
 
 		WindowSystem* m_windowSystem=nullptr;
 		Window* m_window=nullptr;
+
+		RenderSystem* m_renderSystem=nullptr;
 	};
 
 }//end namespace

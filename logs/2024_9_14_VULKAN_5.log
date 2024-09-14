@@ -1,0 +1,13 @@
+[21:13:3][VK][INFO]: Extension check passed.
+[21:13:3][VK][INFO]: Extension check passed.
+[21:13:3][VK][INFO]: Validation layer check passed.
+[21:13:3][VK][INFO]: Debug messenger is active.
+[21:13:3][VK][ERROR]: loader_add_layer_properties: 'layers' tag not supported until file version 1.0.1, but C:\WINDOWS\System32\DriverStore\FileRepository\nvhm.inf_amd64_69784b7a3902e1a0\nv-vk64.json is reporting version 1
+[21:13:3][VK][ERROR]: loader_get_json: Failed to open JSON file C:\Program Files\Rockstar Games\Social Club\SocialClubVulkanLayer.json
+[21:13:3][VK][ERROR]: loader_get_json: Failed to open JSON file C:\Program Files\Rockstar Games\Social Club\SocialClubVulkanLayer.json
+[21:13:3][VK][INFO]: Extension check passed.
+[21:13:3][VK][INFO]: Validation layer check passed.
+[21:13:3][VK][INFO]: General check passed for device NVIDIA GeForce GTX 1650.
+[21:13:3][VK][INFO]: Queue check passed for device NVIDIA GeForce GTX 1650.
+[21:13:3][VK][INFO]: Surface check passed for device NVIDIA GeForce GTX 1650.
+[21:13:3][VK][INFO]: Present mode check passed for device NVIDIA GeForce GTX 1650.
