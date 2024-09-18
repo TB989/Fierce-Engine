@@ -1,6 +1,7 @@
-# Binaries
+# Binaries and external libraries
 **/bin/
 bin-int/
+extern/
 
 # Visual Studio files and folder
 .vs/

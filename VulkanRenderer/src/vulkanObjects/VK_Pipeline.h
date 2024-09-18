@@ -2,6 +2,8 @@
 
 #include "vulkan/vulkan.h"
 
+#include <vector>
+
 namespace Fierce {
 
 	class VK_Device;
@@ -35,6 +37,8 @@ namespace Fierce {
 		VkPipelineMultisampleStateCreateInfo m_multisampling={};
 		VkPipelineColorBlendAttachmentState m_colorBlendAttachment={};
 		VkPipelineColorBlendStateCreateInfo m_colorBlending={};
+		std::vector<VkDynamicState> m_dynamicStates;
+		VkPipelineDynamicStateCreateInfo m_dynamicState={};
 
 		//Vulkan objects
 		VkRenderPass m_renderpass=VK_NULL_HANDLE;

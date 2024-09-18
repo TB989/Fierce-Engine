@@ -18,6 +18,11 @@ namespace Fierce {
 	class VK_Renderpass;
 	class VK_Shader;
 	class VK_Pipeline;
+	class VK_Framebuffers;
+	class VK_CommandPool;
+	class VK_CommandBuffer;
+	class VK_Semaphore;
+	class VK_Fence;
 
 	class RenderSystem:public System {
 	public:
@@ -30,8 +35,26 @@ namespace Fierce {
 		void updateSystem() override;
 		void cleanUpSystem() override;
 
+		void recordCommandBuffer();
+
+		void recreateSwapchain();
+
+	public:
+		struct FrameData {
+			VK_CommandPool* commandPool;
+			VK_CommandBuffer* commandBuffer;
+
+			VK_Semaphore* imageAvailableSemaphore;
+			VK_Semaphore* renderFinishedSemaphore;
+			VK_Fence* renderFinishedFence;
+		};
+
 	public:
 		static Logger* LOGGER;
+
+	private:
+		void beginFrame();
+		void endFrame();
 
 	private:
 		LoggingSystem* m_loggingSystem=nullptr;
@@ -45,6 +68,12 @@ namespace Fierce {
 		VK_Shader* m_vertexShader=nullptr;
 		VK_Shader* m_fragmentShader = nullptr;
 		VK_Pipeline* m_pipeline=nullptr;
+		VK_Framebuffers* m_framebuffers=nullptr;
+
+		const static int NUM_FRAMES_IN_FLIGHT = 2;
+		uint32_t imageIndex=0;
+		int currentFrame = 0;
+		FrameData framesData[NUM_FRAMES_IN_FLIGHT];
 	};
 
 }//end namespace

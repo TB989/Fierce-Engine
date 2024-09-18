@@ -29,6 +29,10 @@ namespace Fierce {
         m_deviceCreateInfo.ppEnabledLayerNames = nullptr;
         m_deviceCreateInfo.pEnabledFeatures = nullptr;
 
+        m_submitInfo={};
+        m_submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        m_submitInfo.pNext = nullptr;
+
         VK_Helper_Device::getAllPhysicalDevices(m_instance, &m_supportedPhysicalDevices);
         m_numSupportedPhysicalDevices = m_supportedPhysicalDevices.size();
         collectPhysicalDeviceData();
@@ -72,6 +76,46 @@ namespace Fierce {
         createLogicalDevice();
         vkGetDeviceQueue(m_device, m_supportedDeviceData[m_indexActivePhysicalDevice].graphicsQueueIndex, 0, &m_graphicsQueue);
         m_transferQueue = m_graphicsQueue;
+    }
+
+    void VK_Device::requerySurfaceData(){
+        VK_Helper_Device::getSurfaceData(m_supportedPhysicalDevices[m_indexActivePhysicalDevice], m_surface, &m_supportedSurfaceData[m_indexActivePhysicalDevice]);
+    }
+
+    void VK_Device::submitCommandBuffer(VkCommandBuffer commandBuffer, VkSemaphore waitSemaphore, VkSemaphore signalSemaphore, VkPipelineStageFlags waitStageMask, VkFence waitFence) {
+        m_submitInfo.commandBufferCount = 1;
+        m_submitInfo.pCommandBuffers = &commandBuffer;
+
+        if (waitSemaphore != VK_NULL_HANDLE) {
+            m_submitInfo.waitSemaphoreCount = 1;
+            m_submitInfo.pWaitSemaphores = &waitSemaphore;
+        }
+        else {
+            m_submitInfo.waitSemaphoreCount = 0;
+            m_submitInfo.pWaitSemaphores = nullptr;
+        }
+
+        if (signalSemaphore != VK_NULL_HANDLE) {
+            m_submitInfo.signalSemaphoreCount = 1;
+            m_submitInfo.pSignalSemaphores = &signalSemaphore;
+        }
+        else {
+            m_submitInfo.signalSemaphoreCount = 0;
+            m_submitInfo.pSignalSemaphores = nullptr;
+        }
+
+        m_submitInfo.pWaitDstStageMask = &waitStageMask;
+
+        if (waitFence == VK_NULL_HANDLE) {
+            if (vkQueueSubmit(m_graphicsQueue, 1, &m_submitInfo, nullptr)!=VK_SUCCESS) {
+                RenderSystem::LOGGER->error("Failed to submit queue.");
+            }
+        }
+        else {
+            if (vkQueueSubmit(m_graphicsQueue, 1, &m_submitInfo, waitFence)) {
+                RenderSystem::LOGGER->error("Failed to submit queue.");
+            }
+        }
     }
 
     void VK_Device::printActiveData(bool printExtensions, bool printLayers, bool printDeviceProperties, bool printDeviceLimits, bool printDeviceFeatures, bool printDeviceMemoryProperties, bool printDeviceQueueFamilies, bool printSurfaceData){

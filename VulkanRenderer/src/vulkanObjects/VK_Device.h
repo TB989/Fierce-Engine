@@ -19,6 +19,10 @@ namespace Fierce {
 		SurfaceData* getSurfaceData() { return &m_supportedSurfaceData[m_indexActivePhysicalDevice]; }
 		DeviceData* getDeviceData() { return &m_supportedDeviceData[m_indexActivePhysicalDevice]; }
 
+		void requerySurfaceData();
+
+		void submitCommandBuffer(VkCommandBuffer commandBuffer, VkSemaphore waitSemaphore, VkSemaphore signalSemaphore, VkPipelineStageFlags waitStageMask, VkFence waitFence);
+
 	public:
 		void printActiveData(bool printExtensions, bool printLayers,
 			bool printDeviceProperties, bool printDeviceLimits, bool printDeviceFeatures, bool printDeviceMemoryProperties, bool printDeviceQueueFamilies,
@@ -50,6 +54,9 @@ namespace Fierce {
 		VkDeviceCreateInfo m_deviceCreateInfo = {};
 		float m_queuePriority = 1.0f;
 		VkDeviceQueueCreateInfo m_queueCreateInfo = {};
+
+		//Submit info
+		VkSubmitInfo m_submitInfo={};
 
 		//Physical device data
 		int m_numSupportedPhysicalDevices = 0;

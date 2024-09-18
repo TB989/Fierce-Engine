@@ -11,6 +11,7 @@ project "VulkanRenderer"
 	defines
 	{
 		"WIN32_LEAN_AND_MEAN",
+		"NOMINMAX",
 		"VK_USE_PLATFORM_WIN32_KHR"
 	}
 
@@ -25,19 +26,25 @@ project "VulkanRenderer"
 		"%{wks.location}/%{prj.name}/src",
 		"%{IncludeDir.Logger}",
 		"%{IncludeDir.Utils}",
-		"%{IncludeDir.Vulkan}"
+		"%{IncludeDir.Vulkan}",
+
+		"C:/Users/tmbal/Downloads/glfw-3.4.bin.WIN64/glfw-3.4.bin.WIN64/include"
 	}
 
 	libdirs
 	{
 		"%{LibraryDir.Common}",
-		"%{LibraryDir.Vulkan}"
+		"%{LibraryDir.Vulkan}",
+
+		"C:/Users/tmbal/Downloads/glfw-3.4.bin.WIN64/glfw-3.4.bin.WIN64/lib-vc2022"
 	}
 
 	links
 	{
 		"%{Library.Logger}",
-		"%{Library.Vulkan}"
+		"%{Library.Vulkan}",
+
+		"glfw3.lib"
 	}
 
 	filter "system:windows"

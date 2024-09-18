@@ -8,12 +8,13 @@ namespace Fierce {
 
 	class VK_Swapchain {
 	public:
-		VK_Swapchain(VK_Device* device, VkSurfaceKHR surface);
+		VK_Swapchain(VK_Device* device, VkSurfaceKHR surface, VkSwapchainKHR oldSwapchain);
 		~VK_Swapchain();
 
 		void create();
 		VkSwapchainKHR getId() { return m_swapchain; }
 
+	public:
 		VkImageView getImage(int index) { return m_imageViews[index]; }
 		size_t getNumImages() { return m_imageViews.size(); }
 
@@ -22,6 +23,9 @@ namespace Fierce {
 		VkExtent2D m_extent;
 		VkSwapchainCreateInfoKHR m_createInfo={};
 		VkImageViewCreateInfo m_imageViewCreateInfo={};
+
+		//Present info
+		VkPresentInfoKHR m_presentInfo={};
 
 		//Vulkan objects
 		VK_Device* m_device = nullptr;

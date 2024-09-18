@@ -6,7 +6,7 @@ namespace Fierce {
 
 	class VK_Device;
 
-	VK_Swapchain::VK_Swapchain(VK_Device* device, VkSurfaceKHR surface) {
+	VK_Swapchain::VK_Swapchain(VK_Device* device, VkSurfaceKHR surface,VkSwapchainKHR oldSwapchain) {
 		m_device = device;
 		m_surface = surface;
 
@@ -27,7 +27,7 @@ namespace Fierce {
 		m_createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 		m_createInfo.presentMode = m_device->getSurfaceData()->swapchainPresentMode;
 		m_createInfo.clipped = VK_TRUE;
-		m_createInfo.oldSwapchain = VK_NULL_HANDLE;
+		m_createInfo.oldSwapchain = oldSwapchain;
 
 		m_imageViewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 		m_imageViewCreateInfo.pNext = nullptr;
@@ -44,6 +44,11 @@ namespace Fierce {
 		m_imageViewCreateInfo.subresourceRange.levelCount = 1;
 		m_imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
 		m_imageViewCreateInfo.subresourceRange.layerCount = 1;
+
+		m_presentInfo={};
+		m_presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+		m_presentInfo.pNext = nullptr;
+		m_presentInfo.pResults = nullptr;
 	}
 
 	VK_Swapchain::~VK_Swapchain() {
@@ -57,10 +62,20 @@ namespace Fierce {
 	void VK_Swapchain::create() {
 		SurfaceData* surfaceData = m_device->getSurfaceData();
 		m_extent = surfaceData->surfaceCapabilities.currentExtent;
-		m_extent.width = max(m_extent.width, surfaceData->surfaceCapabilities.minImageExtent.width);
-		m_extent.width = min(m_extent.width, surfaceData->surfaceCapabilities.maxImageExtent.width);
-		m_extent.height = max(m_extent.height, surfaceData->surfaceCapabilities.minImageExtent.height);
-		m_extent.height = min(m_extent.height, surfaceData->surfaceCapabilities.maxImageExtent.height);
+
+		if (m_extent.width< surfaceData->surfaceCapabilities.minImageExtent.width) {
+			m_extent.width = surfaceData->surfaceCapabilities.minImageExtent.width;
+		}
+		if (m_extent.width < surfaceData->surfaceCapabilities.maxImageExtent.width) {
+			m_extent.width = surfaceData->surfaceCapabilities.maxImageExtent.width;
+		}
+		if (m_extent.height < surfaceData->surfaceCapabilities.minImageExtent.height) {
+			m_extent.height = surfaceData->surfaceCapabilities.minImageExtent.height;
+		}
+		if (m_extent.height < surfaceData->surfaceCapabilities.maxImageExtent.height) {
+			m_extent.height = surfaceData->surfaceCapabilities.maxImageExtent.height;
+		}
+
 		m_createInfo.imageExtent = m_extent;
 
 		surfaceData->swapchainWidth = m_extent.width;

@@ -59,9 +59,9 @@ namespace Fierce {
         m_viewportState.pNext = nullptr;
         m_viewportState.flags = 0;
         m_viewportState.viewportCount = 1;
-        m_viewportState.pViewports = &m_viewport;
+        //m_viewportState.pViewports = &m_viewport;
         m_viewportState.scissorCount = 1;
-        m_viewportState.pScissors = &m_scissor;
+        //m_viewportState.pScissors = &m_scissor;
 
         m_rasterizer = {};
         m_rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -70,7 +70,7 @@ namespace Fierce {
         m_rasterizer.depthClampEnable = VK_FALSE;
         m_rasterizer.rasterizerDiscardEnable = VK_FALSE;
         m_rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
-        m_rasterizer.cullMode = VK_CULL_MODE_FRONT_AND_BACK;
+        m_rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
         m_rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
         m_rasterizer.depthBiasEnable = VK_FALSE;
         m_rasterizer.depthBiasConstantFactor = 0.0f;
@@ -112,6 +112,15 @@ namespace Fierce {
         m_colorBlending.blendConstants[2] = 0.0f;
         m_colorBlending.blendConstants[3] = 0.0f;
 
+        m_dynamicStates.push_back(VK_DYNAMIC_STATE_VIEWPORT);
+        m_dynamicStates.push_back(VK_DYNAMIC_STATE_SCISSOR);
+        m_dynamicState = {};
+        m_dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+        m_dynamicState.pNext = nullptr;
+        m_dynamicState.flags = 0;
+        m_dynamicState.dynamicStateCount = static_cast<uint32_t>(m_dynamicStates.size());
+        m_dynamicState.pDynamicStates = m_dynamicStates.data();
+
         m_pipelineLayoutInfo={};
         m_pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         m_pipelineLayoutInfo.pNext = nullptr;
@@ -133,7 +142,7 @@ namespace Fierce {
         m_createInfo.pMultisampleState = &m_multisampling;
         m_createInfo.pDepthStencilState = nullptr;
         m_createInfo.pColorBlendState = &m_colorBlending;
-        m_createInfo.pDynamicState = nullptr;
+        m_createInfo.pDynamicState = &m_dynamicState;
         m_createInfo.renderPass = m_renderpass;
         m_createInfo.subpass = 0;
         m_createInfo.basePipelineHandle = VK_NULL_HANDLE;
