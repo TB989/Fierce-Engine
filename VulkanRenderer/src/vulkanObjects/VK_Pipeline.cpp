@@ -1,5 +1,7 @@
 #include "VK_Pipeline.h"
 
+#include "glm.hpp"
+
 #include "vulkanObjects/VK_Device.h"
 
 #include "renderSystem/RenderSystem.h"
@@ -26,14 +28,36 @@ namespace Fierce {
         m_fragmentShaderStageInfo.pName = "main";
         m_fragmentShaderStageInfo.pSpecializationInfo = nullptr;
 
+        //Mesh/////////////////////////////////////////////////////////////////////////////
+        m_inputBindingDescription = {};
+        m_inputBindingDescription.binding = 0;
+        m_inputBindingDescription.stride = 5*sizeof(float);
+        m_inputBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+        VkVertexInputAttributeDescription descriptionPosition = {};
+        descriptionPosition.binding = 0;
+        descriptionPosition.location = 0;
+        descriptionPosition.format = VK_FORMAT_R32G32_SFLOAT;
+        descriptionPosition.offset = 0;
+        m_attributeDescriptions.push_back(descriptionPosition);
+
+        VkVertexInputAttributeDescription descriptionColor = {};
+        descriptionColor.binding = 0;
+        descriptionColor.location = 1;
+        descriptionColor.format = VK_FORMAT_R32G32B32_SFLOAT;
+        descriptionColor.offset = 2*sizeof(float);
+        m_attributeDescriptions.push_back(descriptionColor);
+
+        ////////////////////////////////////////////////////////////////////////////////////
+
         m_vertexInputInfo = {};
         m_vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
         m_vertexInputInfo.pNext = nullptr;
         m_vertexInputInfo.flags = 0;
-        m_vertexInputInfo.vertexBindingDescriptionCount = 0;
-        m_vertexInputInfo.pVertexBindingDescriptions = nullptr;
-        m_vertexInputInfo.vertexAttributeDescriptionCount = 0;
-        m_vertexInputInfo.pVertexAttributeDescriptions = nullptr;
+        m_vertexInputInfo.vertexBindingDescriptionCount = 1;
+        m_vertexInputInfo.pVertexBindingDescriptions = &m_inputBindingDescription;
+        m_vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(m_attributeDescriptions.size());
+        m_vertexInputInfo.pVertexAttributeDescriptions = m_attributeDescriptions.data();
 
         m_inputAssembly = {};
         m_inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;

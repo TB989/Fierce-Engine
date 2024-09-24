@@ -16,10 +16,13 @@ namespace Fierce {
 		VkDevice getDevice() { return m_device; }
 		VkQueue getQueue() { return m_graphicsQueue; }
 
+	public:
 		SurfaceData* getSurfaceData() { return &m_supportedSurfaceData[m_indexActivePhysicalDevice]; }
 		DeviceData* getDeviceData() { return &m_supportedDeviceData[m_indexActivePhysicalDevice]; }
 
 		void requerySurfaceData();
+
+		uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 		void submitCommandBuffer(VkCommandBuffer commandBuffer, VkSemaphore waitSemaphore, VkSemaphore signalSemaphore, VkPipelineStageFlags waitStageMask, VkFence waitFence);
 

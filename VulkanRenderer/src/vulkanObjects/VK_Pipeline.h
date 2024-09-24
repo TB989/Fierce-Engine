@@ -40,6 +40,10 @@ namespace Fierce {
 		std::vector<VkDynamicState> m_dynamicStates;
 		VkPipelineDynamicStateCreateInfo m_dynamicState={};
 
+		//Mesh
+		VkVertexInputBindingDescription m_inputBindingDescription={};
+		std::vector<VkVertexInputAttributeDescription> m_attributeDescriptions;
+
 		//Vulkan objects
 		VkRenderPass m_renderpass=VK_NULL_HANDLE;
 		VK_Device* m_device=nullptr;

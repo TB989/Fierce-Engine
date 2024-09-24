@@ -79,6 +79,11 @@ namespace Fierce {
 		vkCmdBindPipeline(m_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 	}
 
+	void VK_CommandBuffer::bindBuffer(VkBuffer buffer){
+		VkDeviceSize offsets[] = { 0 };
+		vkCmdBindVertexBuffers(m_commandBuffer, 0, 1, &buffer, offsets);
+	}
+
 	void VK_CommandBuffer::setViewport(float width,float height){
 		VkViewport viewport={};
 		viewport.x = 0.0f;

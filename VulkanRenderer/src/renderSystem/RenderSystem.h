@@ -23,6 +23,7 @@ namespace Fierce {
 	class VK_CommandBuffer;
 	class VK_Semaphore;
 	class VK_Fence;
+	class VK_Buffer;
 
 	class RenderSystem:public System {
 	public:
@@ -74,6 +75,8 @@ namespace Fierce {
 		uint32_t imageIndex=0;
 		int currentFrame = 0;
 		FrameData framesData[NUM_FRAMES_IN_FLIGHT];
+
+		VK_Buffer* m_vertexBuffer=nullptr;
 	};
 
 }//end namespace

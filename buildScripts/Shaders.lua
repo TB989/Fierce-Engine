@@ -15,10 +15,10 @@ project "Shaders"
 
 	files
 	{
-		"*.bat",
-		"*.vert",
-		"*.frag",
-		"*.spv"
+		"**.bat",
+		"**.vert",
+		"**.frag",
+		"**.spv"
 	}
 
 	includedirs

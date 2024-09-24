@@ -82,6 +82,18 @@ namespace Fierce {
         VK_Helper_Device::getSurfaceData(m_supportedPhysicalDevices[m_indexActivePhysicalDevice], m_surface, &m_supportedSurfaceData[m_indexActivePhysicalDevice]);
     }
 
+    uint32_t VK_Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties){
+        VkPhysicalDeviceMemoryProperties memProperties=m_supportedDeviceData[m_indexActivePhysicalDevice].deviceMemoryProperties;
+
+        for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+            if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+                return i;
+            }
+        }
+
+        RenderSystem::LOGGER->error("Failed to find suitable memory type.");
+    }
+
     void VK_Device::submitCommandBuffer(VkCommandBuffer commandBuffer, VkSemaphore waitSemaphore, VkSemaphore signalSemaphore, VkPipelineStageFlags waitStageMask, VkFence waitFence) {
         m_submitInfo.commandBufferCount = 1;
         m_submitInfo.pCommandBuffers = &commandBuffer;

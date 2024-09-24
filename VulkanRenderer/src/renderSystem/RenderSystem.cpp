@@ -1,5 +1,7 @@
 #include "RenderSystem.h"
 
+#include "glm.hpp"
+
 #include "vulkanObjects/VK_Instance.h"
 #include "vulkanObjects/VK_Surface.h"
 #include "vulkanObjects/VK_Device.h"
@@ -12,6 +14,7 @@
 #include "vulkanObjects/VK_CommandBuffer.h"
 #include "vulkanObjects/VK_Semaphore.h"
 #include "vulkanObjects/VK_Fence.h"
+#include "vulkanObjects/VK_Buffer.h"
 
 namespace Fierce {
 
@@ -51,6 +54,14 @@ namespace Fierce {
 		m_device->create();
 		//m_device->printActiveData(true,true,true,true,true,true,true,true);
 
+		//####################################################################################################################################
+		float vertices[] = {
+			0.0f, -0.5f, 1.0f, 0.0f, 0.0f,
+			-0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+			0.5f, 0.5f, 0.0f, 1.0f, 0.0f
+		};
+		//####################################################################################################################################
+
 		m_swapchain = new VK_Swapchain(m_device, m_surface->getId(),VK_NULL_HANDLE);
 		m_swapchain->create();
 
@@ -58,10 +69,10 @@ namespace Fierce {
 		m_renderpass->create();
 
 		m_vertexShader = new VK_Shader(m_device->getDevice());
-		m_vertexShader->setSourceCode("firstShader_vert.spv");
+		m_vertexShader->setSourceCode("secondShader_vert.spv");
 		m_vertexShader->create();
 		m_fragmentShader = new VK_Shader(m_device->getDevice());
-		m_fragmentShader->setSourceCode("firstShader_frag.spv");
+		m_fragmentShader->setSourceCode("secondShader_frag.spv");
 		m_fragmentShader->create();
 
 		m_pipeline = new VK_Pipeline(m_device,m_renderpass->getId());
@@ -89,6 +100,12 @@ namespace Fierce {
 			framesData[i].renderFinishedFence = new VK_Fence(m_device->getDevice());
 			framesData[i].renderFinishedFence->create();
 		}
+
+		//MESH/////////////////////////////////////////////////////////////////////////////////////////////////////
+		m_vertexBuffer = new VK_Buffer(m_device, 20 * sizeof(float), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+		m_vertexBuffer->create();
+		m_vertexBuffer->loadData(20 * sizeof(float),vertices);
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	}
 
 	void RenderSystem::updateSystem(){
@@ -101,6 +118,8 @@ namespace Fierce {
 		if (vkDeviceWaitIdle(m_device->getDevice())!=VK_SUCCESS) {
 			LOGGER->error("Failed to wait for idle device.");
 		}
+
+		delete m_vertexBuffer;
 
 		for (int i = 0;i<NUM_FRAMES_IN_FLIGHT;i++) {
 			delete framesData[i].renderFinishedFence;
@@ -128,6 +147,7 @@ namespace Fierce {
 		frameData.commandBuffer->startRecording();
 		frameData.commandBuffer->beginRenderpass(m_renderpass->getId(), m_framebuffers->getFramebuffer(imageIndex));
 		frameData.commandBuffer->bindPipeline(m_pipeline->getId());
+		frameData.commandBuffer->bindBuffer(m_vertexBuffer->getId());
 		frameData.commandBuffer->setViewport(static_cast<float>(m_device->getSurfaceData()->swapchainWidth), static_cast<float>(m_device->getSurfaceData()->swapchainHeight));
 		frameData.commandBuffer->setScissor(m_device->getSurfaceData()->swapchainWidth, m_device->getSurfaceData()->swapchainHeight);
 		frameData.commandBuffer->render(3);
