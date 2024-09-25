@@ -30,6 +30,11 @@ namespace Fierce {
 		m_renderPassInfo.renderArea.extent = { m_device->getSurfaceData()->swapchainWidth,  m_device->getSurfaceData()->swapchainHeight };
 		m_renderPassInfo.clearValueCount = 1;
 		m_renderPassInfo.pClearValues = &m_clearColor;
+
+		m_copyInfo = {};
+		m_copyInfo.srcOffset = 0;
+		m_copyInfo.dstOffset = 0;
+
 	}
 
 	VK_CommandBuffer::~VK_CommandBuffer(){
@@ -79,9 +84,13 @@ namespace Fierce {
 		vkCmdBindPipeline(m_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 	}
 
-	void VK_CommandBuffer::bindBuffer(VkBuffer buffer){
+	void VK_CommandBuffer::bindVertexBuffer(VkBuffer buffer){
 		VkDeviceSize offsets[] = { 0 };
 		vkCmdBindVertexBuffers(m_commandBuffer, 0, 1, &buffer, offsets);
+	}
+
+	void VK_CommandBuffer::bindIndexBuffer(VkBuffer buffer){
+		vkCmdBindIndexBuffer(m_commandBuffer, buffer, 0, VK_INDEX_TYPE_UINT16);
 	}
 
 	void VK_CommandBuffer::setViewport(float width,float height){
@@ -105,6 +114,15 @@ namespace Fierce {
 
 	void VK_CommandBuffer::render(int vertexCount){
 		vkCmdDraw(m_commandBuffer, vertexCount, 1, 0, 0);
+	}
+
+	void VK_CommandBuffer::renderIndexed(int indexCount){
+		vkCmdDrawIndexed(m_commandBuffer, indexCount, 1, 0, 0, 0);
+	}
+
+	void VK_CommandBuffer::copy(VkBuffer source, VkBuffer destination,VkDeviceSize size){
+		m_copyInfo.size = size;
+		vkCmdCopyBuffer(m_commandBuffer, source, destination, 1, &m_copyInfo);
 	}
 
 }//end namespace

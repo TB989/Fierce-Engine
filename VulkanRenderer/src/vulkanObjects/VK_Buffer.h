@@ -16,6 +16,7 @@ namespace Fierce {
 
 	public:
 		void loadData(int size, float* vertices);
+		void loadData(int size, uint16_t* indices);
 
 	private:
 		//Create info

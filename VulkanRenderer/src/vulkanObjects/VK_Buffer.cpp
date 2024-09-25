@@ -56,4 +56,13 @@ namespace Fierce {
 		vkUnmapMemory(m_device->getDevice(), m_memory);
 	}
 
+	void VK_Buffer::loadData(int size, uint16_t* indices){
+		void* data;
+		if (vkMapMemory(m_device->getDevice(), m_memory, 0, size, 0, &data) != VK_SUCCESS) {
+			RenderSystem::LOGGER->error("Failed to map buffer memory.");
+		}
+		memcpy(data, indices, (size_t)size);
+		vkUnmapMemory(m_device->getDevice(), m_memory);
+	}
+
 }//end namespace

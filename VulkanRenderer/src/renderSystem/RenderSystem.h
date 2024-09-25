@@ -76,7 +76,13 @@ namespace Fierce {
 		int currentFrame = 0;
 		FrameData framesData[NUM_FRAMES_IN_FLIGHT];
 
+		VK_CommandPool* m_copy_commandPool;
+		VK_CommandBuffer* m_copy_commandBuffer;
+
 		VK_Buffer* m_vertexBuffer=nullptr;
+		VK_Buffer* m_vertexStagingBuffer = nullptr;
+		VK_Buffer* m_indexBuffer = nullptr;
+		VK_Buffer* m_indexStagingBuffer = nullptr;
 	};
 
 }//end namespace

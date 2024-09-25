@@ -56,9 +56,14 @@ namespace Fierce {
 
 		//####################################################################################################################################
 		float vertices[] = {
-			0.0f, -0.5f, 1.0f, 0.0f, 0.0f,
-			-0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-			0.5f, 0.5f, 0.0f, 1.0f, 0.0f
+			-0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+			0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+			0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+			-0.5f, 0.5f, 1.0f, 1.0f, 1.0f
+		};
+
+		uint16_t indices[] = {
+			0, 2,1, 2, 0,3
 		};
 		//####################################################################################################################################
 
@@ -102,9 +107,52 @@ namespace Fierce {
 		}
 
 		//MESH/////////////////////////////////////////////////////////////////////////////////////////////////////
-		m_vertexBuffer = new VK_Buffer(m_device, 20 * sizeof(float), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+		m_vertexStagingBuffer = new VK_Buffer(m_device, 20 * sizeof(float), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+		m_vertexStagingBuffer->create();
+		m_vertexStagingBuffer->loadData(20 * sizeof(float),vertices);
+
+		m_vertexBuffer = new VK_Buffer(m_device, 20 * sizeof(float), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 		m_vertexBuffer->create();
-		m_vertexBuffer->loadData(20 * sizeof(float),vertices);
+
+		m_indexStagingBuffer = new VK_Buffer(m_device, 6 * sizeof(uint16_t), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+		m_indexStagingBuffer->create();
+		m_indexStagingBuffer->loadData(6 * sizeof(uint16_t), indices);
+
+		m_indexBuffer = new VK_Buffer(m_device, 6 * sizeof(uint16_t), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		m_indexBuffer->create();
+
+
+
+		m_copy_commandPool = new VK_CommandPool(m_device);
+		m_copy_commandPool->create();
+		m_copy_commandBuffer = new VK_CommandBuffer(m_device,m_copy_commandPool->getId());
+		m_copy_commandBuffer->create();
+
+
+
+		m_copy_commandBuffer->startRecording();
+		m_copy_commandBuffer->copy(m_vertexStagingBuffer->getId(),m_vertexBuffer->getId(), 20 * sizeof(float));
+		m_copy_commandBuffer->endRecording();
+
+		m_device->submitCommandBuffer(m_copy_commandBuffer->getId(), VK_NULL_HANDLE, VK_NULL_HANDLE, 0, VK_NULL_HANDLE);
+		if (vkQueueWaitIdle(m_device->getQueue()) != VK_SUCCESS) {
+			RenderSystem::LOGGER->error("Failed to wait for idle queue.");
+		}
+
+		m_copy_commandBuffer->startRecording();
+		m_copy_commandBuffer->copy(m_indexStagingBuffer->getId(), m_indexBuffer->getId(), 6 * sizeof(uint16_t));
+		m_copy_commandBuffer->endRecording();
+
+		m_device->submitCommandBuffer(m_copy_commandBuffer->getId(), VK_NULL_HANDLE, VK_NULL_HANDLE, 0, VK_NULL_HANDLE);
+		if (vkQueueWaitIdle(m_device->getQueue()) != VK_SUCCESS) {
+			RenderSystem::LOGGER->error("Failed to wait for idle queue.");
+		}
+
+		delete m_copy_commandBuffer;
+		delete m_copy_commandPool;
+
+		delete m_indexStagingBuffer;
+		delete m_vertexStagingBuffer;
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	}
 
@@ -119,6 +167,7 @@ namespace Fierce {
 			LOGGER->error("Failed to wait for idle device.");
 		}
 
+		delete m_indexBuffer;
 		delete m_vertexBuffer;
 
 		for (int i = 0;i<NUM_FRAMES_IN_FLIGHT;i++) {
@@ -147,10 +196,11 @@ namespace Fierce {
 		frameData.commandBuffer->startRecording();
 		frameData.commandBuffer->beginRenderpass(m_renderpass->getId(), m_framebuffers->getFramebuffer(imageIndex));
 		frameData.commandBuffer->bindPipeline(m_pipeline->getId());
-		frameData.commandBuffer->bindBuffer(m_vertexBuffer->getId());
+		frameData.commandBuffer->bindVertexBuffer(m_vertexBuffer->getId());
+		frameData.commandBuffer->bindIndexBuffer(m_indexBuffer->getId());
 		frameData.commandBuffer->setViewport(static_cast<float>(m_device->getSurfaceData()->swapchainWidth), static_cast<float>(m_device->getSurfaceData()->swapchainHeight));
 		frameData.commandBuffer->setScissor(m_device->getSurfaceData()->swapchainWidth, m_device->getSurfaceData()->swapchainHeight);
-		frameData.commandBuffer->render(3);
+		frameData.commandBuffer->renderIndexed(6);
 		frameData.commandBuffer->endRenderpass();
 		frameData.commandBuffer->endRecording();
 	}
