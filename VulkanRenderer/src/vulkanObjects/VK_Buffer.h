@@ -15,6 +15,8 @@ namespace Fierce {
 		VkBuffer getId() { return m_buffer; }
 
 	public:
+		void shareRessourcesWithTransferQueue() { m_shareRessourcesWithTransferQueue = true; }
+
 		void loadData(int size, float* vertices);
 		void loadData(int size, uint16_t* indices);
 
@@ -30,6 +32,9 @@ namespace Fierce {
 		VK_Device* m_device=nullptr;
 		VkBuffer m_buffer=VK_NULL_HANDLE;
 		VkDeviceMemory m_memory=VK_NULL_HANDLE;
+
+		//Misc
+		bool m_shareRessourcesWithTransferQueue = false;
 	};
 
 }//end namespace

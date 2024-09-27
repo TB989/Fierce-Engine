@@ -42,7 +42,7 @@ namespace Fierce {
 
 	public:
 		struct FrameData {
-			VK_CommandPool* commandPool;
+			//VK_CommandPool* commandPool;
 			VK_CommandBuffer* commandBuffer;
 
 			VK_Semaphore* imageAvailableSemaphore;
@@ -76,8 +76,11 @@ namespace Fierce {
 		int currentFrame = 0;
 		FrameData framesData[NUM_FRAMES_IN_FLIGHT];
 
-		VK_CommandPool* m_copy_commandPool;
-		VK_CommandBuffer* m_copy_commandBuffer;
+		VK_CommandPool* m_commandPool=nullptr;
+		VK_CommandBuffer* m_copy_commandBuffer = nullptr;
+
+		VK_CommandPool* m_dedicated_commandPool = nullptr;
+		VK_CommandBuffer* m_dedicated_commandBuffer = nullptr;
 
 		VK_Buffer* m_vertexBuffer=nullptr;
 		VK_Buffer* m_vertexStagingBuffer = nullptr;

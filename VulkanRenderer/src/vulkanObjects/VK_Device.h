@@ -14,7 +14,8 @@ namespace Fierce {
 
 		void create();
 		VkDevice getDevice() { return m_device; }
-		VkQueue getQueue() { return m_graphicsQueue; }
+		VkQueue getGraphicsQueue() { return m_graphicsQueue; }
+		VkQueue getTransferQueue() { return m_transferQueue; }
 
 	public:
 		SurfaceData* getSurfaceData() { return &m_supportedSurfaceData[m_indexActivePhysicalDevice]; }
@@ -24,7 +25,8 @@ namespace Fierce {
 
 		uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
-		void submitCommandBuffer(VkCommandBuffer commandBuffer, VkSemaphore waitSemaphore, VkSemaphore signalSemaphore, VkPipelineStageFlags waitStageMask, VkFence waitFence);
+		void submitCommandBufferOnGraphicsQueue(VkCommandBuffer commandBuffer, VkSemaphore waitSemaphore, VkSemaphore signalSemaphore, VkPipelineStageFlags waitStageMask, VkFence waitFence);
+		void submitCommandBufferOnTransferQueue(VkCommandBuffer commandBuffer, VkSemaphore waitSemaphore, VkSemaphore signalSemaphore, VkPipelineStageFlags waitStageMask, VkFence waitFence);
 
 	public:
 		void printActiveData(bool printExtensions, bool printLayers,
@@ -44,6 +46,8 @@ namespace Fierce {
 	private:
 		void collectPhysicalDeviceData();
 		void pickPhysicalDevice();
+		void setupQueues();
+		void setupExtensionsAndValidationLayers();
 		void createLogicalDevice();
 
 	private:
@@ -56,7 +60,7 @@ namespace Fierce {
 		//Create info
 		VkDeviceCreateInfo m_deviceCreateInfo = {};
 		float m_queuePriority = 1.0f;
-		VkDeviceQueueCreateInfo m_queueCreateInfo = {};
+		std::vector<VkDeviceQueueCreateInfo> m_queueCreateInfos;
 
 		//Submit info
 		VkSubmitInfo m_submitInfo={};

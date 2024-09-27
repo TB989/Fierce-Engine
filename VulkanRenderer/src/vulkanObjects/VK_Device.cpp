@@ -11,18 +11,11 @@ namespace Fierce {
         m_instance = instance;
         m_surface = surface;
 
-        m_queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-        m_queueCreateInfo.pNext = nullptr;
-        m_queueCreateInfo.flags = 0;
-        m_queueCreateInfo.queueFamilyIndex = 0;
-        m_queueCreateInfo.queueCount = 1;
-        m_queueCreateInfo.pQueuePriorities = &m_queuePriority;
-
         m_deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
         m_deviceCreateInfo.pNext = nullptr;
         m_deviceCreateInfo.flags = 0;
-        m_deviceCreateInfo.queueCreateInfoCount = 1;
-        m_deviceCreateInfo.pQueueCreateInfos = &m_queueCreateInfo;
+        m_deviceCreateInfo.queueCreateInfoCount = 0;
+        m_deviceCreateInfo.pQueueCreateInfos = nullptr;
         m_deviceCreateInfo.enabledExtensionCount = 0;
         m_deviceCreateInfo.ppEnabledExtensionNames = nullptr;
         m_deviceCreateInfo.enabledLayerCount = 0;
@@ -71,11 +64,71 @@ namespace Fierce {
         RenderSystem::LOGGER->error("No compatible device found.");
     }
 
+    void VK_Device::setupQueues(){
+        //Unified graphics and transfer queue
+        if (m_supportedDeviceData[m_indexActivePhysicalDevice].graphicsQueueIndex == m_supportedDeviceData[m_indexActivePhysicalDevice].transferQueueIndex) {
+            VkDeviceQueueCreateInfo m_queueCreateInfo = {};
+            m_queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+            m_queueCreateInfo.pNext = nullptr;
+            m_queueCreateInfo.flags = 0;
+            m_queueCreateInfo.queueFamilyIndex = m_supportedDeviceData[m_indexActivePhysicalDevice].graphicsQueueIndex;
+            m_queueCreateInfo.queueCount = 1;
+            m_queueCreateInfo.pQueuePriorities = &m_queuePriority;
+
+            m_queueCreateInfos.push_back(m_queueCreateInfo);
+        }
+
+        //Dedicated transfer queue
+        else {
+            VkDeviceQueueCreateInfo m_graphicsQueueCreateInfo = {};
+            m_graphicsQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+            m_graphicsQueueCreateInfo.pNext = nullptr;
+            m_graphicsQueueCreateInfo.flags = 0;
+            m_graphicsQueueCreateInfo.queueFamilyIndex = m_supportedDeviceData[m_indexActivePhysicalDevice].graphicsQueueIndex;
+            m_graphicsQueueCreateInfo.queueCount = 1;
+            m_graphicsQueueCreateInfo.pQueuePriorities = &m_queuePriority;
+
+            m_queueCreateInfos.push_back(m_graphicsQueueCreateInfo);
+
+            VkDeviceQueueCreateInfo m_transferQueueCreateInfo = {};
+            m_transferQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+            m_transferQueueCreateInfo.pNext = nullptr;
+            m_transferQueueCreateInfo.flags = 0;
+            m_transferQueueCreateInfo.queueFamilyIndex = m_supportedDeviceData[m_indexActivePhysicalDevice].transferQueueIndex;
+            m_transferQueueCreateInfo.queueCount = 1;
+            m_transferQueueCreateInfo.pQueuePriorities = &m_queuePriority;
+
+            m_queueCreateInfos.push_back(m_transferQueueCreateInfo);
+        }
+
+        m_deviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(m_queueCreateInfos.size());
+        m_deviceCreateInfo.pQueueCreateInfos = m_queueCreateInfos.data();
+    }
+
+    void VK_Device::setupExtensionsAndValidationLayers(){
+        if (m_supportedExtensionValidationLayerData[m_indexActivePhysicalDevice].enabledExtensions.empty()) {
+            m_deviceCreateInfo.enabledExtensionCount = 0;
+            m_deviceCreateInfo.ppEnabledExtensionNames = nullptr;
+        }
+        else {
+            m_deviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(m_supportedExtensionValidationLayerData[m_indexActivePhysicalDevice].enabledExtensions.size());
+            m_deviceCreateInfo.ppEnabledExtensionNames = m_supportedExtensionValidationLayerData[m_indexActivePhysicalDevice].enabledExtensions.data();
+        }
+        if (m_supportedExtensionValidationLayerData[m_indexActivePhysicalDevice].enabledValidationLayers.empty()) {
+            m_deviceCreateInfo.enabledLayerCount = 0;
+            m_deviceCreateInfo.ppEnabledLayerNames = nullptr;
+        }
+        else {
+            m_deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(m_supportedExtensionValidationLayerData[m_indexActivePhysicalDevice].enabledValidationLayers.size());
+            m_deviceCreateInfo.ppEnabledLayerNames = m_supportedExtensionValidationLayerData[m_indexActivePhysicalDevice].enabledValidationLayers.data();
+        }
+    }
+
     void VK_Device::create() {
         pickPhysicalDevice();
         createLogicalDevice();
         vkGetDeviceQueue(m_device, m_supportedDeviceData[m_indexActivePhysicalDevice].graphicsQueueIndex, 0, &m_graphicsQueue);
-        m_transferQueue = m_graphicsQueue;
+        vkGetDeviceQueue(m_device, m_supportedDeviceData[m_indexActivePhysicalDevice].transferQueueIndex, 0, &m_transferQueue);
     }
 
     void VK_Device::requerySurfaceData(){
@@ -94,7 +147,7 @@ namespace Fierce {
         RenderSystem::LOGGER->error("Failed to find suitable memory type.");
     }
 
-    void VK_Device::submitCommandBuffer(VkCommandBuffer commandBuffer, VkSemaphore waitSemaphore, VkSemaphore signalSemaphore, VkPipelineStageFlags waitStageMask, VkFence waitFence) {
+    void VK_Device::submitCommandBufferOnGraphicsQueue(VkCommandBuffer commandBuffer, VkSemaphore waitSemaphore, VkSemaphore signalSemaphore, VkPipelineStageFlags waitStageMask, VkFence waitFence) {
         m_submitInfo.commandBufferCount = 1;
         m_submitInfo.pCommandBuffers = &commandBuffer;
 
@@ -125,6 +178,42 @@ namespace Fierce {
         }
         else {
             if (vkQueueSubmit(m_graphicsQueue, 1, &m_submitInfo, waitFence)) {
+                RenderSystem::LOGGER->error("Failed to submit queue.");
+            }
+        }
+    }
+
+    void VK_Device::submitCommandBufferOnTransferQueue(VkCommandBuffer commandBuffer, VkSemaphore waitSemaphore, VkSemaphore signalSemaphore, VkPipelineStageFlags waitStageMask, VkFence waitFence) {
+        m_submitInfo.commandBufferCount = 1;
+        m_submitInfo.pCommandBuffers = &commandBuffer;
+
+        if (waitSemaphore != VK_NULL_HANDLE) {
+            m_submitInfo.waitSemaphoreCount = 1;
+            m_submitInfo.pWaitSemaphores = &waitSemaphore;
+        }
+        else {
+            m_submitInfo.waitSemaphoreCount = 0;
+            m_submitInfo.pWaitSemaphores = nullptr;
+        }
+
+        if (signalSemaphore != VK_NULL_HANDLE) {
+            m_submitInfo.signalSemaphoreCount = 1;
+            m_submitInfo.pSignalSemaphores = &signalSemaphore;
+        }
+        else {
+            m_submitInfo.signalSemaphoreCount = 0;
+            m_submitInfo.pSignalSemaphores = nullptr;
+        }
+
+        m_submitInfo.pWaitDstStageMask = &waitStageMask;
+
+        if (waitFence == VK_NULL_HANDLE) {
+            if (vkQueueSubmit(m_transferQueue, 1, &m_submitInfo, nullptr) != VK_SUCCESS) {
+                RenderSystem::LOGGER->error("Failed to submit queue.");
+            }
+        }
+        else {
+            if (vkQueueSubmit(m_transferQueue, 1, &m_submitInfo, waitFence)) {
                 RenderSystem::LOGGER->error("Failed to submit queue.");
             }
         }
@@ -297,26 +386,9 @@ namespace Fierce {
     }
 
     void VK_Device::createLogicalDevice() {
-        m_queueCreateInfo.queueFamilyIndex = m_supportedDeviceData[m_indexActivePhysicalDevice].graphicsQueueIndex;
-
+        setupQueues();
         m_deviceCreateInfo.pEnabledFeatures = &m_supportedDeviceData[m_indexActivePhysicalDevice].enabledDeviceFeatures;
-
-        if (m_supportedExtensionValidationLayerData[m_indexActivePhysicalDevice].enabledExtensions.empty()) {
-            m_deviceCreateInfo.enabledExtensionCount = 0;
-            m_deviceCreateInfo.ppEnabledExtensionNames = nullptr;
-        }
-        else {
-            m_deviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(m_supportedExtensionValidationLayerData[m_indexActivePhysicalDevice].enabledExtensions.size());
-            m_deviceCreateInfo.ppEnabledExtensionNames = m_supportedExtensionValidationLayerData[m_indexActivePhysicalDevice].enabledExtensions.data();
-        }
-        if (m_supportedExtensionValidationLayerData[m_indexActivePhysicalDevice].enabledValidationLayers.empty()) {
-            m_deviceCreateInfo.enabledLayerCount = 0;
-            m_deviceCreateInfo.ppEnabledLayerNames = nullptr;
-        }
-        else {
-            m_deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(m_supportedExtensionValidationLayerData[m_indexActivePhysicalDevice].enabledValidationLayers.size());
-            m_deviceCreateInfo.ppEnabledLayerNames = m_supportedExtensionValidationLayerData[m_indexActivePhysicalDevice].enabledValidationLayers.data();
-        }
+        setupExtensionsAndValidationLayers();
 
         if (vkCreateDevice(m_physicalDevice, &m_deviceCreateInfo, nullptr, &m_device)!=VK_SUCCESS) {
             RenderSystem::LOGGER->error("Failed to create logical device.");

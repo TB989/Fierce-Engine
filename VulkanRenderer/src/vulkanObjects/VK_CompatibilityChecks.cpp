@@ -16,17 +16,51 @@ namespace Fierce {
     }
 
     bool VK_Check_Device_Queues::check(ExtensionValidationLayerData* data1, DeviceData* data2, SurfaceData* data3) {
+        bool hasDedicatedTransferQueue = false;
         int i = 0;
+
+        //Look for dedicated transfer queue
         for (VkQueueFamilyProperties queueFamily : data2->queueFamilies) {
-            bool presentSupport = data2->presentSupport[i];
-            if ((queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) && (queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT) && presentSupport) {
+            if (!(queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) && (queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT)) {
                 data2->transferQueueIndex = i;
-                data2->graphicsQueueIndex = i;
-                RenderSystem::LOGGER->info("Queue check passed for device %s.",data2->deviceProperties.deviceName);
-                return true;
+                hasDedicatedTransferQueue = true;
+                RenderSystem::LOGGER->info("Found dedicated transfer queue: %i",i);
+                break;
             }
             i++;
         }
+
+        //Look for graphics queue
+        i = 0;
+        if (hasDedicatedTransferQueue) {
+            for (VkQueueFamilyProperties queueFamily : data2->queueFamilies) {
+                bool presentSupport = data2->presentSupport[i];
+                if ((queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) && presentSupport) {
+                    RenderSystem::LOGGER->info("Found graphics queue: %i", i);
+                    data2->graphicsQueueIndex = i;
+                    RenderSystem::LOGGER->info("Queue check passed for device %s.", data2->deviceProperties.deviceName);
+                    return true;
+                }
+                i++;
+            }
+        }
+
+        //Look for graphics and transfer queue
+        else {
+            for (VkQueueFamilyProperties queueFamily : data2->queueFamilies) {
+                bool presentSupport = data2->presentSupport[i];
+                if ((queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) && (queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT) && presentSupport) {
+                    RenderSystem::LOGGER->info("Found graphics and transfer queue: %i", i);
+                    data2->transferQueueIndex = i;
+                    data2->graphicsQueueIndex = i;
+                    RenderSystem::LOGGER->info("Queue check passed for device %s.", data2->deviceProperties.deviceName);
+                    return true;
+                }
+                i++;
+            }
+        }
+
+        RenderSystem::LOGGER->warn("After second loop.");
 
         RenderSystem::LOGGER->warn("Queue check failed for device %s.", data2->deviceProperties.deviceName);
         return false;

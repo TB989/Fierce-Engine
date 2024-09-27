@@ -16,7 +16,6 @@ namespace Fierce {
 		m_createInfo.flags = 0;
 		m_createInfo.size = size;
 		m_createInfo.usage = usage;
-		m_createInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
 		m_allocateInfo = {};
 		m_allocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
@@ -29,6 +28,18 @@ namespace Fierce {
 	}
 
 	void VK_Buffer::create(){
+		if (m_shareRessourcesWithTransferQueue) {
+			m_createInfo.sharingMode = VK_SHARING_MODE_CONCURRENT;
+			m_createInfo.queueFamilyIndexCount = 2;
+			uint32_t indices[]= { m_device->getDeviceData()->graphicsQueueIndex,m_device->getDeviceData()->transferQueueIndex };
+			m_createInfo.pQueueFamilyIndices = indices;
+		}
+		else {
+			m_createInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+			m_createInfo.queueFamilyIndexCount = 0;
+			m_createInfo.pQueueFamilyIndices = nullptr;
+		}
+
 		if (vkCreateBuffer(m_device->getDevice(), &m_createInfo, nullptr, &m_buffer) != VK_SUCCESS) {
 			RenderSystem::LOGGER->error("Failed to create buffer.");
 		}

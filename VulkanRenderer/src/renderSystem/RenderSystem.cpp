@@ -51,8 +51,9 @@ namespace Fierce {
 		m_device->addCheck(new VK_Check_Device_Queues());
 		m_device->addCheck(new VK_Check_Device_Surface_Format({ VK_FORMAT_B8G8R8A8_SRGB }));
 		m_device->addCheck(new VK_Check_Device_Surface_PresentMode({ VK_PRESENT_MODE_MAILBOX_KHR, VK_PRESENT_MODE_FIFO_KHR }));
+		//m_device->printSupportedData(false, false, true, false, false, false, true, false);
 		m_device->create();
-		//m_device->printActiveData(true,true,true,true,true,true,true,true);
+		//m_device->printActiveData(false,false,true,false,false,false,true,false);
 
 		//####################################################################################################################################
 		float vertices[] = {
@@ -88,12 +89,23 @@ namespace Fierce {
 		m_framebuffers = new VK_Framebuffers(m_device,m_renderpass->getId(),m_swapchain);
 		m_framebuffers->create();
 
+		m_commandPool = new VK_CommandPool(m_device);
+		m_commandPool->create();
+		m_copy_commandBuffer = new VK_CommandBuffer(m_device, m_commandPool->getId());
+		m_copy_commandBuffer->create();
+
+		m_dedicated_commandPool = new VK_CommandPool(m_device);
+		m_dedicated_commandPool->bindToTransferQueue();
+		m_dedicated_commandPool->create();
+		m_dedicated_commandBuffer = new VK_CommandBuffer(m_device, m_dedicated_commandPool->getId());
+		m_dedicated_commandBuffer->create();
+
 		//Create per frame ressources
 		for (int i = 0;i<NUM_FRAMES_IN_FLIGHT;i++) {
-			framesData[i].commandPool = new VK_CommandPool(m_device);
-			framesData[i].commandPool->create();
+			//framesData[i].commandPool = new VK_CommandPool(m_device);
+			//framesData[i].commandPool->create();
 
-			framesData[i].commandBuffer = new VK_CommandBuffer(m_device, framesData[i].commandPool->getId());
+			framesData[i].commandBuffer = new VK_CommandBuffer(m_device, m_commandPool->getId());
 			framesData[i].commandBuffer->create();
 
 			framesData[i].imageAvailableSemaphore = new VK_Semaphore(m_device->getDevice());
@@ -112,6 +124,7 @@ namespace Fierce {
 		m_vertexStagingBuffer->loadData(20 * sizeof(float),vertices);
 
 		m_vertexBuffer = new VK_Buffer(m_device, 20 * sizeof(float), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		m_vertexBuffer->shareRessourcesWithTransferQueue();
 		m_vertexBuffer->create();
 
 		m_indexStagingBuffer = new VK_Buffer(m_device, 6 * sizeof(uint16_t), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
@@ -119,37 +132,18 @@ namespace Fierce {
 		m_indexStagingBuffer->loadData(6 * sizeof(uint16_t), indices);
 
 		m_indexBuffer = new VK_Buffer(m_device, 6 * sizeof(uint16_t), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		m_indexBuffer->shareRessourcesWithTransferQueue();
 		m_indexBuffer->create();
 
+		m_dedicated_commandBuffer->startRecording();
+		m_dedicated_commandBuffer->copy(m_vertexStagingBuffer->getId(),m_vertexBuffer->getId(), 20 * sizeof(float));
+		m_dedicated_commandBuffer->copy(m_indexStagingBuffer->getId(), m_indexBuffer->getId(), 6 * sizeof(uint16_t));
+		m_dedicated_commandBuffer->endRecording();
+		m_device->submitCommandBufferOnTransferQueue(m_dedicated_commandBuffer->getId(), VK_NULL_HANDLE, VK_NULL_HANDLE, 0, VK_NULL_HANDLE);
 
-
-		m_copy_commandPool = new VK_CommandPool(m_device);
-		m_copy_commandPool->create();
-		m_copy_commandBuffer = new VK_CommandBuffer(m_device,m_copy_commandPool->getId());
-		m_copy_commandBuffer->create();
-
-
-
-		m_copy_commandBuffer->startRecording();
-		m_copy_commandBuffer->copy(m_vertexStagingBuffer->getId(),m_vertexBuffer->getId(), 20 * sizeof(float));
-		m_copy_commandBuffer->endRecording();
-
-		m_device->submitCommandBuffer(m_copy_commandBuffer->getId(), VK_NULL_HANDLE, VK_NULL_HANDLE, 0, VK_NULL_HANDLE);
-		if (vkQueueWaitIdle(m_device->getQueue()) != VK_SUCCESS) {
+		if (vkQueueWaitIdle(m_device->getTransferQueue()) != VK_SUCCESS) {
 			RenderSystem::LOGGER->error("Failed to wait for idle queue.");
 		}
-
-		m_copy_commandBuffer->startRecording();
-		m_copy_commandBuffer->copy(m_indexStagingBuffer->getId(), m_indexBuffer->getId(), 6 * sizeof(uint16_t));
-		m_copy_commandBuffer->endRecording();
-
-		m_device->submitCommandBuffer(m_copy_commandBuffer->getId(), VK_NULL_HANDLE, VK_NULL_HANDLE, 0, VK_NULL_HANDLE);
-		if (vkQueueWaitIdle(m_device->getQueue()) != VK_SUCCESS) {
-			RenderSystem::LOGGER->error("Failed to wait for idle queue.");
-		}
-
-		delete m_copy_commandBuffer;
-		delete m_copy_commandPool;
 
 		delete m_indexStagingBuffer;
 		delete m_vertexStagingBuffer;
@@ -170,13 +164,19 @@ namespace Fierce {
 		delete m_indexBuffer;
 		delete m_vertexBuffer;
 
+		delete m_copy_commandBuffer;
+
 		for (int i = 0;i<NUM_FRAMES_IN_FLIGHT;i++) {
 			delete framesData[i].renderFinishedFence;
 			delete framesData[i].renderFinishedSemaphore;
 			delete framesData[i].imageAvailableSemaphore;
 			delete framesData[i].commandBuffer;
-			delete framesData[i].commandPool;
 		}
+
+		delete m_commandPool;
+
+		delete m_dedicated_commandBuffer;
+		delete m_dedicated_commandPool;
 
 		delete m_framebuffers;
 		delete m_pipeline;
@@ -257,7 +257,7 @@ namespace Fierce {
 		FrameData& frameData = framesData[currentFrame];
 
 		//Submit command buffer
-		m_device->submitCommandBuffer(frameData.commandBuffer->getId(), frameData.imageAvailableSemaphore->getId(), frameData.renderFinishedSemaphore->getId(), VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, frameData.renderFinishedFence->getId());
+		m_device->submitCommandBufferOnGraphicsQueue(frameData.commandBuffer->getId(), frameData.imageAvailableSemaphore->getId(), frameData.renderFinishedSemaphore->getId(), VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, frameData.renderFinishedFence->getId());
 
 		//Present image
 		VkSwapchainKHR swapchain = m_swapchain->getId();
@@ -272,7 +272,7 @@ namespace Fierce {
 		m_presentInfo.pImageIndices = &imageIndex;
 		m_presentInfo.waitSemaphoreCount = 1;
 		m_presentInfo.pWaitSemaphores = &semaphore;
-		VkResult result = vkQueuePresentKHR(m_device->getQueue(), &m_presentInfo);
+		VkResult result = vkQueuePresentKHR(m_device->getGraphicsQueue(), &m_presentInfo);
 		if (result==VK_ERROR_OUT_OF_DATE_KHR||result==VK_SUBOPTIMAL_KHR) {
 			recreateSwapchain();
 		}
