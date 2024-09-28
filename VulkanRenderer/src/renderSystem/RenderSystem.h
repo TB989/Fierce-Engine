@@ -37,13 +37,14 @@ namespace Fierce {
 		void cleanUpSystem() override;
 
 		void recordCommandBuffer();
+		void updateUniformBuffer();
 
 		void recreateSwapchain();
 
 	public:
 		struct FrameData {
-			//VK_CommandPool* commandPool;
 			VK_CommandBuffer* commandBuffer;
+			VK_Buffer* ubo;
 
 			VK_Semaphore* imageAvailableSemaphore;
 			VK_Semaphore* renderFinishedSemaphore;

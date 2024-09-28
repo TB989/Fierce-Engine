@@ -145,12 +145,24 @@ namespace Fierce {
         m_dynamicState.dynamicStateCount = static_cast<uint32_t>(m_dynamicStates.size());
         m_dynamicState.pDynamicStates = m_dynamicStates.data();
 
+        m_uboLayoutBinding = {};
+        m_uboLayoutBinding.binding = 0;
+        m_uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        m_uboLayoutBinding.descriptorCount = 1;
+        m_uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        m_uboLayoutBinding.pImmutableSamplers = nullptr;
+
+        m_descriptorSetLayoutInfo = {};
+        m_descriptorSetLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        m_descriptorSetLayoutInfo.pNext = nullptr;
+        m_descriptorSetLayoutInfo.flags = 0;
+        m_descriptorSetLayoutInfo.bindingCount = 1;
+        m_descriptorSetLayoutInfo.pBindings = &m_uboLayoutBinding;
+
         m_pipelineLayoutInfo={};
         m_pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         m_pipelineLayoutInfo.pNext = nullptr;
         m_pipelineLayoutInfo.flags = 0;
-        m_pipelineLayoutInfo.setLayoutCount = 0;
-        m_pipelineLayoutInfo.pSetLayouts = nullptr;
         m_pipelineLayoutInfo.pushConstantRangeCount = 0;
         m_pipelineLayoutInfo.pPushConstantRanges = nullptr;
 
@@ -176,9 +188,17 @@ namespace Fierce {
 	VK_Pipeline::~VK_Pipeline(){
         vkDestroyPipeline(m_device->getDevice(), m_graphicsPipeline, nullptr);
         vkDestroyPipelineLayout(m_device->getDevice(), m_pipelineLayout, nullptr);
+        vkDestroyDescriptorSetLayout(m_device->getDevice(),m_descriptorSetLayout,nullptr);
 	}
 
 	void VK_Pipeline::create(){
+        if (vkCreateDescriptorSetLayout(m_device->getDevice(), &m_descriptorSetLayoutInfo, nullptr, &m_descriptorSetLayout) != VK_SUCCESS) {
+            RenderSystem::LOGGER->error("Failed to create descriptor set layout.");
+        }
+
+        m_pipelineLayoutInfo.setLayoutCount = 1;
+        m_pipelineLayoutInfo.pSetLayouts = &m_descriptorSetLayout;
+
         if (vkCreatePipelineLayout(m_device->getDevice(), &m_pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS) {
             RenderSystem::LOGGER->error("Failed to create pipeline layout.");
         }

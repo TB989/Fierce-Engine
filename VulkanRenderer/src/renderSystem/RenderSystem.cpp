@@ -1,6 +1,11 @@
 #include "RenderSystem.h"
 
 #include "glm.hpp"
+#include <gtc/matrix_transform.hpp>
+
+#include <iostream>
+
+#include "src/Matrix.h"
 
 #include "vulkanObjects/VK_Instance.h"
 #include "vulkanObjects/VK_Surface.h"
@@ -71,6 +76,31 @@ namespace Fierce {
 		m_swapchain = new VK_Swapchain(m_device, m_surface->getId(),VK_NULL_HANDLE);
 		m_swapchain->create();
 
+		//####################################################################################################################################
+		Mat4* projectionMatrix = new Mat4();
+		projectionMatrix->setToPerspectiveProjection((float)m_device->getSurfaceData()->swapchainWidth / (float)m_device->getSurfaceData()->swapchainHeight,45.0f, 0.1f, 10.0f);
+		projectionMatrix->print(RenderSystem::LOGGER,"Projection matrix");
+
+		glm::mat4 projectionMatrix2;
+		projectionMatrix2= glm::perspective(glm::radians(45.0f), (float)m_device->getSurfaceData()->swapchainWidth / (float)m_device->getSurfaceData()->swapchainHeight, 0.1f, 10.0f);
+		projectionMatrix2[1][1] *= -1;
+		for (int i = 0; i < 4; ++i) {
+			for (int j = 0; j < 4; ++j) {
+				std::cout << projectionMatrix2[i][j] << " ";
+			}
+			std::cout << std::endl;
+		}
+
+		glm::mat4 viewMatrix2;
+		viewMatrix2 = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		for (int i = 0; i < 4; ++i) {
+			for (int j = 0; j < 4; ++j) {
+				std::cout << viewMatrix2[i][j] << " ";
+			}
+			std::cout << std::endl;
+		}
+		//####################################################################################################################################
+
 		m_renderpass = new VK_Renderpass(m_device);
 		m_renderpass->create();
 
@@ -102,11 +132,11 @@ namespace Fierce {
 
 		//Create per frame ressources
 		for (int i = 0;i<NUM_FRAMES_IN_FLIGHT;i++) {
-			//framesData[i].commandPool = new VK_CommandPool(m_device);
-			//framesData[i].commandPool->create();
-
 			framesData[i].commandBuffer = new VK_CommandBuffer(m_device, m_commandPool->getId());
 			framesData[i].commandBuffer->create();
+
+			framesData[i].ubo = new VK_Buffer(m_device, 3*16 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+			framesData[i].ubo->create();
 
 			framesData[i].imageAvailableSemaphore = new VK_Semaphore(m_device->getDevice());
 			framesData[i].imageAvailableSemaphore->create();
@@ -152,6 +182,7 @@ namespace Fierce {
 
 	void RenderSystem::updateSystem(){
 		beginFrame();
+		updateUniformBuffer();
 		recordCommandBuffer();
 		endFrame();
 	}
@@ -170,6 +201,7 @@ namespace Fierce {
 			delete framesData[i].renderFinishedFence;
 			delete framesData[i].renderFinishedSemaphore;
 			delete framesData[i].imageAvailableSemaphore;
+			delete framesData[i].ubo;
 			delete framesData[i].commandBuffer;
 		}
 
@@ -203,6 +235,21 @@ namespace Fierce {
 		frameData.commandBuffer->renderIndexed(6);
 		frameData.commandBuffer->endRenderpass();
 		frameData.commandBuffer->endRecording();
+	}
+
+	void RenderSystem::updateUniformBuffer(){
+		static auto startTime = std::chrono::high_resolution_clock::now();
+
+		auto currentTime = std::chrono::high_resolution_clock::now();
+		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
+		glm::mat4 model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		glm::mat4 view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)m_device->getSurfaceData()->swapchainWidth / (float)m_device->getSurfaceData()->swapchainHeight, 0.1f, 10.0f);
+		proj[1][1] *= -1;
+
+		FrameData& frameData = framesData[currentFrame];
+		frameData.ubo->loadData(3*16 * sizeof(float),model,view,proj);
 	}
 
 	void RenderSystem::recreateSwapchain(){

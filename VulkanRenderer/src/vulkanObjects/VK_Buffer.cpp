@@ -76,4 +76,21 @@ namespace Fierce {
 		vkUnmapMemory(m_device->getDevice(), m_memory);
 	}
 
+	void VK_Buffer::loadData(int size, glm::mat4 model, glm::mat4 view, glm::mat4 proj){
+		void* data1;
+		vkMapMemory(m_device->getDevice(), m_memory, 0, 16 * sizeof(float), 0, &data1);
+		memcpy(data1, &model, (size_t)(16 * sizeof(float)));
+		vkUnmapMemory(m_device->getDevice(), m_memory);
+
+		void* data2;
+		vkMapMemory(m_device->getDevice(), m_memory, 16 * sizeof(float), 16 * sizeof(float), 0, &data2);
+		memcpy(data2, &view, (size_t)(16 * sizeof(float)));
+		vkUnmapMemory(m_device->getDevice(), m_memory);
+
+		void* data3;
+		vkMapMemory(m_device->getDevice(), m_memory, 16 * sizeof(float), 2*16 * sizeof(float), 0, &data3);
+		memcpy(data3, &proj, (size_t)(16 * sizeof(float)));
+		vkUnmapMemory(m_device->getDevice(), m_memory);
+	}
+
 }//end namespace

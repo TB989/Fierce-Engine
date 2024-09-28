@@ -1,4 +1,4 @@
-project "VulkanRenderer"
+project "MathLibrary"
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
@@ -10,9 +10,7 @@ project "VulkanRenderer"
 
 	defines
 	{
-		"WIN32_LEAN_AND_MEAN",
-		"NOMINMAX",
-		"VK_USE_PLATFORM_WIN32_KHR"
+		
 	}
 
 	files
@@ -25,29 +23,17 @@ project "VulkanRenderer"
 	{
 		"%{wks.location}/%{prj.name}/src",
 		"%{IncludeDir.Logger}",
-		"%{IncludeDir.Utils}",
-		"%{IncludeDir.Vulkan}",
-		"%{IncludeDir.MathLibrary}",
-
-		"C:/Users/tmbal/Downloads/glfw-3.4.bin.WIN64/glfw-3.4.bin.WIN64/include",
-		"C:/Users/tmbal/Desktop/Fierce-Engine/extern/glm"
+		"%{IncludeDir.Utils}"
 	}
 
 	libdirs
 	{
-		"%{LibraryDir.Common}",
-		"%{LibraryDir.Vulkan}",
-
-		"C:/Users/tmbal/Downloads/glfw-3.4.bin.WIN64/glfw-3.4.bin.WIN64/lib-vc2022"
+		"%{LibraryDir.Common}"
 	}
 
 	links
 	{
-		"%{Library.Logger}",
-		"%{Library.Vulkan}",
-		"%{Library.MathLibrary}",
-
-		"glfw3.lib"
+		"%{Library.Logger}"
 	}
 
 	filter "system:windows"

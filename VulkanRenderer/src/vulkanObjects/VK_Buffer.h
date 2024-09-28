@@ -2,6 +2,8 @@
 
 #include "vulkan/vulkan.h"
 
+#include "glm.hpp"
+
 namespace Fierce {
 
 	class VK_Device;
@@ -19,6 +21,7 @@ namespace Fierce {
 
 		void loadData(int size, float* vertices);
 		void loadData(int size, uint16_t* indices);
+		void loadData(int size, glm::mat4 model, glm::mat4 view, glm::mat4 proj);
 
 	private:
 		//Create info

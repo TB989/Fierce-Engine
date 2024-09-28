@@ -25,6 +25,7 @@ namespace Fierce {
 		//Create info
 		VkGraphicsPipelineCreateInfo m_createInfo={};
 		VkPipelineLayoutCreateInfo m_pipelineLayoutInfo = {};
+		VkDescriptorSetLayoutCreateInfo m_descriptorSetLayoutInfo={};
 
 		VkPipelineShaderStageCreateInfo m_vertexShaderStageInfo={};
 		VkPipelineShaderStageCreateInfo m_fragmentShaderStageInfo={};
@@ -44,9 +45,13 @@ namespace Fierce {
 		VkVertexInputBindingDescription m_inputBindingDescription={};
 		std::vector<VkVertexInputAttributeDescription> m_attributeDescriptions;
 
+		//Descriptors
+		VkDescriptorSetLayoutBinding m_uboLayoutBinding={};
+
 		//Vulkan objects
 		VkRenderPass m_renderpass=VK_NULL_HANDLE;
 		VK_Device* m_device=nullptr;
+		VkDescriptorSetLayout m_descriptorSetLayout = VK_NULL_HANDLE;
 		VkPipelineLayout m_pipelineLayout=VK_NULL_HANDLE;
 		VkPipeline m_graphicsPipeline=VK_NULL_HANDLE;
 	};
