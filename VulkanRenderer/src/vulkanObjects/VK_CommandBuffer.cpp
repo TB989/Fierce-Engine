@@ -1,6 +1,7 @@
 #include "VK_CommandBuffer.h"
 
 #include "vulkanObjects/VK_Device.h"
+#include "vulkanObjects/VK_Pipeline.h"
 
 #include "renderSystem/RenderSystem.h"
 
@@ -31,10 +32,30 @@ namespace Fierce {
 		m_renderPassInfo.clearValueCount = 1;
 		m_renderPassInfo.pClearValues = &m_clearColor;
 
-		m_copyInfo = {};
-		m_copyInfo.srcOffset = 0;
-		m_copyInfo.dstOffset = 0;
+		m_bufferCopy = {};
+		m_bufferCopy.srcOffset = 0;
+		m_bufferCopy.dstOffset = 0;
 
+		m_bufferImageCopy = {};
+		m_bufferImageCopy.bufferOffset = 0;
+		m_bufferImageCopy.bufferRowLength = 0;
+		m_bufferImageCopy.bufferImageHeight = 0;
+		m_bufferImageCopy.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		m_bufferImageCopy.imageSubresource.mipLevel = 0;
+		m_bufferImageCopy.imageSubresource.baseArrayLayer = 0;
+		m_bufferImageCopy.imageSubresource.layerCount = 1;
+		m_bufferImageCopy.imageOffset = { 0, 0, 0 };
+
+		m_imageMemoryBarrier = {};
+		m_imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+		m_imageMemoryBarrier.pNext = nullptr;
+		m_imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+		m_imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+		m_imageMemoryBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		m_imageMemoryBarrier.subresourceRange.baseMipLevel = 0;
+		m_imageMemoryBarrier.subresourceRange.levelCount = 1;
+		m_imageMemoryBarrier.subresourceRange.baseArrayLayer = 0;
+		m_imageMemoryBarrier.subresourceRange.layerCount = 1;
 	}
 
 	VK_CommandBuffer::~VK_CommandBuffer(){
@@ -93,6 +114,10 @@ namespace Fierce {
 		vkCmdBindIndexBuffer(m_commandBuffer, buffer, 0, VK_INDEX_TYPE_UINT16);
 	}
 
+	void VK_CommandBuffer::bindDescriptorSet(VK_Pipeline* pipeline,VkDescriptorSet descriptorSet){
+		vkCmdBindDescriptorSets(m_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getLayout(), 0, 1, &descriptorSet, 0, nullptr);
+	}
+
 	void VK_CommandBuffer::setViewport(float width,float height){
 		VkViewport viewport={};
 		viewport.x = 0.0f;
@@ -121,8 +146,43 @@ namespace Fierce {
 	}
 
 	void VK_CommandBuffer::copy(VkBuffer source, VkBuffer destination,VkDeviceSize size){
-		m_copyInfo.size = size;
-		vkCmdCopyBuffer(m_commandBuffer, source, destination, 1, &m_copyInfo);
+		m_bufferCopy.size = size;
+		vkCmdCopyBuffer(m_commandBuffer, source, destination, 1, &m_bufferCopy);
+	}
+
+	void VK_CommandBuffer::copy(VkBuffer source, VkImage destination, uint32_t width,uint32_t height){
+		m_bufferImageCopy.imageExtent = { width,height,1 };
+		vkCmdCopyBufferToImage(m_commandBuffer,source,destination,VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,1,&m_bufferImageCopy);
+	}
+
+	void VK_CommandBuffer::imageBarrier(VkImage image,VkImageLayout oldLayout,VkImageLayout newLayout){
+		m_imageMemoryBarrier.image = image;
+		m_imageMemoryBarrier.oldLayout = oldLayout;
+		m_imageMemoryBarrier.newLayout = newLayout;
+
+		VkPipelineStageFlags sourceStage;
+		VkPipelineStageFlags destinationStage;
+
+		if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+			m_imageMemoryBarrier.srcAccessMask = 0;
+			m_imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+
+			sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+			destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+		}
+		else if(oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL){
+			m_imageMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+			m_imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+			sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+			destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+		}
+		else {
+			RenderSystem::LOGGER->error("Defined layout transition is not implemented.");
+			return;
+		}
+
+		vkCmdPipelineBarrier(m_commandBuffer, sourceStage,destinationStage, 0, 0, nullptr, 0, nullptr, 1, &m_imageMemoryBarrier);
 	}
 
 }//end namespace

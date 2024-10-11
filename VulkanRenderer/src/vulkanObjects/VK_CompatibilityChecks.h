@@ -112,4 +112,13 @@ namespace Fierce {
 		std::vector<VkPresentModeKHR> m_presentModes;
 	};
 
+	class VK_Check_Sampler_Anisotropy :public VK_CompatibilityCheck_Device {
+	public:
+		VK_Check_Sampler_Anisotropy() {
+
+		}
+
+		bool check(ExtensionValidationLayerData* data1, DeviceData* data2, SurfaceData* data3);
+	};
+
 }//end namespace

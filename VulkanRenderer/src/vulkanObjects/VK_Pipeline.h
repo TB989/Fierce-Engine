@@ -16,6 +16,7 @@ namespace Fierce {
 		void create();
 		VkPipeline getId() { return m_graphicsPipeline; }
 		VkPipelineLayout getLayout() { return m_pipelineLayout; }
+		VkDescriptorSetLayout getDescriptorSetLayout() { return m_descriptorSetLayout; }
 
 	public:
 		void addVertexShader(VkShaderModule shader);
@@ -46,7 +47,7 @@ namespace Fierce {
 		std::vector<VkVertexInputAttributeDescription> m_attributeDescriptions;
 
 		//Descriptors
-		VkDescriptorSetLayoutBinding m_uboLayoutBinding={};
+		std::vector<VkDescriptorSetLayoutBinding> m_layoutBindings;
 
 		//Vulkan objects
 		VkRenderPass m_renderpass=VK_NULL_HANDLE;

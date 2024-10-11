@@ -31,7 +31,7 @@ namespace Fierce {
         //Mesh/////////////////////////////////////////////////////////////////////////////
         m_inputBindingDescription = {};
         m_inputBindingDescription.binding = 0;
-        m_inputBindingDescription.stride = 5*sizeof(float);
+        m_inputBindingDescription.stride = 7*sizeof(float);
         m_inputBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
         VkVertexInputAttributeDescription descriptionPosition = {};
@@ -47,6 +47,13 @@ namespace Fierce {
         descriptionColor.format = VK_FORMAT_R32G32B32_SFLOAT;
         descriptionColor.offset = 2*sizeof(float);
         m_attributeDescriptions.push_back(descriptionColor);
+
+        VkVertexInputAttributeDescription descriptionTex = {};
+        descriptionTex.binding = 0;
+        descriptionTex.location = 2;
+        descriptionTex.format = VK_FORMAT_R32G32_SFLOAT;
+        descriptionTex.offset = 5 * sizeof(float);
+        m_attributeDescriptions.push_back(descriptionTex);
 
         ////////////////////////////////////////////////////////////////////////////////////
 
@@ -94,7 +101,7 @@ namespace Fierce {
         m_rasterizer.depthClampEnable = VK_FALSE;
         m_rasterizer.rasterizerDiscardEnable = VK_FALSE;
         m_rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
-        m_rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+        m_rasterizer.cullMode = VK_CULL_MODE_NONE;
         m_rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
         m_rasterizer.depthBiasEnable = VK_FALSE;
         m_rasterizer.depthBiasConstantFactor = 0.0f;
@@ -145,19 +152,28 @@ namespace Fierce {
         m_dynamicState.dynamicStateCount = static_cast<uint32_t>(m_dynamicStates.size());
         m_dynamicState.pDynamicStates = m_dynamicStates.data();
 
-        m_uboLayoutBinding = {};
+        VkDescriptorSetLayoutBinding m_uboLayoutBinding = {};
         m_uboLayoutBinding.binding = 0;
         m_uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         m_uboLayoutBinding.descriptorCount = 1;
         m_uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
         m_uboLayoutBinding.pImmutableSamplers = nullptr;
+        m_layoutBindings.push_back(m_uboLayoutBinding);
+
+        VkDescriptorSetLayoutBinding m_samplerLayoutBinding = {};
+        m_samplerLayoutBinding.binding = 1;
+        m_samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        m_samplerLayoutBinding.descriptorCount = 1;
+        m_samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+        m_samplerLayoutBinding.pImmutableSamplers = nullptr;
+        m_layoutBindings.push_back(m_samplerLayoutBinding);
 
         m_descriptorSetLayoutInfo = {};
         m_descriptorSetLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
         m_descriptorSetLayoutInfo.pNext = nullptr;
         m_descriptorSetLayoutInfo.flags = 0;
-        m_descriptorSetLayoutInfo.bindingCount = 1;
-        m_descriptorSetLayoutInfo.pBindings = &m_uboLayoutBinding;
+        m_descriptorSetLayoutInfo.bindingCount = static_cast<uint32_t>(m_layoutBindings.size());
+        m_descriptorSetLayoutInfo.pBindings = m_layoutBindings.data();
 
         m_pipelineLayoutInfo={};
         m_pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;

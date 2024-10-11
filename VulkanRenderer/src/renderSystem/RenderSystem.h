@@ -24,6 +24,13 @@ namespace Fierce {
 	class VK_Semaphore;
 	class VK_Fence;
 	class VK_Buffer;
+	class VK_DescriptorPool;
+	class VK_DescriptorSet;
+	class VK_Image;
+	class VK_ImageView;
+	class VK_Sampler;
+
+	class Mat4;
 
 	class RenderSystem:public System {
 	public:
@@ -45,6 +52,7 @@ namespace Fierce {
 		struct FrameData {
 			VK_CommandBuffer* commandBuffer;
 			VK_Buffer* ubo;
+			VK_DescriptorSet* descriptorSet;
 
 			VK_Semaphore* imageAvailableSemaphore;
 			VK_Semaphore* renderFinishedSemaphore;
@@ -87,6 +95,18 @@ namespace Fierce {
 		VK_Buffer* m_vertexStagingBuffer = nullptr;
 		VK_Buffer* m_indexBuffer = nullptr;
 		VK_Buffer* m_indexStagingBuffer = nullptr;
+
+		VK_DescriptorPool* m_descriptorPool = nullptr;
+
+		Mat4* m_modelMatrix=nullptr;
+		Mat4* m_viewMatrix=nullptr;
+		Mat4* m_projMatrix=nullptr;
+
+		VK_CommandBuffer* m_uploadGraphicsBuffer=nullptr;
+		VK_Buffer* m_imageStagingBuffer=nullptr;
+		VK_Image* m_image=nullptr;
+		VK_ImageView* m_imageView = nullptr;
+		VK_Sampler* m_sampler=nullptr;
 	};
 
 }//end namespace

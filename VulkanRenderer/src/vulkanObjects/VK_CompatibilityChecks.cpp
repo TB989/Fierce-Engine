@@ -154,4 +154,12 @@ namespace Fierce {
         return false;
     }
 
+    bool VK_Check_Sampler_Anisotropy ::check(ExtensionValidationLayerData* data1, DeviceData* data2, SurfaceData* data3) {
+        if (data2->supportedDeviceFeatures.samplerAnisotropy==VK_TRUE) {
+            data2->enabledDeviceFeatures.samplerAnisotropy = VK_TRUE;
+        }
+        RenderSystem::LOGGER->info("Sampler anisotropy check passed for device %s.", data2->deviceProperties.deviceName);
+        return true;
+    }
+
 }//end namespace

@@ -19,9 +19,13 @@ namespace Fierce {
 	public:
 		void shareRessourcesWithTransferQueue() { m_shareRessourcesWithTransferQueue = true; }
 
+		VkDeviceSize getSize() { return m_size; }
+
 		void loadData(int size, float* vertices);
 		void loadData(int size, uint16_t* indices);
 		void loadData(int size, glm::mat4 model, glm::mat4 view, glm::mat4 proj);
+		void loadData(int size, float* model, float* view, float* proj);
+		void loadData(int size, unsigned char* data);
 
 	private:
 		//Create info
@@ -30,6 +34,7 @@ namespace Fierce {
 
 		//Misc
 		VkMemoryPropertyFlags m_memoryFlags = {};
+		VkDeviceSize m_size=0;
 
 		//Vulkan objects
 		VK_Device* m_device=nullptr;

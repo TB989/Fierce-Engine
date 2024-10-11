@@ -20,6 +20,14 @@
 #include "vulkanObjects/VK_Semaphore.h"
 #include "vulkanObjects/VK_Fence.h"
 #include "vulkanObjects/VK_Buffer.h"
+#include "vulkanObjects/VK_DescriptorPool.h"
+#include "vulkanObjects/VK_DescriptorSet.h"
+#include "vulkanObjects/VK_Image.h"
+#include "vulkanObjects//VK_ImageView.h"
+#include "vulkanObjects/VK_Sampler.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "imageLoading/stb_image.h"
 
 namespace Fierce {
 
@@ -56,16 +64,17 @@ namespace Fierce {
 		m_device->addCheck(new VK_Check_Device_Queues());
 		m_device->addCheck(new VK_Check_Device_Surface_Format({ VK_FORMAT_B8G8R8A8_SRGB }));
 		m_device->addCheck(new VK_Check_Device_Surface_PresentMode({ VK_PRESENT_MODE_MAILBOX_KHR, VK_PRESENT_MODE_FIFO_KHR }));
+		m_device->addCheck(new VK_Check_Sampler_Anisotropy());
 		//m_device->printSupportedData(false, false, true, false, false, false, true, false);
 		m_device->create();
 		//m_device->printActiveData(false,false,true,false,false,false,true,false);
 
 		//####################################################################################################################################
 		float vertices[] = {
-			-0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-			0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-			0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-			-0.5f, 0.5f, 1.0f, 1.0f, 1.0f
+			-0.5f, -0.5f, 1.0f, 0.0f, 0.0f,1.0f,0.0f,
+			0.5f, -0.5f, 0.0f, 1.0f, 0.0f,0.0f,0.0f,
+			0.5f, 0.5f, 0.0f, 0.0f, 1.0f,0.0f,1.0f,
+			-0.5f, 0.5f, 1.0f, 1.0f, 1.0f,1.0f,1.0f
 		};
 
 		uint16_t indices[] = {
@@ -76,39 +85,14 @@ namespace Fierce {
 		m_swapchain = new VK_Swapchain(m_device, m_surface->getId(),VK_NULL_HANDLE);
 		m_swapchain->create();
 
-		//####################################################################################################################################
-		Mat4* projectionMatrix = new Mat4();
-		projectionMatrix->setToPerspectiveProjection((float)m_device->getSurfaceData()->swapchainWidth / (float)m_device->getSurfaceData()->swapchainHeight,45.0f, 0.1f, 10.0f);
-		projectionMatrix->print(RenderSystem::LOGGER,"Projection matrix");
-
-		glm::mat4 projectionMatrix2;
-		projectionMatrix2= glm::perspective(glm::radians(45.0f), (float)m_device->getSurfaceData()->swapchainWidth / (float)m_device->getSurfaceData()->swapchainHeight, 0.1f, 10.0f);
-		projectionMatrix2[1][1] *= -1;
-		for (int i = 0; i < 4; ++i) {
-			for (int j = 0; j < 4; ++j) {
-				std::cout << projectionMatrix2[i][j] << " ";
-			}
-			std::cout << std::endl;
-		}
-
-		glm::mat4 viewMatrix2;
-		viewMatrix2 = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		for (int i = 0; i < 4; ++i) {
-			for (int j = 0; j < 4; ++j) {
-				std::cout << viewMatrix2[i][j] << " ";
-			}
-			std::cout << std::endl;
-		}
-		//####################################################################################################################################
-
 		m_renderpass = new VK_Renderpass(m_device);
 		m_renderpass->create();
 
 		m_vertexShader = new VK_Shader(m_device->getDevice());
-		m_vertexShader->setSourceCode("secondShader_vert.spv");
+		m_vertexShader->setSourceCode("fourthShader_vert.spv");
 		m_vertexShader->create();
 		m_fragmentShader = new VK_Shader(m_device->getDevice());
-		m_fragmentShader->setSourceCode("secondShader_frag.spv");
+		m_fragmentShader->setSourceCode("fourthShader_frag.spv");
 		m_fragmentShader->create();
 
 		m_pipeline = new VK_Pipeline(m_device,m_renderpass->getId());
@@ -130,6 +114,11 @@ namespace Fierce {
 		m_dedicated_commandBuffer = new VK_CommandBuffer(m_device, m_dedicated_commandPool->getId());
 		m_dedicated_commandBuffer->create();
 
+		m_descriptorPool = new VK_DescriptorPool(m_device->getDevice());
+		m_descriptorPool->addDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,NUM_FRAMES_IN_FLIGHT);
+		m_descriptorPool->addDescriptorType(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, NUM_FRAMES_IN_FLIGHT);
+		m_descriptorPool->create();
+
 		//Create per frame ressources
 		for (int i = 0;i<NUM_FRAMES_IN_FLIGHT;i++) {
 			framesData[i].commandBuffer = new VK_CommandBuffer(m_device, m_commandPool->getId());
@@ -137,6 +126,9 @@ namespace Fierce {
 
 			framesData[i].ubo = new VK_Buffer(m_device, 3*16 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 			framesData[i].ubo->create();
+
+			framesData[i].descriptorSet = new VK_DescriptorSet(m_device->getDevice(),m_descriptorPool->getId(),m_pipeline);
+			framesData[i].descriptorSet->create();
 
 			framesData[i].imageAvailableSemaphore = new VK_Semaphore(m_device->getDevice());
 			framesData[i].imageAvailableSemaphore->create();
@@ -149,11 +141,11 @@ namespace Fierce {
 		}
 
 		//MESH/////////////////////////////////////////////////////////////////////////////////////////////////////
-		m_vertexStagingBuffer = new VK_Buffer(m_device, 20 * sizeof(float), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+		m_vertexStagingBuffer = new VK_Buffer(m_device, 4*7 * sizeof(float), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 		m_vertexStagingBuffer->create();
-		m_vertexStagingBuffer->loadData(20 * sizeof(float),vertices);
+		m_vertexStagingBuffer->loadData(4*7 * sizeof(float),vertices);
 
-		m_vertexBuffer = new VK_Buffer(m_device, 20 * sizeof(float), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		m_vertexBuffer = new VK_Buffer(m_device, 4*7 * sizeof(float), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 		m_vertexBuffer->shareRessourcesWithTransferQueue();
 		m_vertexBuffer->create();
 
@@ -165,9 +157,33 @@ namespace Fierce {
 		m_indexBuffer->shareRessourcesWithTransferQueue();
 		m_indexBuffer->create();
 
+		//IMAGE////////////////////////////////////////////////////////////////////////////////////////////////////
+		int texWidth, texHeight, texChannels;
+		stbi_uc* pixels = stbi_load("C:/Users/tmbal/Desktop/Fierce-Engine/VulkanRenderer/res/texture.jpg", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+		VkDeviceSize imageSize = texWidth * texHeight * 4;
+
+		if (!pixels) {
+			RenderSystem::LOGGER->error("Unable to load image.");
+		}
+
+		m_imageStagingBuffer = new VK_Buffer(m_device, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+		m_imageStagingBuffer->create();
+		m_imageStagingBuffer->loadData(imageSize, pixels);
+
+		stbi_image_free(pixels);
+
+		m_image = new VK_Image(m_device, texWidth, texHeight, imageSize, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		m_image->shareRessourcesWithTransferQueue();
+		m_image->create();
+
+		//Record buffer
 		m_dedicated_commandBuffer->startRecording();
-		m_dedicated_commandBuffer->copy(m_vertexStagingBuffer->getId(),m_vertexBuffer->getId(), 20 * sizeof(float));
+		m_dedicated_commandBuffer->copy(m_vertexStagingBuffer->getId(),m_vertexBuffer->getId(), 4*7 * sizeof(float));
 		m_dedicated_commandBuffer->copy(m_indexStagingBuffer->getId(), m_indexBuffer->getId(), 6 * sizeof(uint16_t));
+		m_dedicated_commandBuffer->imageBarrier(m_image->getId(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+		m_dedicated_commandBuffer->copy(m_imageStagingBuffer->getId(), m_image->getId(), texWidth,texHeight);
+		//######## TODO #########: Do this on graphics queue 
+		//m_dedicated_commandBuffer->imageBarrier(m_image->getId(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		m_dedicated_commandBuffer->endRecording();
 		m_device->submitCommandBufferOnTransferQueue(m_dedicated_commandBuffer->getId(), VK_NULL_HANDLE, VK_NULL_HANDLE, 0, VK_NULL_HANDLE);
 
@@ -175,8 +191,37 @@ namespace Fierce {
 			RenderSystem::LOGGER->error("Failed to wait for idle queue.");
 		}
 
+		m_uploadGraphicsBuffer = new VK_CommandBuffer(m_device,m_commandPool->getId());
+		m_uploadGraphicsBuffer->create();
+		m_uploadGraphicsBuffer->startRecording();
+		m_uploadGraphicsBuffer->imageBarrier(m_image->getId(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		m_uploadGraphicsBuffer->endRecording();
+		m_device->submitCommandBufferOnGraphicsQueue(m_uploadGraphicsBuffer->getId(), VK_NULL_HANDLE, VK_NULL_HANDLE, 0, VK_NULL_HANDLE);
+
+		if (vkQueueWaitIdle(m_device->getGraphicsQueue()) != VK_SUCCESS) {
+			RenderSystem::LOGGER->error("Failed to wait for idle queue.");
+		}
+
+		m_imageView = new VK_ImageView(m_device->getDevice(),m_image->getId());
+		m_imageView->create();
+
+		m_sampler = new VK_Sampler(m_device);
+		m_sampler->create();
+
+		for (int i = 0; i < NUM_FRAMES_IN_FLIGHT; i++) {
+			framesData[i].descriptorSet->update(framesData[i].ubo,m_imageView->getId(),m_sampler->getId());
+		}
+
+		delete m_uploadGraphicsBuffer;
+
 		delete m_indexStagingBuffer;
 		delete m_vertexStagingBuffer;
+		delete m_imageStagingBuffer;
+
+		m_modelMatrix = new Mat4();
+		m_modelMatrix->scale(100.0f, 100.0f, 1.0f);
+		m_viewMatrix = new Mat4();
+		m_projMatrix = new Mat4();
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	}
 
@@ -192,6 +237,13 @@ namespace Fierce {
 			LOGGER->error("Failed to wait for idle device.");
 		}
 
+		delete m_modelMatrix;
+		delete m_viewMatrix;
+		delete m_projMatrix;
+
+		delete m_sampler;
+		delete m_imageView;
+		delete m_image;
 		delete m_indexBuffer;
 		delete m_vertexBuffer;
 
@@ -201,9 +253,12 @@ namespace Fierce {
 			delete framesData[i].renderFinishedFence;
 			delete framesData[i].renderFinishedSemaphore;
 			delete framesData[i].imageAvailableSemaphore;
+			delete framesData[i].descriptorSet;
 			delete framesData[i].ubo;
 			delete framesData[i].commandBuffer;
 		}
+
+		delete m_descriptorPool;
 
 		delete m_commandPool;
 
@@ -232,6 +287,7 @@ namespace Fierce {
 		frameData.commandBuffer->bindIndexBuffer(m_indexBuffer->getId());
 		frameData.commandBuffer->setViewport(static_cast<float>(m_device->getSurfaceData()->swapchainWidth), static_cast<float>(m_device->getSurfaceData()->swapchainHeight));
 		frameData.commandBuffer->setScissor(m_device->getSurfaceData()->swapchainWidth, m_device->getSurfaceData()->swapchainHeight);
+		frameData.commandBuffer->bindDescriptorSet(m_pipeline,frameData.descriptorSet->getId());
 		frameData.commandBuffer->renderIndexed(6);
 		frameData.commandBuffer->endRenderpass();
 		frameData.commandBuffer->endRecording();
@@ -243,13 +299,11 @@ namespace Fierce {
 		auto currentTime = std::chrono::high_resolution_clock::now();
 		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
-		glm::mat4 model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		glm::mat4 view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)m_device->getSurfaceData()->swapchainWidth / (float)m_device->getSurfaceData()->swapchainHeight, 0.1f, 10.0f);
-		proj[1][1] *= -1;
+		m_modelMatrix->rotateZ(0.01f);
+		m_projMatrix->setToOrthographicProjection(false, (float)m_device->getSurfaceData()->swapchainWidth,(float)m_device->getSurfaceData()->swapchainHeight,0.0f,1.0f);
 
 		FrameData& frameData = framesData[currentFrame];
-		frameData.ubo->loadData(3*16 * sizeof(float),model,view,proj);
+		frameData.ubo->loadData(3*16 * sizeof(float),m_modelMatrix->get(), m_viewMatrix->get(), m_projMatrix->get());
 	}
 
 	void RenderSystem::recreateSwapchain(){

@@ -5,6 +5,7 @@
 namespace Fierce {
 
 	class VK_Device;
+	class VK_Pipeline;
 
 	class VK_CommandBuffer {
 	public:
@@ -27,12 +28,18 @@ namespace Fierce {
 		void bindPipeline(VkPipeline pipeline);
 		void bindVertexBuffer(VkBuffer buffer);
 		void bindIndexBuffer(VkBuffer buffer);
+		void bindDescriptorSet(VK_Pipeline* pipeline, VkDescriptorSet descriptorSet);
+
 		void setViewport(float width, float height);
 		void setScissor(uint32_t width, uint32_t height);
+
 		void render(int vertexCount);
 		void renderIndexed(int indexCount);
 
 		void copy(VkBuffer source, VkBuffer destination, VkDeviceSize size);
+		void copy(VkBuffer source, VkImage destination, uint32_t width, uint32_t height);
+
+		void imageBarrier(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout);
 
 	private:
 		//Create info
@@ -41,7 +48,11 @@ namespace Fierce {
 		//Command infos
 		VkCommandBufferBeginInfo m_beginInfo={};
 		VkRenderPassBeginInfo m_renderPassInfo={};
-		VkBufferCopy m_copyInfo = {};
+
+		//Copying
+		VkBufferCopy m_bufferCopy = {};
+		VkBufferImageCopy m_bufferImageCopy = {};
+		VkImageMemoryBarrier m_imageMemoryBarrier={};
 
 		//Misc
 		VkClearValue m_clearColor = { 0.0f, 0.0f, 0.0f, 1.0f };

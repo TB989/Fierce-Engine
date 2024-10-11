@@ -225,50 +225,122 @@ namespace Fierce {
 		M33 = 1;
 	}
 
-	void Mat4::setToOrthographicProjection(float width, float height, float n, float f){
-		M00 = 1.0f / width;
-		M10 = 0;
-		M20 = 0;
-		M30 = -1.0f;
+	/*
+	* OpenGL
+	* 2/width 0        0             0
+	* 0       2/height 0             0
+	* 0       0        -2/(far-near) -(far+near)/(far-near)
+	* 0       0        0             1
+	*
+	* Vulkan
+	* 2/width 0         0             0
+	* 0       -2/height 0             0
+	* 0       0         1/(far-near)  near/(far-near)
+	* 0       0         0             1
+	*/
+	void Mat4::setToOrthographicProjection(bool forOpenGL, float width, float height, float n, float f){
+		if (forOpenGL) {
+			M00 = 2.0f / width;
+			M10 = 0;
+			M20 = 0;
+			M30 = 0;
 
-		M01 = 0;
-		M11 = -1.0f / height;
-		M21 = 0;
-		M31 = 1.0f;
+			M01 = 0;
+			M11 = 2.0f / height;
+			M21 = 0;
+			M31 = 0;
 
-		M02 = 0;
-		M12 = 0;
-		M22 = 2.0f / (n-f);
-		M32 = (n+f) / (n-f);
+			M02 = 0;
+			M12 = 0;
+			M22 = 2.0f / (n - f);
+			M32 = (n + f) / (n - f);
 
-		M03 = 0;
-		M13 = 0;
-		M23 = 0;
-		M33 = 1;
+			M03 = 0;
+			M13 = 0;
+			M23 = 0;
+			M33 = 1;
+		}
+		else {
+			M00 = 2.0f / width;
+			M10 = 0;
+			M20 = 0;
+			M30 = 0;
+
+			M01 = 0;
+			M11 = -2.0f / height;
+			M21 = 0;
+			M31 = 0;
+
+			M02 = 0;
+			M12 = 0;
+			M22 = 1.0f / (f - n);
+			M32 = n / (f - n);
+
+			M03 = 0;
+			M13 = 0;
+			M23 = 0;
+			M33 = 1;
+		}
 	}
 
-	void Mat4::setToPerspectiveProjection(float aspect, float FOV, float n, float f){
+	/*
+	* OpenGL
+	* 1/(aspect*tan(FOV/2)) 0               0                      0
+	* 0                     1/(tan(FOV/2))  0                      0
+	* 0                     0               -(far+near)/(far-near) -(2*far*near)/(far-near)
+	* 0                     0               -1                     0
+	* 
+	* Vulkan
+	* 1/(aspect*tan(FOV/2)) 0                0              0
+	* 0                     -1/(tan(FOV/2))  0              0
+	* 0                     0                far/(far-near) -(far*near)/(far-near)
+	* 0                     0                1              0
+	*/
+	void Mat4::setToPerspectiveProjection(bool forOpenGL,float aspect, float FOV, float n, float f){
 		float t = tanf(M_PI *FOV / 360.0f);
 
-		M00 = 1.0f / (t*aspect);
-		M10 = 0;
-		M20 = 0;
-		M30 = 0;
+		if (forOpenGL) {
+			M00 = 1.0f / (t * aspect);
+			M10 = 0;
+			M20 = 0;
+			M30 = 0;
 
-		M01 = 0;
-		M11 = 1.0f / t;
-		M21 = 0;
-		M31 = 0;
+			M01 = 0;
+			M11 = 1.0f / t;
+			M21 = 0;
+			M31 = 0;
 
-		M02 = 0;
-		M12 = 0;
-		M22 = (n + f) / (n - f);
-		M32 = 2*n*f / (n-f);
+			M02 = 0;
+			M12 = 0;
+			M22 = (n + f) / (n - f);
+			M32 = 2 * n * f / (n - f);
 
-		M03 = 0;
-		M13 = 0;
-		M23 = -1;
-		M33 = 0;
+			M03 = 0;
+			M13 = 0;
+			M23 = -1;
+			M33 = 0;
+		}
+		else {
+			M00 = 1.0f / (t * aspect);
+			M10 = 0;
+			M20 = 0;
+			M30 = 0;
+
+			M01 = 0;
+			M11 = -1.0f / t;
+			M21 = 0;
+			M31 = 0;
+
+			M02 = 0;
+			M12 = 0;
+			M22 = f / (f - n);
+			M32 = n * f / (n - f);
+
+			M03 = 0;
+			M13 = 0;
+			M23 = 1;
+			M33 = 0;
+		}
 	}
 
 	void Mat4::setToTransform(Transform2D transform){

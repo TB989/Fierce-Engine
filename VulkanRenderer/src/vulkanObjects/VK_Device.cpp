@@ -219,6 +219,10 @@ namespace Fierce {
         }
     }
 
+    bool VK_Device::supportsSamplerAnisotropy(){
+        return m_supportedDeviceData[m_indexActivePhysicalDevice].enabledDeviceFeatures.samplerAnisotropy == VK_TRUE;
+    }
+
     void VK_Device::printActiveData(bool printExtensions, bool printLayers, bool printDeviceProperties, bool printDeviceLimits, bool printDeviceFeatures, bool printDeviceMemoryProperties, bool printDeviceQueueFamilies, bool printSurfaceData){
         if (printExtensions) {
             printActiveExtensions(m_indexActivePhysicalDevice);

@@ -48,8 +48,8 @@ namespace Fierce {
 		void setToYRotation(float angle);
 		void setToZRotation(float angle);
 		void setToScale(float scaleX,float scaleY,float scaleZ);
-		void setToOrthographicProjection(float width, float height,float n,float f);
-		void setToPerspectiveProjection(float aspect, float FOV, float n, float f);
+		void setToOrthographicProjection(bool forOpenGL, float width, float height,float n,float f);
+		void setToPerspectiveProjection(bool forOpenGL, float aspect, float FOV, float n, float f);
 		void setToTransform(Transform2D transform);
 		void setToTransform(Transform3D transform);
 		void setToView(Transform3D transform);

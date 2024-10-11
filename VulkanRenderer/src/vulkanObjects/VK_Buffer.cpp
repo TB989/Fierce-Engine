@@ -9,12 +9,13 @@ namespace Fierce {
 	VK_Buffer::VK_Buffer(VK_Device* device, int size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties){
 		m_device = device;
 		m_memoryFlags = properties;
+		m_size = size;
 
 		m_createInfo = {};
 		m_createInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 		m_createInfo.pNext = nullptr;
 		m_createInfo.flags = 0;
-		m_createInfo.size = size;
+		m_createInfo.size = m_size;
 		m_createInfo.usage = usage;
 
 		m_allocateInfo = {};
@@ -88,8 +89,34 @@ namespace Fierce {
 		vkUnmapMemory(m_device->getDevice(), m_memory);
 
 		void* data3;
-		vkMapMemory(m_device->getDevice(), m_memory, 16 * sizeof(float), 2*16 * sizeof(float), 0, &data3);
+		vkMapMemory(m_device->getDevice(), m_memory, 2*16 * sizeof(float), 16 * sizeof(float), 0, &data3);
 		memcpy(data3, &proj, (size_t)(16 * sizeof(float)));
+		vkUnmapMemory(m_device->getDevice(), m_memory);
+	}
+
+	void VK_Buffer::loadData(int size, float* model, float* view, float* proj) {
+		void* data1;
+		vkMapMemory(m_device->getDevice(), m_memory, 0, 16 * sizeof(float), 0, &data1);
+		memcpy(data1, model, (size_t)(16 * sizeof(float)));
+		vkUnmapMemory(m_device->getDevice(), m_memory);
+
+		void* data2;
+		vkMapMemory(m_device->getDevice(), m_memory, 16 * sizeof(float), 16 * sizeof(float), 0, &data2);
+		memcpy(data2, view, (size_t)(16 * sizeof(float)));
+		vkUnmapMemory(m_device->getDevice(), m_memory);
+
+		void* data3;
+		vkMapMemory(m_device->getDevice(), m_memory, 2 * 16 * sizeof(float), 16 * sizeof(float), 0, &data3);
+		memcpy(data3, proj, (size_t)(16 * sizeof(float)));
+		vkUnmapMemory(m_device->getDevice(), m_memory);
+	}
+
+	void VK_Buffer::loadData(int size, unsigned char* data){
+		void* temp;
+		if (vkMapMemory(m_device->getDevice(), m_memory, 0, size, 0, &temp) != VK_SUCCESS) {
+			RenderSystem::LOGGER->error("Failed to map buffer memory.");
+		}
+		memcpy(temp, data, (size_t)size);
 		vkUnmapMemory(m_device->getDevice(), m_memory);
 	}
 
