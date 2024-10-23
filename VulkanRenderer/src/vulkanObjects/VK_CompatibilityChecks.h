@@ -24,6 +24,8 @@ namespace Fierce {
 		int graphicsQueueIndex = -1;
 		int transferQueueIndex = -1;
 		int computeQueueIndex = -1;
+
+		bool hasDedicatedTransferQueue = false;
 	};
 
 	struct SurfaceData {

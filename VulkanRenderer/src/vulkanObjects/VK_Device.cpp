@@ -2,6 +2,9 @@
 
 #include "renderSystem/RenderSystem.h"
 
+#include "vulkanObjects/VK_CommandPool.h"
+#include "vulkanObjects/VK_CommandBuffer.h"
+
 #include "VK_Helper_Extensions_ValidationLayers.h"
 #include "VK_HelperDevice.h"
 
@@ -32,6 +35,13 @@ namespace Fierce {
     }
 
     VK_Device::~VK_Device() {
+        if (m_supportedDeviceData[m_indexActivePhysicalDevice].hasDedicatedTransferQueue) {
+            delete m_graphicsCommandPool;
+            delete m_transferCommandPool;
+        }
+        else {
+            delete m_graphicsCommandPool;
+        }
         vkDestroyDevice(m_device, nullptr);
     }
 
@@ -66,7 +76,7 @@ namespace Fierce {
 
     void VK_Device::setupQueues(){
         //Unified graphics and transfer queue
-        if (m_supportedDeviceData[m_indexActivePhysicalDevice].graphicsQueueIndex == m_supportedDeviceData[m_indexActivePhysicalDevice].transferQueueIndex) {
+        if (!m_supportedDeviceData[m_indexActivePhysicalDevice].hasDedicatedTransferQueue) {
             VkDeviceQueueCreateInfo m_queueCreateInfo = {};
             m_queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
             m_queueCreateInfo.pNext = nullptr;
@@ -129,6 +139,7 @@ namespace Fierce {
         createLogicalDevice();
         vkGetDeviceQueue(m_device, m_supportedDeviceData[m_indexActivePhysicalDevice].graphicsQueueIndex, 0, &m_graphicsQueue);
         vkGetDeviceQueue(m_device, m_supportedDeviceData[m_indexActivePhysicalDevice].transferQueueIndex, 0, &m_transferQueue);
+        createCommandPools();
     }
 
     void VK_Device::requerySurfaceData(){
@@ -147,7 +158,7 @@ namespace Fierce {
         RenderSystem::LOGGER->error("Failed to find suitable memory type.");
     }
 
-    void VK_Device::submitCommandBufferOnGraphicsQueue(VkCommandBuffer commandBuffer, VkSemaphore waitSemaphore, VkSemaphore signalSemaphore, VkPipelineStageFlags waitStageMask, VkFence waitFence) {
+    void VK_Device::submitCommandBuffer(QUEUE_TYPE queue,VkCommandBuffer commandBuffer, VkSemaphore waitSemaphore, VkSemaphore signalSemaphore, VkPipelineStageFlags waitStageMask, VkFence waitFence) {
         m_submitInfo.commandBufferCount = 1;
         m_submitInfo.pCommandBuffers = &commandBuffer;
 
@@ -172,55 +183,50 @@ namespace Fierce {
         m_submitInfo.pWaitDstStageMask = &waitStageMask;
 
         if (waitFence == VK_NULL_HANDLE) {
-            if (vkQueueSubmit(m_graphicsQueue, 1, &m_submitInfo, nullptr)!=VK_SUCCESS) {
-                RenderSystem::LOGGER->error("Failed to submit queue.");
+            if (queue==GRAPHICS) {
+                if (vkQueueSubmit(m_graphicsQueue, 1, &m_submitInfo, nullptr) != VK_SUCCESS) {
+                    RenderSystem::LOGGER->error("Failed to submit queue.");
+                }
+            }
+            else {
+                if (vkQueueSubmit(m_transferQueue, 1, &m_submitInfo, nullptr) != VK_SUCCESS) {
+                    RenderSystem::LOGGER->error("Failed to submit queue.");
+                }
             }
         }
         else {
-            if (vkQueueSubmit(m_graphicsQueue, 1, &m_submitInfo, waitFence)) {
-                RenderSystem::LOGGER->error("Failed to submit queue.");
+            if (queue == GRAPHICS) {
+                if (vkQueueSubmit(m_graphicsQueue, 1, &m_submitInfo, waitFence)) {
+                    RenderSystem::LOGGER->error("Failed to submit queue.");
+                }
             }
-        }
-    }
-
-    void VK_Device::submitCommandBufferOnTransferQueue(VkCommandBuffer commandBuffer, VkSemaphore waitSemaphore, VkSemaphore signalSemaphore, VkPipelineStageFlags waitStageMask, VkFence waitFence) {
-        m_submitInfo.commandBufferCount = 1;
-        m_submitInfo.pCommandBuffers = &commandBuffer;
-
-        if (waitSemaphore != VK_NULL_HANDLE) {
-            m_submitInfo.waitSemaphoreCount = 1;
-            m_submitInfo.pWaitSemaphores = &waitSemaphore;
-        }
-        else {
-            m_submitInfo.waitSemaphoreCount = 0;
-            m_submitInfo.pWaitSemaphores = nullptr;
-        }
-
-        if (signalSemaphore != VK_NULL_HANDLE) {
-            m_submitInfo.signalSemaphoreCount = 1;
-            m_submitInfo.pSignalSemaphores = &signalSemaphore;
-        }
-        else {
-            m_submitInfo.signalSemaphoreCount = 0;
-            m_submitInfo.pSignalSemaphores = nullptr;
-        }
-
-        m_submitInfo.pWaitDstStageMask = &waitStageMask;
-
-        if (waitFence == VK_NULL_HANDLE) {
-            if (vkQueueSubmit(m_transferQueue, 1, &m_submitInfo, nullptr) != VK_SUCCESS) {
-                RenderSystem::LOGGER->error("Failed to submit queue.");
-            }
-        }
-        else {
-            if (vkQueueSubmit(m_transferQueue, 1, &m_submitInfo, waitFence)) {
-                RenderSystem::LOGGER->error("Failed to submit queue.");
+            else {
+                if (vkQueueSubmit(m_transferQueue, 1, &m_submitInfo, waitFence)) {
+                    RenderSystem::LOGGER->error("Failed to submit queue.");
+                }
             }
         }
     }
 
     bool VK_Device::supportsSamplerAnisotropy(){
         return m_supportedDeviceData[m_indexActivePhysicalDevice].enabledDeviceFeatures.samplerAnisotropy == VK_TRUE;
+    }
+
+    VK_CommandBuffer* VK_Device::getCommandBuffer(QUEUE_TYPE queue){
+        VK_CommandBuffer* commandBuffer = nullptr;
+        if (queue==GRAPHICS) {
+            commandBuffer=new VK_CommandBuffer(this, m_graphicsCommandPool->getId());
+            commandBuffer->create();
+        }
+        else {
+            commandBuffer = new VK_CommandBuffer(this, m_transferCommandPool->getId());
+            commandBuffer->create();
+        }
+        return commandBuffer;
+    }
+
+    void VK_Device::releaseCommandBuffer(VK_CommandBuffer* commandBuffer){
+        delete commandBuffer;
     }
 
     void VK_Device::printActiveData(bool printExtensions, bool printLayers, bool printDeviceProperties, bool printDeviceLimits, bool printDeviceFeatures, bool printDeviceMemoryProperties, bool printDeviceQueueFamilies, bool printSurfaceData){
@@ -396,6 +402,23 @@ namespace Fierce {
 
         if (vkCreateDevice(m_physicalDevice, &m_deviceCreateInfo, nullptr, &m_device)!=VK_SUCCESS) {
             RenderSystem::LOGGER->error("Failed to create logical device.");
+        }
+    }
+
+    void VK_Device::createCommandPools(){
+        if (m_supportedDeviceData[m_indexActivePhysicalDevice].hasDedicatedTransferQueue) {
+            m_graphicsCommandPool = new VK_CommandPool(this);
+            m_graphicsCommandPool->create();
+
+            m_transferCommandPool = new VK_CommandPool(this);
+            m_transferCommandPool->bindToTransferQueue();
+            m_transferCommandPool->create();
+        }
+        else {
+            m_graphicsCommandPool=new VK_CommandPool(this);
+            m_graphicsCommandPool->create();
+
+            m_transferCommandPool = m_graphicsCommandPool;
         }
     }
 

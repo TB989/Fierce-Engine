@@ -16,14 +16,13 @@ namespace Fierce {
     }
 
     bool VK_Check_Device_Queues::check(ExtensionValidationLayerData* data1, DeviceData* data2, SurfaceData* data3) {
-        bool hasDedicatedTransferQueue = false;
         int i = 0;
 
         //Look for dedicated transfer queue
         for (VkQueueFamilyProperties queueFamily : data2->queueFamilies) {
             if (!(queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) && (queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT)) {
                 data2->transferQueueIndex = i;
-                hasDedicatedTransferQueue = true;
+                data2->hasDedicatedTransferQueue = true;
                 RenderSystem::LOGGER->info("Found dedicated transfer queue: %i",i);
                 break;
             }
@@ -32,7 +31,7 @@ namespace Fierce {
 
         //Look for graphics queue
         i = 0;
-        if (hasDedicatedTransferQueue) {
+        if (data2->hasDedicatedTransferQueue) {
             for (VkQueueFamilyProperties queueFamily : data2->queueFamilies) {
                 bool presentSupport = data2->presentSupport[i];
                 if ((queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) && presentSupport) {
@@ -59,8 +58,6 @@ namespace Fierce {
                 i++;
             }
         }
-
-        RenderSystem::LOGGER->warn("After second loop.");
 
         RenderSystem::LOGGER->warn("Queue check failed for device %s.", data2->deviceProperties.deviceName);
         return false;

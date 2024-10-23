@@ -7,7 +7,15 @@
 
 namespace Fierce {
 
+	class VK_CommandPool;
+	class VK_CommandBuffer;
+
 	class VK_Device :public VK_CheckSupport{
+	public:
+		enum QUEUE_TYPE{
+			GRAPHICS,TRANSFER
+		};
+
 	public:
 		VK_Device(VkInstance instance, VkSurfaceKHR surface);
 		~VK_Device();
@@ -22,13 +30,11 @@ namespace Fierce {
 		DeviceData* getDeviceData() { return &m_supportedDeviceData[m_indexActivePhysicalDevice]; }
 
 		void requerySurfaceData();
-
 		uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-
-		void submitCommandBufferOnGraphicsQueue(VkCommandBuffer commandBuffer, VkSemaphore waitSemaphore, VkSemaphore signalSemaphore, VkPipelineStageFlags waitStageMask, VkFence waitFence);
-		void submitCommandBufferOnTransferQueue(VkCommandBuffer commandBuffer, VkSemaphore waitSemaphore, VkSemaphore signalSemaphore, VkPipelineStageFlags waitStageMask, VkFence waitFence);
-
+		void submitCommandBuffer(QUEUE_TYPE queue,VkCommandBuffer commandBuffer, VkSemaphore waitSemaphore, VkSemaphore signalSemaphore, VkPipelineStageFlags waitStageMask, VkFence waitFence);
 		bool supportsSamplerAnisotropy();
+		VK_CommandBuffer* getCommandBuffer(QUEUE_TYPE queue);
+		void releaseCommandBuffer(VK_CommandBuffer* commandBuffer);
 
 	public:
 		void printActiveData(bool printExtensions, bool printLayers,
@@ -51,6 +57,7 @@ namespace Fierce {
 		void setupQueues();
 		void setupExtensionsAndValidationLayers();
 		void createLogicalDevice();
+		void createCommandPools();
 
 	private:
 		void printSupportedExtensions(int index);
@@ -77,11 +84,16 @@ namespace Fierce {
 		//Vulkan objects
 		VkInstance m_instance = VK_NULL_HANDLE;
 		VkSurfaceKHR m_surface = VK_NULL_HANDLE;
+
 		int m_indexActivePhysicalDevice = 0;
 		VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
 		VkDevice m_device = VK_NULL_HANDLE;
+
 		VkQueue m_graphicsQueue = VK_NULL_HANDLE;
 		VkQueue m_transferQueue = VK_NULL_HANDLE;
+
+		VK_CommandPool* m_graphicsCommandPool=nullptr;
+		VK_CommandPool* m_transferCommandPool = nullptr;
 	};
 
 }//end namespace

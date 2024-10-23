@@ -19,7 +19,6 @@ namespace Fierce {
 	class VK_Shader;
 	class VK_Pipeline;
 	class VK_Framebuffers;
-	class VK_CommandPool;
 	class VK_CommandBuffer;
 	class VK_Semaphore;
 	class VK_Fence;
@@ -85,10 +84,10 @@ namespace Fierce {
 		int currentFrame = 0;
 		FrameData framesData[NUM_FRAMES_IN_FLIGHT];
 
-		VK_CommandPool* m_commandPool=nullptr;
-		VK_CommandBuffer* m_copy_commandBuffer = nullptr;
+		//VK_CommandPool* m_commandPool=nullptr;
+		//VK_CommandBuffer* m_copy_commandBuffer = nullptr;
 
-		VK_CommandPool* m_dedicated_commandPool = nullptr;
+		//VK_CommandPool* m_dedicated_commandPool = nullptr;
 		VK_CommandBuffer* m_dedicated_commandBuffer = nullptr;
 
 		VK_Buffer* m_vertexBuffer=nullptr;
