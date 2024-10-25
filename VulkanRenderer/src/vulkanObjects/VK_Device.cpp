@@ -212,6 +212,10 @@ namespace Fierce {
         return m_supportedDeviceData[m_indexActivePhysicalDevice].enabledDeviceFeatures.samplerAnisotropy == VK_TRUE;
     }
 
+    bool VK_Device::hasDedicatedTransferQueue(){
+        return m_supportedDeviceData[m_indexActivePhysicalDevice].hasDedicatedTransferQueue;
+    }
+
     VK_CommandBuffer* VK_Device::getCommandBuffer(QUEUE_TYPE queue){
         VK_CommandBuffer* commandBuffer = nullptr;
         if (queue==GRAPHICS) {

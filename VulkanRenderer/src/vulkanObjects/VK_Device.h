@@ -33,6 +33,7 @@ namespace Fierce {
 		uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 		void submitCommandBuffer(QUEUE_TYPE queue,VkCommandBuffer commandBuffer, VkSemaphore waitSemaphore, VkSemaphore signalSemaphore, VkPipelineStageFlags waitStageMask, VkFence waitFence);
 		bool supportsSamplerAnisotropy();
+		bool hasDedicatedTransferQueue();
 		VK_CommandBuffer* getCommandBuffer(QUEUE_TYPE queue);
 		void releaseCommandBuffer(VK_CommandBuffer* commandBuffer);
 

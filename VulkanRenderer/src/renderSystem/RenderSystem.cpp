@@ -1,5 +1,7 @@
 #include "RenderSystem.h"
 
+#include "uploading/UploadContext.h"
+
 #include "glm.hpp"
 #include <gtc/matrix_transform.hpp>
 
@@ -67,6 +69,8 @@ namespace Fierce {
 		//m_device->printSupportedData(false, false, true, false, false, false, true, false);
 		m_device->create();
 		//m_device->printActiveData(false,false,true,false,false,false,true,false);
+
+		m_uploadContext = new UploadContext(m_device);
 
 		//####################################################################################################################################
 		float vertices[] = {
@@ -164,33 +168,11 @@ namespace Fierce {
 		m_image->shareRessourcesWithTransferQueue();
 		m_image->create();
 
-		//Record buffer
-		m_dedicated_commandBuffer = m_device->getCommandBuffer(VK_Device::TRANSFER);
-		m_dedicated_commandBuffer->create();
-		m_dedicated_commandBuffer->startRecording();
-		m_dedicated_commandBuffer->copy(m_vertexStagingBuffer->getId(),m_vertexBuffer->getId(), 4*7 * sizeof(float));
-		m_dedicated_commandBuffer->copy(m_indexStagingBuffer->getId(), m_indexBuffer->getId(), 6 * sizeof(uint16_t));
-		m_dedicated_commandBuffer->imageBarrier(m_image->getId(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-		m_dedicated_commandBuffer->copy(m_imageStagingBuffer->getId(), m_image->getId(), texWidth,texHeight);
-		//######## TODO #########: Do this on graphics queue 
-		//m_dedicated_commandBuffer->imageBarrier(m_image->getId(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-		m_dedicated_commandBuffer->endRecording();
-		m_device->submitCommandBuffer(VK_Device::QUEUE_TYPE::TRANSFER,m_dedicated_commandBuffer->getId(), VK_NULL_HANDLE, VK_NULL_HANDLE, 0, VK_NULL_HANDLE);
-
-		if (vkQueueWaitIdle(m_device->getTransferQueue()) != VK_SUCCESS) {
-			RenderSystem::LOGGER->error("Failed to wait for idle queue.");
-		}
-
-		m_uploadGraphicsBuffer = m_device->getCommandBuffer(VK_Device::GRAPHICS);
-		m_uploadGraphicsBuffer->create();
-		m_uploadGraphicsBuffer->startRecording();
-		m_uploadGraphicsBuffer->imageBarrier(m_image->getId(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-		m_uploadGraphicsBuffer->endRecording();
-		m_device->submitCommandBuffer(VK_Device::QUEUE_TYPE::GRAPHICS,m_uploadGraphicsBuffer->getId(), VK_NULL_HANDLE, VK_NULL_HANDLE, 0, VK_NULL_HANDLE);
-
-		if (vkQueueWaitIdle(m_device->getGraphicsQueue()) != VK_SUCCESS) {
-			RenderSystem::LOGGER->error("Failed to wait for idle queue.");
-		}
+		//Upload buffers and image
+		m_uploadContext->copyBuffer(m_vertexStagingBuffer, m_vertexBuffer, 4 * 7 * sizeof(float));
+		m_uploadContext->copyBuffer(m_indexStagingBuffer, m_indexBuffer, 6 * sizeof(uint16_t));
+		m_uploadContext->copyImage(m_imageStagingBuffer, m_image, texWidth, texHeight);
+		m_uploadContext->startAndWaitForUpload();
 
 		m_imageView = new VK_ImageView(m_device->getDevice(),m_image->getId());
 		m_imageView->create();
@@ -201,9 +183,6 @@ namespace Fierce {
 		for (int i = 0; i < NUM_FRAMES_IN_FLIGHT; i++) {
 			framesData[i].descriptorSet->update(framesData[i].ubo,m_imageView->getId(),m_sampler->getId());
 		}
-
-		m_device->releaseCommandBuffer(m_dedicated_commandBuffer);
-		m_device->releaseCommandBuffer(m_uploadGraphicsBuffer);
 
 		delete m_indexStagingBuffer;
 		delete m_vertexStagingBuffer;
@@ -235,6 +214,7 @@ namespace Fierce {
 		delete m_sampler;
 		delete m_imageView;
 		delete m_image;
+
 		delete m_indexBuffer;
 		delete m_vertexBuffer;
 
@@ -255,6 +235,9 @@ namespace Fierce {
 		delete m_vertexShader;
 		delete m_renderpass;
 		delete m_swapchain;
+
+		delete m_uploadContext;
+
 		delete m_device;
 		delete m_surface;
 		delete m_instance;

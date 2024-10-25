@@ -11,6 +11,8 @@ namespace Fierce {
 
 	class LoggingSystem;
 
+	class UploadContext;
+
 	class VK_Instance;
 	class VK_Surface;
 	class VK_Device;
@@ -69,6 +71,8 @@ namespace Fierce {
 		LoggingSystem* m_loggingSystem=nullptr;
 		HWND m_windowHandle=NULL;
 
+		UploadContext* m_uploadContext=nullptr;
+
 		VK_Instance* m_instance = nullptr;
 		VK_Surface* m_surface = nullptr;
 		VK_Device* m_device = nullptr;
@@ -84,12 +88,6 @@ namespace Fierce {
 		int currentFrame = 0;
 		FrameData framesData[NUM_FRAMES_IN_FLIGHT];
 
-		//VK_CommandPool* m_commandPool=nullptr;
-		//VK_CommandBuffer* m_copy_commandBuffer = nullptr;
-
-		//VK_CommandPool* m_dedicated_commandPool = nullptr;
-		VK_CommandBuffer* m_dedicated_commandBuffer = nullptr;
-
 		VK_Buffer* m_vertexBuffer=nullptr;
 		VK_Buffer* m_vertexStagingBuffer = nullptr;
 		VK_Buffer* m_indexBuffer = nullptr;
@@ -101,7 +99,6 @@ namespace Fierce {
 		Mat4* m_viewMatrix=nullptr;
 		Mat4* m_projMatrix=nullptr;
 
-		VK_CommandBuffer* m_uploadGraphicsBuffer=nullptr;
 		VK_Buffer* m_imageStagingBuffer=nullptr;
 		VK_Image* m_image=nullptr;
 		VK_ImageView* m_imageView = nullptr;
