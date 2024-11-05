@@ -5,6 +5,8 @@
 #include "vulkanObjects/VK_Buffer.h"
 #include "vulkanObjects/VK_Image.h"
 
+#include "assets/VK_Mesh.h"
+
 #include "renderSystem/RenderSystem.h"
 
 namespace Fierce {
@@ -40,6 +42,30 @@ namespace Fierce {
 		}
 	}
 
+	void UploadContext::copyMesh(VK_Mesh* mesh){
+		VK_Buffer* vertexBuffer=new VK_Buffer(m_device, mesh->getNumVertices() * sizeof(float), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		vertexBuffer->shareRessourcesWithTransferQueue();
+		vertexBuffer->create();
+
+		VK_Buffer* indexBuffer= new VK_Buffer(m_device, mesh->getNumIndices() * sizeof(uint16_t), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		indexBuffer->shareRessourcesWithTransferQueue();
+		indexBuffer->create();
+
+		RenderSystem::LOGGER->info("Old vertex buffer: %p", vertexBuffer);
+		RenderSystem::LOGGER->info("Old index buffer: %p",indexBuffer);
+
+		copyBuffer(mesh->getVertexBuffer(), vertexBuffer, mesh->getNumVertices() * sizeof(float));
+		copyBuffer(mesh->getIndexBuffer(), indexBuffer, mesh->getNumIndices() * sizeof(uint16_t));
+
+		mesh->swapBuffers(vertexBuffer,indexBuffer);
+
+		RenderSystem::LOGGER->info("New vertex buffer: %p", vertexBuffer);
+		RenderSystem::LOGGER->info("New index buffer: %p", indexBuffer);
+
+		m_buffersToDelete.push_back(vertexBuffer);
+		m_buffersToDelete.push_back(indexBuffer);
+	}
+
 	void UploadContext::startAndWaitForUpload(){
 		m_transferCommandBuffer->endRecording();
 		m_graphicsCommandBuffer->endRecording();
@@ -54,6 +80,10 @@ namespace Fierce {
 			if (vkQueueWaitIdle(m_device->getGraphicsQueue()) != VK_SUCCESS) {
 				RenderSystem::LOGGER->error("Failed to wait for idle queue.");
 			}
+		}
+
+		for (VK_Buffer* buffer:m_buffersToDelete) {
+			delete buffer;
 		}
 	}
 

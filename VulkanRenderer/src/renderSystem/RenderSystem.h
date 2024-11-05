@@ -33,6 +33,8 @@ namespace Fierce {
 
 	class Mat4;
 
+	class VK_Mesh;
+
 	class RenderSystem:public System {
 	public:
 		RenderSystem(LoggingSystem* loggingSystem);
@@ -88,10 +90,7 @@ namespace Fierce {
 		int currentFrame = 0;
 		FrameData framesData[NUM_FRAMES_IN_FLIGHT];
 
-		VK_Buffer* m_vertexBuffer=nullptr;
-		VK_Buffer* m_vertexStagingBuffer = nullptr;
-		VK_Buffer* m_indexBuffer = nullptr;
-		VK_Buffer* m_indexStagingBuffer = nullptr;
+		VK_Mesh* m_mesh=nullptr;
 
 		VK_DescriptorPool* m_descriptorPool = nullptr;
 

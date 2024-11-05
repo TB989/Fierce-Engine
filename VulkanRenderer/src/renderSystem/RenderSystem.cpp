@@ -30,6 +30,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "imageLoading/stb_image.h"
 
+#include "assets/VK_Mesh.h"
+
 namespace Fierce {
 
 	Logger* RenderSystem::LOGGER = nullptr;
@@ -71,19 +73,6 @@ namespace Fierce {
 		//m_device->printActiveData(false,false,true,false,false,false,true,false);
 
 		m_uploadContext = new UploadContext(m_device);
-
-		//####################################################################################################################################
-		float vertices[] = {
-			-0.5f, -0.5f, 1.0f, 0.0f, 0.0f,1.0f,0.0f,
-			0.5f, -0.5f, 0.0f, 1.0f, 0.0f,0.0f,0.0f,
-			0.5f, 0.5f, 0.0f, 0.0f, 1.0f,0.0f,1.0f,
-			-0.5f, 0.5f, 1.0f, 1.0f, 1.0f,1.0f,1.0f
-		};
-
-		uint16_t indices[] = {
-			0, 2,1, 2, 0,3
-		};
-		//####################################################################################################################################
 
 		m_swapchain = new VK_Swapchain(m_device, m_surface->getId(),VK_NULL_HANDLE);
 		m_swapchain->create();
@@ -133,21 +122,20 @@ namespace Fierce {
 		}
 
 		//MESH/////////////////////////////////////////////////////////////////////////////////////////////////////
-		m_vertexStagingBuffer = new VK_Buffer(m_device, 4*7 * sizeof(float), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-		m_vertexStagingBuffer->create();
-		m_vertexStagingBuffer->loadData(4*7 * sizeof(float),vertices);
+		float vertices[] = {
+			-0.5f, -0.5f, 1.0f, 0.0f, 0.0f,1.0f,0.0f,
+			0.5f, -0.5f, 0.0f, 1.0f, 0.0f,0.0f,0.0f,
+			0.5f, 0.5f, 0.0f, 0.0f, 1.0f,0.0f,1.0f,
+			-0.5f, 0.5f, 1.0f, 1.0f, 1.0f,1.0f,1.0f
+		};
 
-		m_vertexBuffer = new VK_Buffer(m_device, 4*7 * sizeof(float), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-		m_vertexBuffer->shareRessourcesWithTransferQueue();
-		m_vertexBuffer->create();
+		uint16_t indices[] = {
+			0, 2,1, 2, 0,3
+		};
 
-		m_indexStagingBuffer = new VK_Buffer(m_device, 6 * sizeof(uint16_t), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-		m_indexStagingBuffer->create();
-		m_indexStagingBuffer->loadData(6 * sizeof(uint16_t), indices);
-
-		m_indexBuffer = new VK_Buffer(m_device, 6 * sizeof(uint16_t), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-		m_indexBuffer->shareRessourcesWithTransferQueue();
-		m_indexBuffer->create();
+		m_mesh = new VK_Mesh(m_device,4*7,6);
+		m_mesh->loadVertices(4*7,vertices);
+		m_mesh->loadIndices(6,indices);
 
 		//IMAGE////////////////////////////////////////////////////////////////////////////////////////////////////
 		int texWidth, texHeight, texChannels;
@@ -169,8 +157,7 @@ namespace Fierce {
 		m_image->create();
 
 		//Upload buffers and image
-		m_uploadContext->copyBuffer(m_vertexStagingBuffer, m_vertexBuffer, 4 * 7 * sizeof(float));
-		m_uploadContext->copyBuffer(m_indexStagingBuffer, m_indexBuffer, 6 * sizeof(uint16_t));
+		m_uploadContext->copyMesh(m_mesh);
 		m_uploadContext->copyImage(m_imageStagingBuffer, m_image, texWidth, texHeight);
 		m_uploadContext->startAndWaitForUpload();
 
@@ -184,8 +171,6 @@ namespace Fierce {
 			framesData[i].descriptorSet->update(framesData[i].ubo,m_imageView->getId(),m_sampler->getId());
 		}
 
-		delete m_indexStagingBuffer;
-		delete m_vertexStagingBuffer;
 		delete m_imageStagingBuffer;
 
 		m_modelMatrix = new Mat4();
@@ -215,8 +200,7 @@ namespace Fierce {
 		delete m_imageView;
 		delete m_image;
 
-		delete m_indexBuffer;
-		delete m_vertexBuffer;
+		delete m_mesh;
 
 		for (int i = 0;i<NUM_FRAMES_IN_FLIGHT;i++) {
 			delete framesData[i].renderFinishedFence;
@@ -250,8 +234,8 @@ namespace Fierce {
 		frameData.commandBuffer->startRecording();
 		frameData.commandBuffer->beginRenderpass(m_renderpass->getId(), m_framebuffers->getFramebuffer(imageIndex));
 		frameData.commandBuffer->bindPipeline(m_pipeline->getId());
-		frameData.commandBuffer->bindVertexBuffer(m_vertexBuffer->getId());
-		frameData.commandBuffer->bindIndexBuffer(m_indexBuffer->getId());
+		frameData.commandBuffer->bindVertexBuffer(m_mesh->getVertexBuffer()->getId());
+		frameData.commandBuffer->bindIndexBuffer(m_mesh->getIndexBuffer()->getId());
 		frameData.commandBuffer->setViewport(static_cast<float>(m_device->getSurfaceData()->swapchainWidth), static_cast<float>(m_device->getSurfaceData()->swapchainHeight));
 		frameData.commandBuffer->setScissor(m_device->getSurfaceData()->swapchainWidth, m_device->getSurfaceData()->swapchainHeight);
 		frameData.commandBuffer->bindDescriptorSet(m_pipeline,frameData.descriptorSet->getId());
