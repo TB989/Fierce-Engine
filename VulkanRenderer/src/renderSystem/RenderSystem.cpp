@@ -31,6 +31,7 @@
 #include "imageLoading/stb_image.h"
 
 #include "assets/VK_Mesh.h"
+#include "assets/VK_Texture.h"
 
 namespace Fierce {
 
@@ -140,38 +141,25 @@ namespace Fierce {
 		//IMAGE////////////////////////////////////////////////////////////////////////////////////////////////////
 		int texWidth, texHeight, texChannels;
 		stbi_uc* pixels = stbi_load("C:/Users/tmbal/Desktop/Fierce-Engine/VulkanRenderer/res/texture.jpg", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-		VkDeviceSize imageSize = texWidth * texHeight * 4;
-
 		if (!pixels) {
 			RenderSystem::LOGGER->error("Unable to load image.");
 		}
 
-		m_imageStagingBuffer = new VK_Buffer(m_device, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-		m_imageStagingBuffer->create();
-		m_imageStagingBuffer->loadData(imageSize, pixels);
+		m_texture = new VK_Texture(m_device,texWidth,texHeight,4);
+		m_texture->loadData(m_texture->getSize(),pixels);
 
 		stbi_image_free(pixels);
 
-		m_image = new VK_Image(m_device, texWidth, texHeight, imageSize, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-		m_image->shareRessourcesWithTransferQueue();
-		m_image->create();
-
-		//Upload buffers and image
+		//UPLOAD ASSETS/////////////////////////////////////////////////////////////////////////////////////////////
 		m_uploadContext->copyMesh(m_mesh);
-		m_uploadContext->copyImage(m_imageStagingBuffer, m_image, texWidth, texHeight);
+		m_uploadContext->copyTexture(m_texture);
 		m_uploadContext->startAndWaitForUpload();
 
-		m_imageView = new VK_ImageView(m_device->getDevice(),m_image->getId());
-		m_imageView->create();
-
-		m_sampler = new VK_Sampler(m_device);
-		m_sampler->create();
+		m_texture->createImageViewAndSampler();
 
 		for (int i = 0; i < NUM_FRAMES_IN_FLIGHT; i++) {
-			framesData[i].descriptorSet->update(framesData[i].ubo,m_imageView->getId(),m_sampler->getId());
+			framesData[i].descriptorSet->update(framesData[i].ubo,m_texture->getImageView()->getId(), m_texture->getSampler()->getId());
 		}
-
-		delete m_imageStagingBuffer;
 
 		m_modelMatrix = new Mat4();
 		m_modelMatrix->scale(100.0f, 100.0f, 1.0f);
@@ -196,10 +184,7 @@ namespace Fierce {
 		delete m_viewMatrix;
 		delete m_projMatrix;
 
-		delete m_sampler;
-		delete m_imageView;
-		delete m_image;
-
+		delete m_texture;
 		delete m_mesh;
 
 		for (int i = 0;i<NUM_FRAMES_IN_FLIGHT;i++) {

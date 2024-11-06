@@ -6,6 +6,7 @@
 #include "vulkanObjects/VK_Image.h"
 
 #include "assets/VK_Mesh.h"
+#include "assets/VK_Texture.h"
 
 #include "renderSystem/RenderSystem.h"
 
@@ -51,19 +52,34 @@ namespace Fierce {
 		indexBuffer->shareRessourcesWithTransferQueue();
 		indexBuffer->create();
 
-		RenderSystem::LOGGER->info("Old vertex buffer: %p", vertexBuffer);
-		RenderSystem::LOGGER->info("Old index buffer: %p",indexBuffer);
-
 		copyBuffer(mesh->getVertexBuffer(), vertexBuffer, mesh->getNumVertices() * sizeof(float));
 		copyBuffer(mesh->getIndexBuffer(), indexBuffer, mesh->getNumIndices() * sizeof(uint16_t));
 
 		mesh->swapBuffers(vertexBuffer,indexBuffer);
 
-		RenderSystem::LOGGER->info("New vertex buffer: %p", vertexBuffer);
-		RenderSystem::LOGGER->info("New index buffer: %p", indexBuffer);
-
 		m_buffersToDelete.push_back(vertexBuffer);
 		m_buffersToDelete.push_back(indexBuffer);
+	}
+
+	void UploadContext::copyTexture(VK_Texture* texture){
+		VK_Buffer* buffer = nullptr;
+		VK_Image* image= new VK_Image(m_device, texture->getWidth(), texture->getHeight(), texture->getSize(), VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		image->shareRessourcesWithTransferQueue();
+		image->create();
+
+		m_transferCommandBuffer->imageBarrier(image->getId(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+		m_transferCommandBuffer->copy(texture->getBuffer()->getId(), image->getId(), texture->getWidth(), texture->getHeight());
+
+		if (m_device->hasDedicatedTransferQueue()) {
+			m_graphicsCommandBuffer->imageBarrier(image->getId(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		}
+		else {
+			m_transferCommandBuffer->imageBarrier(image->getId(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		}
+
+		texture->swapBuffers(buffer,image);
+
+		m_buffersToDelete.push_back(buffer);
 	}
 
 	void UploadContext::startAndWaitForUpload(){

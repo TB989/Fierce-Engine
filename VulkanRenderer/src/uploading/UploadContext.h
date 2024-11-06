@@ -11,6 +11,7 @@ namespace Fierce {
 	class VK_Buffer;
 	class VK_Image;
 	class VK_Mesh;
+	class VK_Texture;
 
 	class UploadContext {
 	public:
@@ -21,6 +22,7 @@ namespace Fierce {
 		void copyImage(VK_Buffer* source,VK_Image* destination,uint32_t width,uint32_t height);
 
 		void copyMesh(VK_Mesh* mesh);
+		void copyTexture(VK_Texture* texture);
 
 		void startAndWaitForUpload();
 

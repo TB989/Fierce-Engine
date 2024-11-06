@@ -34,6 +34,7 @@ namespace Fierce {
 	class Mat4;
 
 	class VK_Mesh;
+	class VK_Texture;
 
 	class RenderSystem:public System {
 	public:
@@ -91,17 +92,13 @@ namespace Fierce {
 		FrameData framesData[NUM_FRAMES_IN_FLIGHT];
 
 		VK_Mesh* m_mesh=nullptr;
+		VK_Texture* m_texture=nullptr;
 
 		VK_DescriptorPool* m_descriptorPool = nullptr;
 
 		Mat4* m_modelMatrix=nullptr;
 		Mat4* m_viewMatrix=nullptr;
 		Mat4* m_projMatrix=nullptr;
-
-		VK_Buffer* m_imageStagingBuffer=nullptr;
-		VK_Image* m_image=nullptr;
-		VK_ImageView* m_imageView = nullptr;
-		VK_Sampler* m_sampler=nullptr;
 	};
 
 }//end namespace
