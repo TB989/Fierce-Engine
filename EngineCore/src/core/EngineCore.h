@@ -2,12 +2,13 @@
 
 #include "EngineSettings.h"
 
+#include "src/renderSystem/RenderSystem.h"
+
 namespace Fierce {
 
 	class LoggingSystem;
 	class Logger;
 	class WindowSystem;
-	class RenderSystem;
 
 	class EngineCore {
 	public:

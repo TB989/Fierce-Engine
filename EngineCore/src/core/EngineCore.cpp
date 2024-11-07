@@ -4,7 +4,6 @@
 
 #include "src/LoggingSystem.h"
 #include "src/WindowSystem.h"
-#include "src/renderSystem/RenderSystem.h"
 
 namespace Fierce {
 
@@ -24,6 +23,7 @@ namespace Fierce {
 	void EngineCore::run(){
 		coreInit();
 		init();
+		m_renderSystem->postInit();
 
 		m_running = true;
 		m_window->show();

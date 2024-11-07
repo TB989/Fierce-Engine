@@ -2,6 +2,9 @@
 
 #include "src/Matrix.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "io/stb_image.h"
+
 namespace Fierce {
 
 	TestWindow::TestWindow() {
@@ -13,32 +16,39 @@ namespace Fierce {
 	}
 
 	void TestWindow::init() {
+		//###################################### MESHES ###############################################################################
+		float vertices[] = {
+			-0.5f, -0.5f, 1.0f, 0.0f, 0.0f,1.0f,0.0f,
+			0.5f, -0.5f, 0.0f, 1.0f, 0.0f,0.0f,0.0f,
+			0.5f, 0.5f, 0.0f, 0.0f, 1.0f,0.0f,1.0f,
+			-0.5f, 0.5f, 1.0f, 1.0f, 1.0f,1.0f,1.0f
+		};
 
-		//Create matrices
-		m_modelMatrix = new Mat4();
-		m_modelMatrix->scale(100.0f, 100.0f, 1.0f);
-		m_viewMatrix = new Mat4();
-		m_projectionMatrix = new Mat4();
+		uint16_t indices[] = {
+			0, 2,1, 2, 0,3
+		};
+
+		m_meshId=m_renderSystem->newMesh(4*7,6);
+		m_renderSystem->meshLoadVertices(m_meshId,4*7,vertices);
+		m_renderSystem->meshLoadIndices(m_meshId, 6, indices);
+
+		//################################################ TEXTURES #####################################################################
+		int texWidth, texHeight, texChannels;
+		stbi_uc* pixels = stbi_load("C:/Users/tmbal/Desktop/Fierce-Engine/VulkanRenderer/res/texture.jpg", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+		if (!pixels) {
+			m_logger->error("Unable to load image.");
+		}
+		m_textureId = m_renderSystem->newTexture(texWidth,texHeight,4);
+		m_renderSystem->textureLoadData(m_textureId, pixels);
+		stbi_image_free(pixels);
 	}
 
 	void TestWindow::update() {
-		//m_modelMatrix->rotateZ(0.01f);
-		//m_projectionMatrix->setToOrthographicProjection(false, (float)m_device->getSurfaceData()->swapchainWidth, (float)m_device->getSurfaceData()->swapchainHeight, 0.0f, 1.0f);
-
-		//FrameData& frameData = framesData[currentFrame];
-		//frameData.ubo->loadData(3 * 16 * sizeof(float), m_modelMatrix->get(), m_viewMatrix->get(), m_projMatrix->get());
+		
 	}
 
 	void TestWindow::render() {
-		//frameData.commandBuffer->beginRenderpass(m_renderpass->getId(), m_framebuffers->getFramebuffer(imageIndex));
-		//frameData.commandBuffer->bindPipeline(m_pipeline->getId());
-		//frameData.commandBuffer->bindVertexBuffer(m_vertexBuffer->getId());
-		//frameData.commandBuffer->bindIndexBuffer(m_indexBuffer->getId());
-		//frameData.commandBuffer->setViewport(static_cast<float>(m_device->getSurfaceData()->swapchainWidth), static_cast<float>(m_device->getSurfaceData()->swapchainHeight));
-		//frameData.commandBuffer->setScissor(m_device->getSurfaceData()->swapchainWidth, m_device->getSurfaceData()->swapchainHeight);
-		//frameData.commandBuffer->bindDescriptorSet(m_pipeline, frameData.descriptorSet->getId());
-		//frameData.commandBuffer->renderIndexed(6);
-		//frameData.commandBuffer->endRenderpass();
+		
 	}
 
 	void TestWindow::cleanUp() {

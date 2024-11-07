@@ -52,6 +52,17 @@ namespace Fierce {
 
 		void recreateSwapchain();
 
+		//########################### INTERFACE ##############################################################################
+		int newMesh(int numVertices, int numIndices);
+		void meshLoadVertices(int meshId,int numVertices,float* vertices);
+		void meshLoadIndices(int meshId, int numIndices, uint16_t* indices);
+
+		int newTexture(int width, int height, int numChannels);
+		void textureLoadData(int textureId, unsigned char* pixels);
+
+		void postInit();
+		//########################### INTERFACE ##############################################################################
+
 	public:
 		struct FrameData {
 			VK_CommandBuffer* commandBuffer;
@@ -91,14 +102,18 @@ namespace Fierce {
 		int currentFrame = 0;
 		FrameData framesData[NUM_FRAMES_IN_FLIGHT];
 
-		VK_Mesh* m_mesh=nullptr;
-		VK_Texture* m_texture=nullptr;
-
 		VK_DescriptorPool* m_descriptorPool = nullptr;
 
 		Mat4* m_modelMatrix=nullptr;
 		Mat4* m_viewMatrix=nullptr;
 		Mat4* m_projMatrix=nullptr;
+
+	private:
+		int m_numMeshes = -1;
+		std::vector<VK_Mesh*> m_meshes;
+
+		int m_numTextures = -1;
+		std::vector<VK_Texture*> m_textures;
 	};
 
 }//end namespace

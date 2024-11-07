@@ -27,9 +27,6 @@
 #include "vulkanObjects//VK_ImageView.h"
 #include "vulkanObjects/VK_Sampler.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "imageLoading/stb_image.h"
-
 #include "assets/VK_Mesh.h"
 #include "assets/VK_Texture.h"
 
@@ -122,45 +119,6 @@ namespace Fierce {
 			framesData[i].renderFinishedFence->create();
 		}
 
-		//MESH/////////////////////////////////////////////////////////////////////////////////////////////////////
-		float vertices[] = {
-			-0.5f, -0.5f, 1.0f, 0.0f, 0.0f,1.0f,0.0f,
-			0.5f, -0.5f, 0.0f, 1.0f, 0.0f,0.0f,0.0f,
-			0.5f, 0.5f, 0.0f, 0.0f, 1.0f,0.0f,1.0f,
-			-0.5f, 0.5f, 1.0f, 1.0f, 1.0f,1.0f,1.0f
-		};
-
-		uint16_t indices[] = {
-			0, 2,1, 2, 0,3
-		};
-
-		m_mesh = new VK_Mesh(m_device,4*7,6);
-		m_mesh->loadVertices(4*7,vertices);
-		m_mesh->loadIndices(6,indices);
-
-		//IMAGE////////////////////////////////////////////////////////////////////////////////////////////////////
-		int texWidth, texHeight, texChannels;
-		stbi_uc* pixels = stbi_load("C:/Users/tmbal/Desktop/Fierce-Engine/VulkanRenderer/res/texture.jpg", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-		if (!pixels) {
-			RenderSystem::LOGGER->error("Unable to load image.");
-		}
-
-		m_texture = new VK_Texture(m_device,texWidth,texHeight,4);
-		m_texture->loadData(m_texture->getSize(),pixels);
-
-		stbi_image_free(pixels);
-
-		//UPLOAD ASSETS/////////////////////////////////////////////////////////////////////////////////////////////
-		m_uploadContext->copyMesh(m_mesh);
-		m_uploadContext->copyTexture(m_texture);
-		m_uploadContext->startAndWaitForUpload();
-
-		m_texture->createImageViewAndSampler();
-
-		for (int i = 0; i < NUM_FRAMES_IN_FLIGHT; i++) {
-			framesData[i].descriptorSet->update(framesData[i].ubo,m_texture->getImageView()->getId(), m_texture->getSampler()->getId());
-		}
-
 		m_modelMatrix = new Mat4();
 		m_modelMatrix->scale(100.0f, 100.0f, 1.0f);
 		m_viewMatrix = new Mat4();
@@ -184,8 +142,12 @@ namespace Fierce {
 		delete m_viewMatrix;
 		delete m_projMatrix;
 
-		delete m_texture;
-		delete m_mesh;
+		for (VK_Mesh* mesh:m_meshes) {
+			delete mesh;
+		}
+		for (VK_Texture* texture : m_textures) {
+			delete texture;
+		}
 
 		for (int i = 0;i<NUM_FRAMES_IN_FLIGHT;i++) {
 			delete framesData[i].renderFinishedFence;
@@ -219,12 +181,14 @@ namespace Fierce {
 		frameData.commandBuffer->startRecording();
 		frameData.commandBuffer->beginRenderpass(m_renderpass->getId(), m_framebuffers->getFramebuffer(imageIndex));
 		frameData.commandBuffer->bindPipeline(m_pipeline->getId());
-		frameData.commandBuffer->bindVertexBuffer(m_mesh->getVertexBuffer()->getId());
-		frameData.commandBuffer->bindIndexBuffer(m_mesh->getIndexBuffer()->getId());
 		frameData.commandBuffer->setViewport(static_cast<float>(m_device->getSurfaceData()->swapchainWidth), static_cast<float>(m_device->getSurfaceData()->swapchainHeight));
 		frameData.commandBuffer->setScissor(m_device->getSurfaceData()->swapchainWidth, m_device->getSurfaceData()->swapchainHeight);
 		frameData.commandBuffer->bindDescriptorSet(m_pipeline,frameData.descriptorSet->getId());
-		frameData.commandBuffer->renderIndexed(6);
+		for (VK_Mesh* mesh:m_meshes) {
+			frameData.commandBuffer->bindVertexBuffer(mesh->getVertexBuffer()->getId());
+			frameData.commandBuffer->bindIndexBuffer(mesh->getIndexBuffer()->getId());
+			frameData.commandBuffer->renderIndexed(mesh->getNumIndices());
+		}
 		frameData.commandBuffer->endRenderpass();
 		frameData.commandBuffer->endRecording();
 	}
@@ -262,6 +226,46 @@ namespace Fierce {
 
 		for (int i = 0;i<NUM_FRAMES_IN_FLIGHT;i++) {
 			framesData[i].commandBuffer->updateRenderArea();
+		}
+	}
+
+	int RenderSystem::newMesh(int numVertices,int numIndices){
+		m_numMeshes++;
+		m_meshes.push_back(new VK_Mesh(m_device, numVertices, numIndices));
+		return m_numMeshes;
+	}
+
+	int RenderSystem::newTexture(int width, int height,int numChannels){
+		m_numTextures++;
+		m_textures.push_back(new VK_Texture(m_device, width,height,numChannels));
+		return m_numTextures;
+	}
+
+	void RenderSystem::textureLoadData(int textureId, unsigned char* pixels){
+		m_textures[textureId]->loadData(m_textures[textureId]->getSize(), pixels);
+	}
+
+	void RenderSystem::meshLoadVertices(int meshId, int numVertices, float* vertices){
+		m_meshes[meshId]->loadVertices(numVertices,vertices);
+	}
+
+	void RenderSystem::meshLoadIndices(int meshId, int numIndices, uint16_t* indices){
+		m_meshes[meshId]->loadIndices(numIndices, indices);
+	}
+
+	void RenderSystem::postInit(){
+		for (VK_Mesh* mesh:m_meshes) {
+			m_uploadContext->copyMesh(mesh);
+		}
+		for (VK_Texture* texture : m_textures) {
+			m_uploadContext->copyTexture(texture);
+		}
+		m_uploadContext->startAndWaitForUpload();
+
+		m_textures[0]->createImageViewAndSampler();
+
+		for (int i = 0; i < NUM_FRAMES_IN_FLIGHT; i++) {
+			framesData[i].descriptorSet->update(framesData[i].ubo, m_textures[0]->getImageView()->getId(), m_textures[0]->getSampler()->getId());
 		}
 	}
 
