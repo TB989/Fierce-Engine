@@ -11,7 +11,7 @@ namespace Fierce {
 
 	class VK_DescriptorSet {
 	public:
-		VK_DescriptorSet(VkDevice device,VkDescriptorPool descriptorPool,VK_Pipeline* pipeline);
+		VK_DescriptorSet(VkDevice device,VkDescriptorPool descriptorPool, VkDescriptorSetLayout descriptorLayout);
 		~VK_DescriptorSet();
 
 		void create();
@@ -19,6 +19,8 @@ namespace Fierce {
 
 	public:
 		void update(VK_Buffer* buffer, uint32_t binding);
+		void update(VK_Buffer* buffer);
+		void update(VkImageView imageView, VkSampler imageSampler);
 		void update(VK_Buffer* buffer, VkImageView imageView, VkSampler imageSampler);
 
 	private:

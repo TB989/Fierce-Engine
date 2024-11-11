@@ -6,11 +6,11 @@
 #include "renderSystem/RenderSystem.h"
 
 namespace Fierce {
-	Fierce::VK_DescriptorSet::VK_DescriptorSet(VkDevice device, VkDescriptorPool descriptorPool, VK_Pipeline* pipeline){
+	Fierce::VK_DescriptorSet::VK_DescriptorSet(VkDevice device, VkDescriptorPool descriptorPool, VkDescriptorSetLayout descriptorLayout){
 		m_device = device;
 		m_descriptorPool = descriptorPool;
 
-		m_layouts.push_back(pipeline->getDescriptorSetLayout());
+		m_layouts.push_back(descriptorLayout);
 
 		m_allocateInfo = {};
 		m_allocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -46,6 +46,48 @@ namespace Fierce {
 		m_descriptorWrite.descriptorCount = 1;
 		m_descriptorWrite.pBufferInfo = &m_bufferInfo;
 		m_descriptorWrite.pImageInfo = nullptr;
+		m_descriptorWrite.pTexelBufferView = nullptr;
+
+		vkUpdateDescriptorSets(m_device, 1, &m_descriptorWrite, 0, nullptr);
+	}
+
+	void VK_DescriptorSet::update(VK_Buffer* buffer) {
+		m_bufferInfo = {};
+		m_bufferInfo.buffer = buffer->getId();
+		m_bufferInfo.offset = 0;
+		m_bufferInfo.range = buffer->getSize();
+
+		m_descriptorWrite = {};
+		m_descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		m_descriptorWrite.pNext = nullptr;
+		m_descriptorWrite.dstSet = m_descriptorSet;
+		m_descriptorWrite.dstBinding = 0;
+		m_descriptorWrite.dstArrayElement = 0;
+		m_descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		m_descriptorWrite.descriptorCount = 1;
+		m_descriptorWrite.pBufferInfo = &m_bufferInfo;
+		m_descriptorWrite.pImageInfo = nullptr;
+		m_descriptorWrite.pTexelBufferView = nullptr;
+
+		vkUpdateDescriptorSets(m_device, 1, &m_descriptorWrite, 0, nullptr);
+	}
+
+	void VK_DescriptorSet::update(VkImageView imageView, VkSampler imageSampler) {
+		m_imageInfo = {};
+		m_imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		m_imageInfo.imageView = imageView;
+		m_imageInfo.sampler = imageSampler;
+
+		VkWriteDescriptorSet m_descriptorWrite = {};
+		m_descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		m_descriptorWrite.pNext = nullptr;
+		m_descriptorWrite.dstSet = m_descriptorSet;
+		m_descriptorWrite.dstBinding = 0;
+		m_descriptorWrite.dstArrayElement = 0;
+		m_descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		m_descriptorWrite.descriptorCount = 1;
+		m_descriptorWrite.pBufferInfo = nullptr;
+		m_descriptorWrite.pImageInfo = &m_imageInfo;
 		m_descriptorWrite.pTexelBufferView = nullptr;
 
 		vkUpdateDescriptorSets(m_device, 1, &m_descriptorWrite, 0, nullptr);

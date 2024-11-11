@@ -79,10 +79,10 @@ namespace Fierce {
 		m_renderpass->create();
 
 		m_vertexShader = new VK_Shader(m_device->getDevice());
-		m_vertexShader->setSourceCode("fourthShader_vert.spv");
+		m_vertexShader->setSourceCode("fifthShader_vert.spv");
 		m_vertexShader->create();
 		m_fragmentShader = new VK_Shader(m_device->getDevice());
-		m_fragmentShader->setSourceCode("fourthShader_frag.spv");
+		m_fragmentShader->setSourceCode("fifthShader_frag.spv");
 		m_fragmentShader->create();
 
 		m_pipeline = new VK_Pipeline(m_device,m_renderpass->getId());
@@ -93,21 +93,37 @@ namespace Fierce {
 		m_framebuffers = new VK_Framebuffers(m_device,m_renderpass->getId(),m_swapchain);
 		m_framebuffers->create();
 
-		m_descriptorPool = new VK_DescriptorPool(m_device->getDevice());
-		m_descriptorPool->addDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,NUM_FRAMES_IN_FLIGHT);
-		m_descriptorPool->addDescriptorType(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, NUM_FRAMES_IN_FLIGHT);
-		m_descriptorPool->create();
+		m_descriptorPoolViewProjection = new VK_DescriptorPool(m_device->getDevice());
+		m_descriptorPoolViewProjection->addDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,NUM_FRAMES_IN_FLIGHT);
+		m_descriptorPoolViewProjection->create();
+
+		m_descriptorPoolModel = new VK_DescriptorPool(m_device->getDevice());
+		m_descriptorPoolModel->addDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 200);
+		m_descriptorPoolModel->create();
+
+		m_descriptorPoolSampler = new VK_DescriptorPool(m_device->getDevice());
+		m_descriptorPoolSampler->addDescriptorType(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 200);
+		m_descriptorPoolSampler->create();
 
 		//Create per frame ressources
 		for (int i = 0;i<NUM_FRAMES_IN_FLIGHT;i++) {
 			framesData[i].commandBuffer = m_device->getCommandBuffer(VK_Device::GRAPHICS);
 			framesData[i].commandBuffer->create();
 
-			framesData[i].ubo = new VK_Buffer(m_device, 3*16 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-			framesData[i].ubo->create();
+			framesData[i].uboViewProjection = new VK_Buffer(m_device, 2*16 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+			framesData[i].uboViewProjection->create();
 
-			framesData[i].descriptorSet = new VK_DescriptorSet(m_device->getDevice(),m_descriptorPool->getId(),m_pipeline);
-			framesData[i].descriptorSet->create();
+			framesData[i].uboModel = new VK_Buffer(m_device, 16 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+			framesData[i].uboModel->create();
+
+			framesData[i].descriptorSetViewProjection = new VK_DescriptorSet(m_device->getDevice(),m_descriptorPoolViewProjection->getId(),m_pipeline->getDescriptorSetLayoutViewProjection());
+			framesData[i].descriptorSetViewProjection->create();
+
+			framesData[i].descriptorSetModel = new VK_DescriptorSet(m_device->getDevice(), m_descriptorPoolModel->getId(), m_pipeline->getDescriptorSetLayoutModel());
+			framesData[i].descriptorSetModel->create();
+
+			framesData[i].descriptorSetSampler = new VK_DescriptorSet(m_device->getDevice(), m_descriptorPoolSampler->getId(), m_pipeline->getDescriptorSetLayoutSampler());
+			framesData[i].descriptorSetSampler->create();
 
 			framesData[i].imageAvailableSemaphore = new VK_Semaphore(m_device->getDevice());
 			framesData[i].imageAvailableSemaphore->create();
@@ -153,12 +169,17 @@ namespace Fierce {
 			delete framesData[i].renderFinishedFence;
 			delete framesData[i].renderFinishedSemaphore;
 			delete framesData[i].imageAvailableSemaphore;
-			delete framesData[i].descriptorSet;
-			delete framesData[i].ubo;
+			delete framesData[i].descriptorSetViewProjection;
+			delete framesData[i].descriptorSetModel;
+			delete framesData[i].descriptorSetSampler;
+			delete framesData[i].uboViewProjection;
+			delete framesData[i].uboModel;
 			m_device->releaseCommandBuffer(framesData[i].commandBuffer);
 		}
 
-		delete m_descriptorPool;
+		delete m_descriptorPoolViewProjection;
+		delete m_descriptorPoolModel;
+		delete m_descriptorPoolSampler;
 
 		delete m_framebuffers;
 		delete m_pipeline;
@@ -183,7 +204,9 @@ namespace Fierce {
 		frameData.commandBuffer->bindPipeline(m_pipeline->getId());
 		frameData.commandBuffer->setViewport(static_cast<float>(m_device->getSurfaceData()->swapchainWidth), static_cast<float>(m_device->getSurfaceData()->swapchainHeight));
 		frameData.commandBuffer->setScissor(m_device->getSurfaceData()->swapchainWidth, m_device->getSurfaceData()->swapchainHeight);
-		frameData.commandBuffer->bindDescriptorSet(m_pipeline,frameData.descriptorSet->getId());
+		frameData.commandBuffer->bindDescriptorSet(m_pipeline,frameData.descriptorSetViewProjection->getId(),0);
+		frameData.commandBuffer->bindDescriptorSet(m_pipeline, frameData.descriptorSetModel->getId(), 1);
+		frameData.commandBuffer->bindDescriptorSet(m_pipeline, frameData.descriptorSetSampler->getId(), 2);
 		for (VK_Mesh* mesh:m_meshes) {
 			frameData.commandBuffer->bindVertexBuffer(mesh->getVertexBuffer()->getId());
 			frameData.commandBuffer->bindIndexBuffer(mesh->getIndexBuffer()->getId());
@@ -203,7 +226,8 @@ namespace Fierce {
 		m_projMatrix->setToOrthographicProjection(false, (float)m_device->getSurfaceData()->swapchainWidth,(float)m_device->getSurfaceData()->swapchainHeight,0.0f,1.0f);
 
 		FrameData& frameData = framesData[currentFrame];
-		frameData.ubo->loadData(3*16 * sizeof(float),m_modelMatrix->get(), m_viewMatrix->get(), m_projMatrix->get());
+		frameData.uboViewProjection->loadData(2*16 * sizeof(float),m_viewMatrix->get(), m_projMatrix->get());
+		frameData.uboModel->loadData(16 * sizeof(float), m_modelMatrix->get());
 	}
 
 	void RenderSystem::recreateSwapchain(){
@@ -265,7 +289,9 @@ namespace Fierce {
 		m_textures[0]->createImageViewAndSampler();
 
 		for (int i = 0; i < NUM_FRAMES_IN_FLIGHT; i++) {
-			framesData[i].descriptorSet->update(framesData[i].ubo, m_textures[0]->getImageView()->getId(), m_textures[0]->getSampler()->getId());
+			framesData[i].descriptorSetViewProjection->update(framesData[i].uboViewProjection);
+			framesData[i].descriptorSetModel->update(framesData[i].uboModel);
+			framesData[i].descriptorSetSampler->update(m_textures[0]->getImageView()->getId(), m_textures[0]->getSampler()->getId());
 		}
 	}
 

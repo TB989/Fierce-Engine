@@ -66,8 +66,11 @@ namespace Fierce {
 	public:
 		struct FrameData {
 			VK_CommandBuffer* commandBuffer;
-			VK_Buffer* ubo;
-			VK_DescriptorSet* descriptorSet;
+			VK_Buffer* uboViewProjection;
+			VK_Buffer* uboModel;
+			VK_DescriptorSet* descriptorSetViewProjection;
+			VK_DescriptorSet* descriptorSetModel;
+			VK_DescriptorSet* descriptorSetSampler;
 
 			VK_Semaphore* imageAvailableSemaphore;
 			VK_Semaphore* renderFinishedSemaphore;
@@ -102,7 +105,9 @@ namespace Fierce {
 		int currentFrame = 0;
 		FrameData framesData[NUM_FRAMES_IN_FLIGHT];
 
-		VK_DescriptorPool* m_descriptorPool = nullptr;
+		VK_DescriptorPool* m_descriptorPoolViewProjection = nullptr;
+		VK_DescriptorPool* m_descriptorPoolModel = nullptr;
+		VK_DescriptorPool* m_descriptorPoolSampler = nullptr;
 
 		Mat4* m_modelMatrix=nullptr;
 		Mat4* m_viewMatrix=nullptr;

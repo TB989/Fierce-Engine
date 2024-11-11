@@ -16,7 +16,9 @@ namespace Fierce {
 		void create();
 		VkPipeline getId() { return m_graphicsPipeline; }
 		VkPipelineLayout getLayout() { return m_pipelineLayout; }
-		VkDescriptorSetLayout getDescriptorSetLayout() { return m_descriptorSetLayout; }
+		VkDescriptorSetLayout getDescriptorSetLayoutViewProjection() { return m_descriptorSetLayoutViewProjection; }
+		VkDescriptorSetLayout getDescriptorSetLayoutModel() { return m_descriptorSetLayoutModel; }
+		VkDescriptorSetLayout getDescriptorSetLayoutSampler() { return m_descriptorSetLayoutSampler; }
 
 	public:
 		void addVertexShader(VkShaderModule shader);
@@ -26,7 +28,6 @@ namespace Fierce {
 		//Create info
 		VkGraphicsPipelineCreateInfo m_createInfo={};
 		VkPipelineLayoutCreateInfo m_pipelineLayoutInfo = {};
-		VkDescriptorSetLayoutCreateInfo m_descriptorSetLayoutInfo={};
 
 		VkPipelineShaderStageCreateInfo m_vertexShaderStageInfo={};
 		VkPipelineShaderStageCreateInfo m_fragmentShaderStageInfo={};
@@ -47,12 +48,22 @@ namespace Fierce {
 		std::vector<VkVertexInputAttributeDescription> m_attributeDescriptions;
 
 		//Descriptors
+		VkDescriptorSetLayoutBinding m_uboViewProjectionLayoutBinding = {};
+		VkDescriptorSetLayoutBinding m_uboModelLayoutBinding = {};
+		VkDescriptorSetLayoutBinding m_samplerLayoutBinding = {};
+
+		VkDescriptorSetLayoutCreateInfo m_descriptorSetViewProjectionLayoutCreateInfo = {};
+		VkDescriptorSetLayoutCreateInfo m_descriptorSetModelLayoutCreateInfo = {};
+		VkDescriptorSetLayoutCreateInfo m_descriptorSetSamplerLayoutCreateInfo = {};
 		std::vector<VkDescriptorSetLayoutBinding> m_layoutBindings;
+		VkDescriptorSetLayout m_descriptorSetLayoutViewProjection = VK_NULL_HANDLE;
+		VkDescriptorSetLayout m_descriptorSetLayoutModel = VK_NULL_HANDLE;
+		VkDescriptorSetLayout m_descriptorSetLayoutSampler = VK_NULL_HANDLE;
+		std::vector<VkDescriptorSetLayout> m_descriptorLayouts;
 
 		//Vulkan objects
 		VkRenderPass m_renderpass=VK_NULL_HANDLE;
 		VK_Device* m_device=nullptr;
-		VkDescriptorSetLayout m_descriptorSetLayout = VK_NULL_HANDLE;
 		VkPipelineLayout m_pipelineLayout=VK_NULL_HANDLE;
 		VkPipeline m_graphicsPipeline=VK_NULL_HANDLE;
 	};

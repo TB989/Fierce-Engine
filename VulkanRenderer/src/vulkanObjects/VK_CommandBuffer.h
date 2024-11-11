@@ -28,7 +28,7 @@ namespace Fierce {
 		void bindPipeline(VkPipeline pipeline);
 		void bindVertexBuffer(VkBuffer buffer);
 		void bindIndexBuffer(VkBuffer buffer);
-		void bindDescriptorSet(VK_Pipeline* pipeline, VkDescriptorSet descriptorSet);
+		void bindDescriptorSet(VK_Pipeline* pipeline, VkDescriptorSet descriptorSet,int index);
 
 		void setViewport(float width, float height);
 		void setScissor(uint32_t width, uint32_t height);

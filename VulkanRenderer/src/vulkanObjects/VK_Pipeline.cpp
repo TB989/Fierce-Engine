@@ -152,28 +152,52 @@ namespace Fierce {
         m_dynamicState.dynamicStateCount = static_cast<uint32_t>(m_dynamicStates.size());
         m_dynamicState.pDynamicStates = m_dynamicStates.data();
 
-        VkDescriptorSetLayoutBinding m_uboLayoutBinding = {};
-        m_uboLayoutBinding.binding = 0;
-        m_uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        m_uboLayoutBinding.descriptorCount = 1;
-        m_uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-        m_uboLayoutBinding.pImmutableSamplers = nullptr;
-        m_layoutBindings.push_back(m_uboLayoutBinding);
+        //############################ Descriptors #####################################################################
+        m_uboViewProjectionLayoutBinding = {};
+        m_uboViewProjectionLayoutBinding.binding = 0;
+        m_uboViewProjectionLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        m_uboViewProjectionLayoutBinding.descriptorCount = 1;
+        m_uboViewProjectionLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        m_uboViewProjectionLayoutBinding.pImmutableSamplers = nullptr;
+        m_layoutBindings.push_back(m_uboViewProjectionLayoutBinding);
 
-        VkDescriptorSetLayoutBinding m_samplerLayoutBinding = {};
-        m_samplerLayoutBinding.binding = 1;
+        m_uboModelLayoutBinding = {};
+        m_uboModelLayoutBinding.binding = 0;
+        m_uboModelLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        m_uboModelLayoutBinding.descriptorCount = 1;
+        m_uboModelLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        m_uboModelLayoutBinding.pImmutableSamplers = nullptr;
+        m_layoutBindings.push_back(m_uboModelLayoutBinding);
+
+        m_samplerLayoutBinding = {};
+        m_samplerLayoutBinding.binding = 0;
         m_samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         m_samplerLayoutBinding.descriptorCount = 1;
         m_samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
         m_samplerLayoutBinding.pImmutableSamplers = nullptr;
         m_layoutBindings.push_back(m_samplerLayoutBinding);
 
-        m_descriptorSetLayoutInfo = {};
-        m_descriptorSetLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-        m_descriptorSetLayoutInfo.pNext = nullptr;
-        m_descriptorSetLayoutInfo.flags = 0;
-        m_descriptorSetLayoutInfo.bindingCount = static_cast<uint32_t>(m_layoutBindings.size());
-        m_descriptorSetLayoutInfo.pBindings = m_layoutBindings.data();
+        m_descriptorSetViewProjectionLayoutCreateInfo = {};
+        m_descriptorSetViewProjectionLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        m_descriptorSetViewProjectionLayoutCreateInfo.pNext = nullptr;
+        m_descriptorSetViewProjectionLayoutCreateInfo.flags = 0;
+        m_descriptorSetViewProjectionLayoutCreateInfo.bindingCount = 1;
+        m_descriptorSetViewProjectionLayoutCreateInfo.pBindings = &m_uboViewProjectionLayoutBinding;
+
+        m_descriptorSetModelLayoutCreateInfo = {};
+        m_descriptorSetModelLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        m_descriptorSetModelLayoutCreateInfo.pNext = nullptr;
+        m_descriptorSetModelLayoutCreateInfo.flags = 0;
+        m_descriptorSetModelLayoutCreateInfo.bindingCount = 1;
+        m_descriptorSetModelLayoutCreateInfo.pBindings = &m_uboModelLayoutBinding;
+
+        m_descriptorSetSamplerLayoutCreateInfo = {};
+        m_descriptorSetSamplerLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        m_descriptorSetSamplerLayoutCreateInfo.pNext = nullptr;
+        m_descriptorSetSamplerLayoutCreateInfo.flags = 0;
+        m_descriptorSetSamplerLayoutCreateInfo.bindingCount = 1;
+        m_descriptorSetSamplerLayoutCreateInfo.pBindings = &m_samplerLayoutBinding;
+        //###############################################################################################################
 
         m_pipelineLayoutInfo={};
         m_pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -204,16 +228,27 @@ namespace Fierce {
 	VK_Pipeline::~VK_Pipeline(){
         vkDestroyPipeline(m_device->getDevice(), m_graphicsPipeline, nullptr);
         vkDestroyPipelineLayout(m_device->getDevice(), m_pipelineLayout, nullptr);
-        vkDestroyDescriptorSetLayout(m_device->getDevice(),m_descriptorSetLayout,nullptr);
+        vkDestroyDescriptorSetLayout(m_device->getDevice(),m_descriptorSetLayoutViewProjection,nullptr);
+        vkDestroyDescriptorSetLayout(m_device->getDevice(), m_descriptorSetLayoutModel, nullptr);
+        vkDestroyDescriptorSetLayout(m_device->getDevice(), m_descriptorSetLayoutSampler, nullptr);
 	}
 
 	void VK_Pipeline::create(){
-        if (vkCreateDescriptorSetLayout(m_device->getDevice(), &m_descriptorSetLayoutInfo, nullptr, &m_descriptorSetLayout) != VK_SUCCESS) {
+        if (vkCreateDescriptorSetLayout(m_device->getDevice(), &m_descriptorSetViewProjectionLayoutCreateInfo, nullptr, &m_descriptorSetLayoutViewProjection) != VK_SUCCESS) {
             RenderSystem::LOGGER->error("Failed to create descriptor set layout.");
         }
+        if (vkCreateDescriptorSetLayout(m_device->getDevice(), &m_descriptorSetModelLayoutCreateInfo, nullptr, &m_descriptorSetLayoutModel) != VK_SUCCESS) {
+            RenderSystem::LOGGER->error("Failed to create descriptor set layout.");
+        }
+        if (vkCreateDescriptorSetLayout(m_device->getDevice(), &m_descriptorSetSamplerLayoutCreateInfo, nullptr, &m_descriptorSetLayoutSampler) != VK_SUCCESS) {
+            RenderSystem::LOGGER->error("Failed to create descriptor set layout.");
+        }
+        m_descriptorLayouts.push_back(m_descriptorSetLayoutViewProjection);
+        m_descriptorLayouts.push_back(m_descriptorSetLayoutModel);
+        m_descriptorLayouts.push_back(m_descriptorSetLayoutSampler);
 
-        m_pipelineLayoutInfo.setLayoutCount = 1;
-        m_pipelineLayoutInfo.pSetLayouts = &m_descriptorSetLayout;
+        m_pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(m_descriptorLayouts.size());
+        m_pipelineLayoutInfo.pSetLayouts = m_descriptorLayouts.data();
 
         if (vkCreatePipelineLayout(m_device->getDevice(), &m_pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS) {
             RenderSystem::LOGGER->error("Failed to create pipeline layout.");

@@ -10,5 +10,7 @@ C:/VulkanSDK/1.3.290.0/Bin/glslc.exe thirdShader.frag -o thirdShader_frag.spv
 C:/VulkanSDK/1.3.290.0/Bin/glslc.exe fourthShader.vert -o fourthShader_vert.spv
 C:/VulkanSDK/1.3.290.0/Bin/glslc.exe fourthShader.frag -o fourthShader_frag.spv
 
+C:/VulkanSDK/1.3.290.0/Bin/glslc.exe fifthShader.vert -o fifthShader_vert.spv
+C:/VulkanSDK/1.3.290.0/Bin/glslc.exe fifthShader.frag -o fifthShader_frag.spv
 
 pause

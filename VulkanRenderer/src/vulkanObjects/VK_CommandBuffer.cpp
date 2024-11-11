@@ -114,8 +114,8 @@ namespace Fierce {
 		vkCmdBindIndexBuffer(m_commandBuffer, buffer, 0, VK_INDEX_TYPE_UINT16);
 	}
 
-	void VK_CommandBuffer::bindDescriptorSet(VK_Pipeline* pipeline,VkDescriptorSet descriptorSet){
-		vkCmdBindDescriptorSets(m_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getLayout(), 0, 1, &descriptorSet, 0, nullptr);
+	void VK_CommandBuffer::bindDescriptorSet(VK_Pipeline* pipeline,VkDescriptorSet descriptorSet,int index){
+		vkCmdBindDescriptorSets(m_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getLayout(), index,1, &descriptorSet, 0, nullptr);
 	}
 
 	void VK_CommandBuffer::setViewport(float width,float height){
