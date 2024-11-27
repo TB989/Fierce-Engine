@@ -27,7 +27,7 @@ namespace Fierce {
 		VkSubpassDescription m_subpassDescription={};
 
 		//Vulkan objects
-		VkDevice m_device=VK_NULL_HANDLE;
+		VK_Device* m_device=nullptr;
 		VkRenderPass m_renderPass=VK_NULL_HANDLE;
 	};
 

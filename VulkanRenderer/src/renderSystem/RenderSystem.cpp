@@ -58,7 +58,7 @@ namespace Fierce {
 		m_surface = new VK_Surface(m_instance->getId(), m_windowHandle);
 		m_surface->create();
 
-		m_device = new VK_Device(m_instance->getId(), m_surface->getId());
+		m_device = new VK_Device(m_instance, m_surface->getId());
 		m_device->addCheck(new VK_Check_Device_Extensions(true, { VK_KHR_SWAPCHAIN_EXTENSION_NAME }));
 		m_device->addCheck(new VK_Check_Device_ValidationLayers(false, { "VK_LAYER_KHRONOS_validation" }));
 		m_device->addCheck(new VK_Check_Device_General());
@@ -78,10 +78,10 @@ namespace Fierce {
 		m_renderpass = new VK_Renderpass(m_device);
 		m_renderpass->create();
 
-		m_vertexShader = new VK_Shader(m_device->getDevice());
+		m_vertexShader = new VK_Shader(m_device);
 		m_vertexShader->setSourceCode("fifthShader_vert.spv");
 		m_vertexShader->create();
-		m_fragmentShader = new VK_Shader(m_device->getDevice());
+		m_fragmentShader = new VK_Shader(m_device);
 		m_fragmentShader->setSourceCode("fifthShader_frag.spv");
 		m_fragmentShader->create();
 
@@ -96,43 +96,55 @@ namespace Fierce {
 		m_descriptorPoolViewProjection = new VK_DescriptorPool(m_device->getDevice());
 		m_descriptorPoolViewProjection->addDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,NUM_FRAMES_IN_FLIGHT);
 		m_descriptorPoolViewProjection->create();
+		m_device->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_POOL, (uint64_t)m_descriptorPoolViewProjection->getId(), "DescriptorPool View/Projection");
 
 		m_descriptorPoolModel = new VK_DescriptorPool(m_device->getDevice());
 		m_descriptorPoolModel->addDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 200);
 		m_descriptorPoolModel->create();
+		m_device->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_POOL, (uint64_t)m_descriptorPoolModel->getId(), "DescriptorPool Model");
 
 		m_descriptorPoolSampler = new VK_DescriptorPool(m_device->getDevice());
 		m_descriptorPoolSampler->addDescriptorType(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 200);
 		m_descriptorPoolSampler->create();
+		m_device->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_POOL, (uint64_t)m_descriptorPoolSampler->getId(), "DescriptorPool Sampler");
 
 		//Create per frame ressources
 		for (int i = 0;i<NUM_FRAMES_IN_FLIGHT;i++) {
 			framesData[i].commandBuffer = m_device->getCommandBuffer(VK_Device::GRAPHICS);
 			framesData[i].commandBuffer->create();
+			m_device->debug_setName(VK_OBJECT_TYPE_COMMAND_BUFFER, (uint64_t)framesData[i].commandBuffer->getId(), "CommandBuffer frame");
 
 			framesData[i].uboViewProjection = new VK_Buffer(m_device, 2*16 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 			framesData[i].uboViewProjection->create();
+			m_device->debug_setName(VK_OBJECT_TYPE_BUFFER, (uint64_t)framesData[i].uboViewProjection->getId(), "Buffer UBO View/Projection");
 
 			framesData[i].uboModel = new VK_Buffer(m_device, 16 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 			framesData[i].uboModel->create();
+			m_device->debug_setName(VK_OBJECT_TYPE_BUFFER, (uint64_t)framesData[i].uboModel->getId(), "Buffer UBO Model");
 
 			framesData[i].descriptorSetViewProjection = new VK_DescriptorSet(m_device->getDevice(),m_descriptorPoolViewProjection->getId(),m_pipeline->getDescriptorSetLayoutViewProjection());
 			framesData[i].descriptorSetViewProjection->create();
+			m_device->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_SET, (uint64_t)framesData[i].descriptorSetViewProjection->getId(), "DescriptorSet View/Projection");
 
 			framesData[i].descriptorSetModel = new VK_DescriptorSet(m_device->getDevice(), m_descriptorPoolModel->getId(), m_pipeline->getDescriptorSetLayoutModel());
 			framesData[i].descriptorSetModel->create();
+			m_device->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_SET, (uint64_t)framesData[i].descriptorSetModel->getId(), "DescriptorSet Model");
 
 			framesData[i].descriptorSetSampler = new VK_DescriptorSet(m_device->getDevice(), m_descriptorPoolSampler->getId(), m_pipeline->getDescriptorSetLayoutSampler());
 			framesData[i].descriptorSetSampler->create();
+			m_device->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_SET, (uint64_t)framesData[i].descriptorSetSampler->getId(), "DescriptorSet Sampler");
 
 			framesData[i].imageAvailableSemaphore = new VK_Semaphore(m_device->getDevice());
 			framesData[i].imageAvailableSemaphore->create();
+			m_device->debug_setName(VK_OBJECT_TYPE_SEMAPHORE, (uint64_t)framesData[i].imageAvailableSemaphore->getId(), "Semaphore imageAvailable");
 
 			framesData[i].renderFinishedSemaphore = new VK_Semaphore(m_device->getDevice());
 			framesData[i].renderFinishedSemaphore->create();
+			m_device->debug_setName(VK_OBJECT_TYPE_SEMAPHORE, (uint64_t)framesData[i].renderFinishedSemaphore->getId(), "Semaphore renderFinished");
 
 			framesData[i].renderFinishedFence = new VK_Fence(m_device->getDevice());
 			framesData[i].renderFinishedFence->create();
+			m_device->debug_setName(VK_OBJECT_TYPE_FENCE, (uint64_t)framesData[i].renderFinishedFence->getId(), "Fence renderFinished");
 		}
 
 		m_modelMatrix = new Mat4();

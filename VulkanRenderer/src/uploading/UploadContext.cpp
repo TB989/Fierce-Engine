@@ -18,6 +18,9 @@ namespace Fierce {
 		m_transferCommandBuffer = m_device->getCommandBuffer(VK_Device::TRANSFER);
 		m_graphicsCommandBuffer = m_device->getCommandBuffer(VK_Device::GRAPHICS);
 
+		m_device->debug_setName(VK_OBJECT_TYPE_COMMAND_BUFFER,(uint64_t)(m_transferCommandBuffer->getId()), "CommandBuffer upload transfer");
+		m_device->debug_setName(VK_OBJECT_TYPE_COMMAND_BUFFER, (uint64_t)(m_graphicsCommandBuffer->getId()), "CommandBuffer upload graphics");
+
 		m_transferCommandBuffer->startRecording();
 		m_graphicsCommandBuffer->startRecording();
 	}

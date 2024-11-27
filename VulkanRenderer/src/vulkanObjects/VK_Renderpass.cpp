@@ -7,7 +7,7 @@
 namespace Fierce {
 
 	VK_Renderpass::VK_Renderpass(VK_Device* device){
-		m_device = device->getDevice();
+		m_device = device;
 
 		m_colorAttachmentDescription = {};
 		m_colorAttachmentDescription.flags = 0;
@@ -58,13 +58,15 @@ namespace Fierce {
 	}
 
 	VK_Renderpass::~VK_Renderpass(){
-		vkDestroyRenderPass(m_device, m_renderPass, nullptr);
+		vkDestroyRenderPass(m_device->getDevice(), m_renderPass, nullptr);
 	}
 
 	void VK_Renderpass::create(){
-		if (vkCreateRenderPass(m_device, &m_renderPassCreateInfo, nullptr, &m_renderPass)!=VK_SUCCESS) {
+		if (vkCreateRenderPass(m_device->getDevice(), &m_renderPassCreateInfo, nullptr, &m_renderPass) != VK_SUCCESS) {
 			RenderSystem::LOGGER->error("Failed to create renderpass.");
 		}
+
+		m_device->debug_setName(VK_OBJECT_TYPE_RENDER_PASS, (uint64_t)m_renderPass, "Renderpass");
 	}
 
 }//end namespace

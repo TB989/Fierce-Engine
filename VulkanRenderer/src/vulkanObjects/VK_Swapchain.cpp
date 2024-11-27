@@ -91,6 +91,8 @@ namespace Fierce {
 			RenderSystem::LOGGER->error("Failed to create swapchain.");
 		}
 
+		m_device->debug_setName(VK_OBJECT_TYPE_SWAPCHAIN_KHR, (uint64_t)m_swapchain, "Swapchain");
+
 		if (vkGetSwapchainImagesKHR(m_device->getDevice(), m_swapchain, &imageCount, nullptr) != VK_SUCCESS) {
 			RenderSystem::LOGGER->error("Failed to get swapchain images.");
 		}
@@ -106,6 +108,9 @@ namespace Fierce {
 			if (vkCreateImageView(m_device->getDevice(), &m_imageViewCreateInfo, nullptr, &m_imageViews[i])) {
 				RenderSystem::LOGGER->error("Failed to create image view for swapchain.");
 			}
+
+			m_device->debug_setName(VK_OBJECT_TYPE_IMAGE, (uint64_t)m_images[i], "Swapchain image");
+			m_device->debug_setName(VK_OBJECT_TYPE_IMAGE_VIEW, (uint64_t)m_imageViews[i], "Swapchain image view");
 		}
 	}
 

@@ -2,6 +2,7 @@
 
 #include "renderSystem/RenderSystem.h"
 
+#include "vulkanObjects/VK_Instance.h"
 #include "vulkanObjects/VK_CommandPool.h"
 #include "vulkanObjects/VK_CommandBuffer.h"
 
@@ -10,9 +11,10 @@
 
 namespace Fierce {
 
-    VK_Device::VK_Device(VkInstance instance, VkSurfaceKHR surface) {
+    VK_Device::VK_Device(VK_Instance* instance, VkSurfaceKHR surface) {
         m_instance = instance;
         m_surface = surface;
+        m_debug = m_instance->getDebug();
 
         m_deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
         m_deviceCreateInfo.pNext = nullptr;
@@ -29,7 +31,7 @@ namespace Fierce {
         m_submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         m_submitInfo.pNext = nullptr;
 
-        VK_Helper_Device::getAllPhysicalDevices(m_instance, &m_supportedPhysicalDevices);
+        VK_Helper_Device::getAllPhysicalDevices(m_instance->getId(), &m_supportedPhysicalDevices);
         m_numSupportedPhysicalDevices = m_supportedPhysicalDevices.size();
         collectPhysicalDeviceData();
     }
@@ -140,6 +142,10 @@ namespace Fierce {
         vkGetDeviceQueue(m_device, m_supportedDeviceData[m_indexActivePhysicalDevice].graphicsQueueIndex, 0, &m_graphicsQueue);
         vkGetDeviceQueue(m_device, m_supportedDeviceData[m_indexActivePhysicalDevice].transferQueueIndex, 0, &m_transferQueue);
         createCommandPools();
+        m_debug->setName(m_device, VK_OBJECT_TYPE_INSTANCE, (uint64_t)(m_instance->getId()), "Instance");
+        m_debug->setName(m_device,VK_OBJECT_TYPE_DEVICE,(uint64_t)m_device,"Device");
+        m_debug->setName(m_device, VK_OBJECT_TYPE_QUEUE, (uint64_t)m_graphicsQueue, "Queue graphics");
+        m_debug->setName(m_device, VK_OBJECT_TYPE_QUEUE, (uint64_t)m_transferQueue, "Queue transfer");
     }
 
     void VK_Device::requerySurfaceData(){
@@ -417,12 +423,17 @@ namespace Fierce {
             m_transferCommandPool = new VK_CommandPool(this);
             m_transferCommandPool->bindToTransferQueue();
             m_transferCommandPool->create();
+
+            m_debug->setName(m_device, VK_OBJECT_TYPE_COMMAND_POOL, (uint64_t)(m_graphicsCommandPool->getId()), "CommandPool graphics");
+            m_debug->setName(m_device, VK_OBJECT_TYPE_COMMAND_POOL, (uint64_t)(m_transferCommandPool->getId()), "CommandPool transfer");
         }
         else {
             m_graphicsCommandPool=new VK_CommandPool(this);
             m_graphicsCommandPool->create();
 
             m_transferCommandPool = m_graphicsCommandPool;
+
+            m_debug->setName(m_device, VK_OBJECT_TYPE_COMMAND_POOL, (uint64_t)(m_graphicsCommandPool->getId()), "CommandPool graphics/transfer");
         }
     }
 

@@ -96,7 +96,7 @@ namespace Fierce {
 
 	void VK_Buffer::loadData(int size, float* view, float* proj) {
 		void* data2;
-		vkMapMemory(m_device->getDevice(), m_memory, 16 * sizeof(float), 16 * sizeof(float), 0, &data2);
+		vkMapMemory(m_device->getDevice(), m_memory, 0, 16 * sizeof(float), 0, &data2);
 		memcpy(data2, view, (size_t)(16 * sizeof(float)));
 		vkUnmapMemory(m_device->getDevice(), m_memory);
 

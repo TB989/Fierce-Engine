@@ -41,6 +41,8 @@ namespace Fierce {
 			if (vkCreateFramebuffer(m_device->getDevice(), &m_createInfo, nullptr, &m_framebuffers[i]) != VK_SUCCESS) {
 				RenderSystem::LOGGER->error("Failed to create framebuffer.");
 			}
+
+			m_device->debug_setName(VK_OBJECT_TYPE_FRAMEBUFFER, (uint64_t)m_framebuffers[i],"Framebuffer");
 		}
 	}
 

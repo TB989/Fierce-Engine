@@ -2,11 +2,13 @@
 
 #include "vulkan/vulkan.h"
 
+#include "vulkanObjects/VK_DebugTools.h"
 #include "VK_CompatibilityChecks.h"
 #include "VK_CheckSupport.h"
 
 namespace Fierce {
 
+	class VK_Instance;
 	class VK_CommandPool;
 	class VK_CommandBuffer;
 
@@ -17,7 +19,7 @@ namespace Fierce {
 		};
 
 	public:
-		VK_Device(VkInstance instance, VkSurfaceKHR surface);
+		VK_Device(VK_Instance* instance, VkSurfaceKHR surface);
 		~VK_Device();
 
 		void create();
@@ -36,6 +38,17 @@ namespace Fierce {
 		bool hasDedicatedTransferQueue();
 		VK_CommandBuffer* getCommandBuffer(QUEUE_TYPE queue);
 		void releaseCommandBuffer(VK_CommandBuffer* commandBuffer);
+
+	public:
+		void debug_cmdBeginLabel(VkCommandBuffer commandBuffer, const char* label, float r, float g, float b) { return m_debug->cmdBeginLabel(commandBuffer,label,r,g,b); }
+		void debug_cmdEndLabel(VkCommandBuffer commandBuffer) { return m_debug->cmdEndLabel(commandBuffer); }
+		void debug_cmdInsertLabel(VkCommandBuffer commandBuffer, const char* label, float r, float g, float b) { return m_debug->cmdInsertLabel(commandBuffer, label, r, g, b); }
+
+		void debug_queueBeginLabel(VkQueue queue, const char* label, float r, float g, float b) { m_debug->queueBeginLabel(queue, label, r, g, b); }
+		void debug_queueEndLabel(VkQueue queue) { m_debug->queueEndLabel(queue); }
+		void debug_queueInsertLabel(VkQueue queue, const char* label, float r, float g, float b) { m_debug->queueInsertLabel(queue, label, r, g, b); }
+
+		void debug_setName(VkObjectType objectType, uint64_t object, const char* name) { return m_debug->setName(m_device,objectType,object,name); }
 
 	public:
 		void printActiveData(bool printExtensions, bool printLayers,
@@ -83,8 +96,9 @@ namespace Fierce {
 		std::vector<ExtensionValidationLayerData> m_supportedExtensionValidationLayerData;
 
 		//Vulkan objects
-		VkInstance m_instance = VK_NULL_HANDLE;
+		VK_Instance* m_instance = nullptr;
 		VkSurfaceKHR m_surface = VK_NULL_HANDLE;
+		I_DebugTools* m_debug = nullptr;
 
 		int m_indexActivePhysicalDevice = 0;
 		VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;

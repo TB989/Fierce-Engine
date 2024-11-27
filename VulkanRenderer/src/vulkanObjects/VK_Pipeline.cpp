@@ -243,6 +243,11 @@ namespace Fierce {
         if (vkCreateDescriptorSetLayout(m_device->getDevice(), &m_descriptorSetSamplerLayoutCreateInfo, nullptr, &m_descriptorSetLayoutSampler) != VK_SUCCESS) {
             RenderSystem::LOGGER->error("Failed to create descriptor set layout.");
         }
+
+        m_device->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT, (uint64_t)m_descriptorSetLayoutViewProjection, "DescriptorSetLayout view/projection");
+        m_device->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT, (uint64_t)m_descriptorSetLayoutModel, "DescriptorSetLayout model");
+        m_device->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT, (uint64_t)m_descriptorSetLayoutSampler, "DescriptorSetLayout sampler");
+
         m_descriptorLayouts.push_back(m_descriptorSetLayoutViewProjection);
         m_descriptorLayouts.push_back(m_descriptorSetLayoutModel);
         m_descriptorLayouts.push_back(m_descriptorSetLayoutSampler);
@@ -253,14 +258,18 @@ namespace Fierce {
         if (vkCreatePipelineLayout(m_device->getDevice(), &m_pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS) {
             RenderSystem::LOGGER->error("Failed to create pipeline layout.");
         }
-        m_createInfo.layout = m_pipelineLayout;
 
+        m_device->debug_setName(VK_OBJECT_TYPE_PIPELINE_LAYOUT, (uint64_t)m_pipelineLayout, "Pipeline layout 2D");
+
+        m_createInfo.layout = m_pipelineLayout;
         VkPipelineShaderStageCreateInfo shaderStages[] = { m_vertexShaderStageInfo ,m_fragmentShaderStageInfo };
         m_createInfo.stageCount = 2;
         m_createInfo.pStages = shaderStages;
         if (vkCreateGraphicsPipelines(m_device->getDevice(), VK_NULL_HANDLE, 1, &m_createInfo, nullptr, &m_graphicsPipeline) != VK_SUCCESS) {
             RenderSystem::LOGGER->error("Failed to create pipeline.");
         }
+
+        m_device->debug_setName(VK_OBJECT_TYPE_PIPELINE, (uint64_t)m_graphicsPipeline, "Pipeline 2D");
 	}
 
     void VK_Pipeline::addVertexShader(VkShaderModule shader){

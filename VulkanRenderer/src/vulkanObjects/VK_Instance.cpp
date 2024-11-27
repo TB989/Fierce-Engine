@@ -2,6 +2,8 @@
 
 #include "renderSystem/RenderSystem.h"
 
+#include "vulkanObjects/VK_DebugTools.h"
+
 #include "VK_Helper_Extensions_ValidationLayers.h"
 
 namespace Fierce {
@@ -26,15 +28,6 @@ namespace Fierce {
         m_createInfo.enabledLayerCount = 0;
         m_createInfo.ppEnabledLayerNames = nullptr;
 
-        m_debugCreateInfo={};
-        m_debugCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-        m_debugCreateInfo.pNext = nullptr;
-        m_debugCreateInfo.flags = 0;
-        m_debugCreateInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-        m_debugCreateInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-        m_debugCreateInfo.pfnUserCallback = debugCallback;
-        m_debugCreateInfo.pUserData = nullptr;
-
         m_extensionLayerData = {};
         VK_Helper_Extensions_ValidationLayers::getExtensions(nullptr, &m_extensionLayerData.supportedExtensions);
         VK_Helper_Extensions_ValidationLayers::getValidationLayers(nullptr, &m_extensionLayerData.supportedValidationLayers);
@@ -43,9 +36,7 @@ namespace Fierce {
     }
 
     VK_Instance::~VK_Instance() {
-        if (m_isDebugSupported) {
-            vkDestroyDebugUtilsMessengerEXT(m_instance, m_debugMessenger, nullptr);
-        }
+        delete m_debug;
         vkDestroyInstance(m_instance, nullptr);
     }
 
@@ -74,24 +65,25 @@ namespace Fierce {
         if (m_isDebugSupported) {
             RenderSystem::LOGGER->info("Debug messenger is active.");
 
-            m_createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&m_debugCreateInfo;
+            m_debug = new VK_DebugTools_debug();
+
+            m_createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&m_debug->getDebugInfo();
             if (vkCreateInstance(&m_createInfo, nullptr, &m_instance) != VK_SUCCESS) {
                 RenderSystem::LOGGER->error("Failed to create instance.");
             }
 
-            vkCreateDebugUtilsMessengerEXT = loadCreateFunctionPointer(m_instance);
-            vkDestroyDebugUtilsMessengerEXT = loadDestroyFunctionPointer(m_instance);
-
-            if (vkCreateDebugUtilsMessengerEXT(m_instance, &m_debugCreateInfo, nullptr, &m_debugMessenger) != VK_SUCCESS) {
-                RenderSystem::LOGGER->error("Failed to create debug messenger.");
-            }
+            m_debug->create(m_instance);
         }
         else {
             RenderSystem::LOGGER->info("Debug messenger is not active.");
 
+            m_debug = new VK_DebugTools_dummy();
+
             if (vkCreateInstance(&m_createInfo, nullptr, &m_instance) != VK_SUCCESS) {
                 RenderSystem::LOGGER->error("Failed to create instance.");
             }
+
+            m_debug->create(m_instance);
         }
     }
 
@@ -120,30 +112,4 @@ namespace Fierce {
             VK_Helper_Extensions_ValidationLayers::printValidationLayers(true, "active", &m_extensionLayerData.enabledValidationLayers);
         }
     }
-
-    PFN_vkCreateDebugUtilsMessengerEXT VK_Instance::loadCreateFunctionPointer(VkInstance instance) {
-        PFN_vkCreateDebugUtilsMessengerEXT func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
-
-        if (func == nullptr) {
-            RenderSystem::LOGGER->error("Failed to load function pointer for vkCreateDebugUtilsMessengerEXT.");
-            return nullptr;
-        }
-        return func;
-    }
-
-    PFN_vkDestroyDebugUtilsMessengerEXT VK_Instance::loadDestroyFunctionPointer(VkInstance instance) {
-        PFN_vkDestroyDebugUtilsMessengerEXT func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
-
-        if (func == nullptr) {
-            RenderSystem::LOGGER->error("Failed to load function pointer for vkDestroyDebugUtilsMessengerEXT.");
-            return nullptr;
-        }
-        return func;
-    }
-
-    VKAPI_ATTR VkBool32 VKAPI_CALL VK_Instance::debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
-        RenderSystem::LOGGER->error("%s", pCallbackData->pMessage);
-        return VK_FALSE;
-    }
-
 }

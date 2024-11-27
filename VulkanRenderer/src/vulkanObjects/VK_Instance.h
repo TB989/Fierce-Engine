@@ -10,6 +10,8 @@
 
 namespace Fierce {
 
+	class I_DebugTools;
+
 	class VK_Instance :public VK_CheckSupport{
 	public:
 		VK_Instance();
@@ -17,6 +19,7 @@ namespace Fierce {
 
 		void create();
 		VkInstance getId() { return m_instance; }
+		I_DebugTools* getDebug() { return m_debug; }
 
 	public:
 		bool isDebugSupported() { return m_isDebugSupported; }
@@ -26,27 +29,19 @@ namespace Fierce {
 		void printActiveValidationLayers();
 
 	private:
-		PFN_vkCreateDebugUtilsMessengerEXT loadCreateFunctionPointer(VkInstance instance);
-		PFN_vkDestroyDebugUtilsMessengerEXT loadDestroyFunctionPointer(VkInstance instance);
-		static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);
-
-	private:
 		//Create info
 		VkApplicationInfo m_appInfo = {};
 		VkInstanceCreateInfo m_createInfo = {};
-		VkDebugUtilsMessengerCreateInfoEXT m_debugCreateInfo = {};
 
 		//Vulkan objects
 		VkInstance m_instance=VK_NULL_HANDLE;
-		VkDebugUtilsMessengerEXT m_debugMessenger = VK_NULL_HANDLE;
 
 		//Extensions/Validation layers
 		ExtensionValidationLayerData m_extensionLayerData = {};
 
-		//Debug misc
+		//Debug
 		bool m_isDebugSupported = false;
-		PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT = VK_NULL_HANDLE;
-		PFN_vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT = VK_NULL_HANDLE;
+		I_DebugTools* m_debug = nullptr;
 
 		//Constants
 		uint32_t API_VERSION = VK_MAKE_API_VERSION(0, 1, 0, 1);
