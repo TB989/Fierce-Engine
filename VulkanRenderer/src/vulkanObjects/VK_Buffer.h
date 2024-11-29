@@ -11,7 +11,7 @@ namespace Fierce {
 	class VK_Buffer{
 	public:
 		VK_Buffer(VK_Device* device, int size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
-		~VK_Buffer();
+		virtual ~VK_Buffer();
 
 		void create();
 		VkBuffer getId() { return m_buffer; }
@@ -28,6 +28,9 @@ namespace Fierce {
 		void loadData(int size, float* model, float* view, float* proj);
 		void loadData(int size, unsigned char* data);
 
+	protected:
+		VK_Device* m_device = nullptr;
+
 	private:
 		//Create info
 		VkBufferCreateInfo m_createInfo={};
@@ -38,7 +41,6 @@ namespace Fierce {
 		VkDeviceSize m_size=0;
 
 		//Vulkan objects
-		VK_Device* m_device=nullptr;
 		VkBuffer m_buffer=VK_NULL_HANDLE;
 		VkDeviceMemory m_memory=VK_NULL_HANDLE;
 

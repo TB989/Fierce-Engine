@@ -5,6 +5,7 @@
 #include "vulkanObjects/VK_Image.h"
 #include "vulkanObjects/VK_ImageView.h"
 #include "vulkanObjects/VK_Sampler.h"
+#include "vulkanObjects/VK_DescriptorPool.h"
 
 namespace Fierce {
 	VK_Texture::VK_Texture(VK_Device* device, int width, int height, int numChannels){
@@ -25,6 +26,7 @@ namespace Fierce {
 		}
 		delete m_imageView;
 		delete m_sampler;
+		delete m_descriptorSet;
 	}
 
 	void VK_Texture::loadData(int size, unsigned char* pixels){
@@ -49,5 +51,26 @@ namespace Fierce {
 		m_sampler = new VK_Sampler(m_device);
 		m_sampler->create();
 		m_device->debug_setName(VK_OBJECT_TYPE_SAMPLER, (uint64_t)m_sampler->getId(), "Sampler texture");
+	}
+
+	void VK_Texture::createDescriptorSet(VK_DescriptorPool* descriptorPool, VkDescriptorSetLayout descriptorSetLayout){
+		m_descriptorSet = new VK_DescriptorSet(m_device->getDevice(), descriptorPool->getId(), descriptorSetLayout);
+		m_descriptorSet->create();
+	}
+	
+	void VK_Texture::update(VK_Buffer* buffer, uint32_t binding) {
+		m_descriptorSet->update(buffer, binding);
+	}
+
+	void VK_Texture::update(VK_Buffer* buffer) {
+		m_descriptorSet->update(buffer);
+	}
+
+	void VK_Texture::update(VkImageView imageView, VkSampler imageSampler) {
+		m_descriptorSet->update(imageView, imageSampler);
+	}
+
+	void VK_Texture::update(VK_Buffer* buffer, VkImageView imageView, VkSampler imageSampler) {
+		m_descriptorSet->update(buffer, imageView, imageSampler);
 	}
 }//end namespace

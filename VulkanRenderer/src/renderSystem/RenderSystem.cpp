@@ -26,6 +26,7 @@
 #include "vulkanObjects/VK_Image.h"
 #include "vulkanObjects//VK_ImageView.h"
 #include "vulkanObjects/VK_Sampler.h"
+#include "vulkanObjects/VK_UBO.h"
 
 #include "assets/VK_Mesh.h"
 #include "assets/VK_Texture.h"
@@ -114,25 +115,15 @@ namespace Fierce {
 			framesData[i].commandBuffer->create();
 			m_device->debug_setName(VK_OBJECT_TYPE_COMMAND_BUFFER, (uint64_t)framesData[i].commandBuffer->getId(), "CommandBuffer frame");
 
-			framesData[i].uboViewProjection = new VK_Buffer(m_device, 2*16 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+			framesData[i].uboViewProjection = new VK_UBO(m_device, 2*16 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 			framesData[i].uboViewProjection->create();
+			framesData[i].uboViewProjection->createDescriptorSet(m_descriptorPoolViewProjection, m_pipeline->getDescriptorSetLayoutViewProjection());
 			m_device->debug_setName(VK_OBJECT_TYPE_BUFFER, (uint64_t)framesData[i].uboViewProjection->getId(), "Buffer UBO View/Projection");
 
-			framesData[i].uboModel = new VK_Buffer(m_device, 16 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+			framesData[i].uboModel = new VK_UBO(m_device, 16 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 			framesData[i].uboModel->create();
+			framesData[i].uboModel->createDescriptorSet(m_descriptorPoolModel, m_pipeline->getDescriptorSetLayoutModel());
 			m_device->debug_setName(VK_OBJECT_TYPE_BUFFER, (uint64_t)framesData[i].uboModel->getId(), "Buffer UBO Model");
-
-			framesData[i].descriptorSetViewProjection = new VK_DescriptorSet(m_device->getDevice(),m_descriptorPoolViewProjection->getId(),m_pipeline->getDescriptorSetLayoutViewProjection());
-			framesData[i].descriptorSetViewProjection->create();
-			m_device->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_SET, (uint64_t)framesData[i].descriptorSetViewProjection->getId(), "DescriptorSet View/Projection");
-
-			framesData[i].descriptorSetModel = new VK_DescriptorSet(m_device->getDevice(), m_descriptorPoolModel->getId(), m_pipeline->getDescriptorSetLayoutModel());
-			framesData[i].descriptorSetModel->create();
-			m_device->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_SET, (uint64_t)framesData[i].descriptorSetModel->getId(), "DescriptorSet Model");
-
-			framesData[i].descriptorSetSampler = new VK_DescriptorSet(m_device->getDevice(), m_descriptorPoolSampler->getId(), m_pipeline->getDescriptorSetLayoutSampler());
-			framesData[i].descriptorSetSampler->create();
-			m_device->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_SET, (uint64_t)framesData[i].descriptorSetSampler->getId(), "DescriptorSet Sampler");
 
 			framesData[i].imageAvailableSemaphore = new VK_Semaphore(m_device->getDevice());
 			framesData[i].imageAvailableSemaphore->create();
@@ -181,9 +172,6 @@ namespace Fierce {
 			delete framesData[i].renderFinishedFence;
 			delete framesData[i].renderFinishedSemaphore;
 			delete framesData[i].imageAvailableSemaphore;
-			delete framesData[i].descriptorSetViewProjection;
-			delete framesData[i].descriptorSetModel;
-			delete framesData[i].descriptorSetSampler;
 			delete framesData[i].uboViewProjection;
 			delete framesData[i].uboModel;
 			m_device->releaseCommandBuffer(framesData[i].commandBuffer);
@@ -216,9 +204,9 @@ namespace Fierce {
 		frameData.commandBuffer->bindPipeline(m_pipeline->getId());
 		frameData.commandBuffer->setViewport(static_cast<float>(m_device->getSurfaceData()->swapchainWidth), static_cast<float>(m_device->getSurfaceData()->swapchainHeight));
 		frameData.commandBuffer->setScissor(m_device->getSurfaceData()->swapchainWidth, m_device->getSurfaceData()->swapchainHeight);
-		frameData.commandBuffer->bindDescriptorSet(m_pipeline,frameData.descriptorSetViewProjection->getId(),0);
-		frameData.commandBuffer->bindDescriptorSet(m_pipeline, frameData.descriptorSetModel->getId(), 1);
-		frameData.commandBuffer->bindDescriptorSet(m_pipeline, frameData.descriptorSetSampler->getId(), 2);
+		frameData.commandBuffer->bindDescriptorSet(m_pipeline, frameData.uboViewProjection->getDescriptorSet(), 0);
+		frameData.commandBuffer->bindDescriptorSet(m_pipeline, frameData.uboModel->getDescriptorSet(), 1);
+		frameData.commandBuffer->bindDescriptorSet(m_pipeline, m_textures[0]->getDescriptorSet(), 2);
 		for (VK_Mesh* mesh:m_meshes) {
 			frameData.commandBuffer->bindVertexBuffer(mesh->getVertexBuffer()->getId());
 			frameData.commandBuffer->bindIndexBuffer(mesh->getIndexBuffer()->getId());
@@ -299,11 +287,12 @@ namespace Fierce {
 		m_uploadContext->startAndWaitForUpload();
 
 		m_textures[0]->createImageViewAndSampler();
+		m_textures[0]->createDescriptorSet(m_descriptorPoolSampler,m_pipeline->getDescriptorSetLayoutSampler());
 
 		for (int i = 0; i < NUM_FRAMES_IN_FLIGHT; i++) {
-			framesData[i].descriptorSetViewProjection->update(framesData[i].uboViewProjection);
-			framesData[i].descriptorSetModel->update(framesData[i].uboModel);
-			framesData[i].descriptorSetSampler->update(m_textures[0]->getImageView()->getId(), m_textures[0]->getSampler()->getId());
+			framesData[i].uboViewProjection->update(framesData[i].uboViewProjection);
+			framesData[i].uboModel->update(framesData[i].uboModel);
+			m_textures[0]->update(m_textures[0]->getImageView()->getId(), m_textures[0]->getSampler()->getId());
 		}
 	}
 

@@ -30,6 +30,7 @@ namespace Fierce {
 	class VK_Image;
 	class VK_ImageView;
 	class VK_Sampler;
+	class VK_UBO;
 
 	class Mat4;
 
@@ -66,11 +67,8 @@ namespace Fierce {
 	public:
 		struct FrameData {
 			VK_CommandBuffer* commandBuffer;
-			VK_Buffer* uboViewProjection;
-			VK_Buffer* uboModel;
-			VK_DescriptorSet* descriptorSetViewProjection;
-			VK_DescriptorSet* descriptorSetModel;
-			VK_DescriptorSet* descriptorSetSampler;
+			VK_UBO* uboViewProjection;
+			VK_UBO* uboModel;
 
 			VK_Semaphore* imageAvailableSemaphore;
 			VK_Semaphore* renderFinishedSemaphore;
