@@ -2,9 +2,9 @@
 
 #include "glm.hpp"
 
-#include "vulkanObjects/VK_Device.h"
+#include "src/vulkanObjects/VK_Device.h"
 
-#include "renderSystem/RenderSystem.h"
+#include "src/renderSystem/RenderSystem.h"
 
 namespace Fierce {
 
@@ -27,44 +27,6 @@ namespace Fierce {
         m_fragmentShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
         m_fragmentShaderStageInfo.pName = "main";
         m_fragmentShaderStageInfo.pSpecializationInfo = nullptr;
-
-        //Mesh/////////////////////////////////////////////////////////////////////////////
-        m_inputBindingDescription = {};
-        m_inputBindingDescription.binding = 0;
-        m_inputBindingDescription.stride = 7*sizeof(float);
-        m_inputBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-        VkVertexInputAttributeDescription descriptionPosition = {};
-        descriptionPosition.binding = 0;
-        descriptionPosition.location = 0;
-        descriptionPosition.format = VK_FORMAT_R32G32_SFLOAT;
-        descriptionPosition.offset = 0;
-        m_attributeDescriptions.push_back(descriptionPosition);
-
-        VkVertexInputAttributeDescription descriptionColor = {};
-        descriptionColor.binding = 0;
-        descriptionColor.location = 1;
-        descriptionColor.format = VK_FORMAT_R32G32B32_SFLOAT;
-        descriptionColor.offset = 2*sizeof(float);
-        m_attributeDescriptions.push_back(descriptionColor);
-
-        VkVertexInputAttributeDescription descriptionTex = {};
-        descriptionTex.binding = 0;
-        descriptionTex.location = 2;
-        descriptionTex.format = VK_FORMAT_R32G32_SFLOAT;
-        descriptionTex.offset = 5 * sizeof(float);
-        m_attributeDescriptions.push_back(descriptionTex);
-
-        ////////////////////////////////////////////////////////////////////////////////////
-
-        m_vertexInputInfo = {};
-        m_vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        m_vertexInputInfo.pNext = nullptr;
-        m_vertexInputInfo.flags = 0;
-        m_vertexInputInfo.vertexBindingDescriptionCount = 1;
-        m_vertexInputInfo.pVertexBindingDescriptions = &m_inputBindingDescription;
-        m_vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(m_attributeDescriptions.size());
-        m_vertexInputInfo.pVertexAttributeDescriptions = m_attributeDescriptions.data();
 
         m_inputAssembly = {};
         m_inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -234,6 +196,20 @@ namespace Fierce {
 	}
 
 	void VK_Pipeline::create(){
+        m_inputBindingDescription = {};
+        m_inputBindingDescription.binding = 0;
+        m_inputBindingDescription.stride = m_vertexSize * sizeof(float);
+        m_inputBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+        m_vertexInputInfo = {};
+        m_vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+        m_vertexInputInfo.pNext = nullptr;
+        m_vertexInputInfo.flags = 0;
+        m_vertexInputInfo.vertexBindingDescriptionCount = 1;
+        m_vertexInputInfo.pVertexBindingDescriptions = &m_inputBindingDescription;
+        m_vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(m_attributeDescriptions.size());
+        m_vertexInputInfo.pVertexAttributeDescriptions = m_attributeDescriptions.data();
+
         if (vkCreateDescriptorSetLayout(m_device->getDevice(), &m_descriptorSetViewProjectionLayoutCreateInfo, nullptr, &m_descriptorSetLayoutViewProjection) != VK_SUCCESS) {
             RenderSystem::LOGGER->error("Failed to create descriptor set layout.");
         }
@@ -278,6 +254,23 @@ namespace Fierce {
 
     void VK_Pipeline::addFragmentShader(VkShaderModule shader){
         m_fragmentShaderStageInfo.module = shader;
+    }
+
+    void VK_Pipeline::addVertexInput(uint32_t location,VkFormat format){
+        VkVertexInputAttributeDescription description= {};
+        description.binding = 0;
+        description.location = location;
+        description.format = format;
+        description.offset = m_vertexSize* sizeof(float);
+        m_attributeDescriptions.push_back(description);
+        switch (format) {
+        case VK_FORMAT_R32G32_SFLOAT:
+            m_vertexSize += 2;
+            break;
+        case VK_FORMAT_R32G32B32_SFLOAT:
+            m_vertexSize += 3;
+            break;
+        }
     }
 
 }//end namespace

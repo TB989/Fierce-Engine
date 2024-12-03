@@ -2,7 +2,7 @@
 
 #include "vulkan/vulkan.h"
 
-#include "vulkanObjects/VK_DebugTools.h"
+#include "src/vulkanObjects/VK_DebugTools.h"
 #include "VK_CompatibilityChecks.h"
 #include "VK_CheckSupport.h"
 

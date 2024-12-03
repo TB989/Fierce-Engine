@@ -21,7 +21,7 @@ project "Utils"
 
 	includedirs
 	{
-		"%{wks.location}/%{prj.name}/src",
+		"%{wks.location}/%{prj.name}",
 	}
 
 	libdirs

@@ -1,6 +1,6 @@
 #include "RenderSystem.h"
 
-#include "uploading/UploadContext.h"
+#include "src/uploading/UploadContext.h"
 
 #include "glm.hpp"
 #include <gtc/matrix_transform.hpp>
@@ -9,27 +9,27 @@
 
 #include "src/Matrix.h"
 
-#include "vulkanObjects/VK_Instance.h"
-#include "vulkanObjects/VK_Surface.h"
-#include "vulkanObjects/VK_Device.h"
-#include "vulkanObjects/VK_Swapchain.h"
-#include "vulkanObjects/VK_Renderpass.h"
-#include "vulkanObjects/VK_Shader.h"
-#include "vulkanObjects/VK_Pipeline.h"
-#include "vulkanObjects/VK_Framebuffers.h"
-#include "vulkanObjects/VK_CommandBuffer.h"
-#include "vulkanObjects/VK_Semaphore.h"
-#include "vulkanObjects/VK_Fence.h"
-#include "vulkanObjects/VK_Buffer.h"
-#include "vulkanObjects/VK_DescriptorPool.h"
-#include "vulkanObjects/VK_DescriptorSet.h"
-#include "vulkanObjects/VK_Image.h"
-#include "vulkanObjects//VK_ImageView.h"
-#include "vulkanObjects/VK_Sampler.h"
-#include "vulkanObjects/VK_UBO.h"
+#include "src/vulkanObjects/VK_Instance.h"
+#include "src/vulkanObjects/VK_Surface.h"
+#include "src/vulkanObjects/VK_Device.h"
+#include "src/vulkanObjects/VK_Swapchain.h"
+#include "src/vulkanObjects/VK_Renderpass.h"
+#include "src/vulkanObjects/VK_Shader.h"
+#include "src/vulkanObjects/VK_Pipeline.h"
+#include "src/vulkanObjects/VK_Framebuffers.h"
+#include "src/vulkanObjects/VK_CommandBuffer.h"
+#include "src/vulkanObjects/VK_Semaphore.h"
+#include "src/vulkanObjects/VK_Fence.h"
+#include "src/vulkanObjects/VK_Buffer.h"
+#include "src/vulkanObjects/VK_DescriptorPool.h"
+#include "src/vulkanObjects/VK_DescriptorSet.h"
+#include "src/vulkanObjects/VK_Image.h"
+#include "src/vulkanObjects//VK_ImageView.h"
+#include "src/vulkanObjects/VK_Sampler.h"
+#include "src/vulkanObjects/VK_UBO.h"
 
-#include "assets/VK_Mesh.h"
-#include "assets/VK_Texture.h"
+#include "src/assets/VK_Mesh.h"
+#include "src/assets/VK_Texture.h"
 
 namespace Fierce {
 
@@ -76,23 +76,17 @@ namespace Fierce {
 		m_swapchain = new VK_Swapchain(m_device, m_surface->getId(),VK_NULL_HANDLE);
 		m_swapchain->create();
 
-		m_renderpass = new VK_Renderpass(m_device);
-		m_renderpass->create();
+		//Create managers
+		m_renderpasses= new VK_Manager<VK_Renderpass*>();
+		m_framebuffers = new VK_Manager<VK_Framebuffers*>();
+		m_shaders = new VK_Manager<VK_Shader*>();
+		m_pipelines = new VK_Manager<VK_Pipeline*>();
 
-		m_vertexShader = new VK_Shader(m_device);
-		m_vertexShader->setSourceCode("fifthShader_vert.spv");
-		m_vertexShader->create();
-		m_fragmentShader = new VK_Shader(m_device);
-		m_fragmentShader->setSourceCode("fifthShader_frag.spv");
-		m_fragmentShader->create();
-
-		m_pipeline = new VK_Pipeline(m_device,m_renderpass->getId());
-		m_pipeline->addVertexShader(m_vertexShader->getId());
-		m_pipeline->addFragmentShader(m_fragmentShader->getId());
-		m_pipeline->create();
-
-		m_framebuffers = new VK_Framebuffers(m_device,m_renderpass->getId(),m_swapchain);
-		m_framebuffers->create();
+		//Create engine ressources
+		createRenderpasses();
+		createFramebuffers();
+		createShaders();
+		createPipelines();
 
 		m_descriptorPoolViewProjection = new VK_DescriptorPool(m_device->getDevice());
 		m_descriptorPoolViewProjection->addDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,NUM_FRAMES_IN_FLIGHT);
@@ -117,12 +111,12 @@ namespace Fierce {
 
 			framesData[i].uboViewProjection = new VK_UBO(m_device, 2*16 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 			framesData[i].uboViewProjection->create();
-			framesData[i].uboViewProjection->createDescriptorSet(m_descriptorPoolViewProjection, m_pipeline->getDescriptorSetLayoutViewProjection());
+			framesData[i].uboViewProjection->createDescriptorSet(m_descriptorPoolViewProjection, m_pipelines->get("Main")->getDescriptorSetLayoutViewProjection());
 			m_device->debug_setName(VK_OBJECT_TYPE_BUFFER, (uint64_t)framesData[i].uboViewProjection->getId(), "Buffer UBO View/Projection");
 
 			framesData[i].uboModel = new VK_UBO(m_device, 16 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 			framesData[i].uboModel->create();
-			framesData[i].uboModel->createDescriptorSet(m_descriptorPoolModel, m_pipeline->getDescriptorSetLayoutModel());
+			framesData[i].uboModel->createDescriptorSet(m_descriptorPoolModel, m_pipelines->get("Main")->getDescriptorSetLayoutModel());
 			m_device->debug_setName(VK_OBJECT_TYPE_BUFFER, (uint64_t)framesData[i].uboModel->getId(), "Buffer UBO Model");
 
 			framesData[i].imageAvailableSemaphore = new VK_Semaphore(m_device->getDevice());
@@ -181,11 +175,12 @@ namespace Fierce {
 		delete m_descriptorPoolModel;
 		delete m_descriptorPoolSampler;
 
+		//Delete engine ressources
+		delete m_pipelines;
+		delete m_shaders;
 		delete m_framebuffers;
-		delete m_pipeline;
-		delete m_fragmentShader;
-		delete m_vertexShader;
-		delete m_renderpass;
+		delete m_renderpasses;
+
 		delete m_swapchain;
 
 		delete m_uploadContext;
@@ -200,13 +195,13 @@ namespace Fierce {
 		FrameData& frameData = framesData[currentFrame];
 
 		frameData.commandBuffer->startRecording();
-		frameData.commandBuffer->beginRenderpass(m_renderpass->getId(), m_framebuffers->getFramebuffer(imageIndex));
-		frameData.commandBuffer->bindPipeline(m_pipeline->getId());
+		frameData.commandBuffer->beginRenderpass(m_renderpasses->get("Main")->getId(), m_framebuffers->get("Main")->getFramebuffer(imageIndex));
+		frameData.commandBuffer->bindPipeline(m_pipelines->get("Main")->getId());
 		frameData.commandBuffer->setViewport(static_cast<float>(m_device->getSurfaceData()->swapchainWidth), static_cast<float>(m_device->getSurfaceData()->swapchainHeight));
 		frameData.commandBuffer->setScissor(m_device->getSurfaceData()->swapchainWidth, m_device->getSurfaceData()->swapchainHeight);
-		frameData.commandBuffer->bindDescriptorSet(m_pipeline, frameData.uboViewProjection->getDescriptorSet(), 0);
-		frameData.commandBuffer->bindDescriptorSet(m_pipeline, frameData.uboModel->getDescriptorSet(), 1);
-		frameData.commandBuffer->bindDescriptorSet(m_pipeline, m_textures[0]->getDescriptorSet(), 2);
+		frameData.commandBuffer->bindDescriptorSet(m_pipelines->get("Main"), frameData.uboViewProjection->getDescriptorSet(), 0);
+		frameData.commandBuffer->bindDescriptorSet(m_pipelines->get("Main"), frameData.uboModel->getDescriptorSet(), 1);
+		frameData.commandBuffer->bindDescriptorSet(m_pipelines->get("Main"), m_textures[0]->getDescriptorSet(), 2);
 		for (VK_Mesh* mesh:m_meshes) {
 			frameData.commandBuffer->bindVertexBuffer(mesh->getVertexBuffer()->getId());
 			frameData.commandBuffer->bindIndexBuffer(mesh->getIndexBuffer()->getId());
@@ -237,7 +232,7 @@ namespace Fierce {
 
 		m_device->requerySurfaceData();
 
-		delete m_framebuffers;
+		delete m_framebuffers->get("Main");
 
 		VK_Swapchain* oldSwapchain = m_swapchain;
 		VK_Swapchain* newSwapchain = new VK_Swapchain(m_device,m_surface->getId(),oldSwapchain->getId());
@@ -245,8 +240,10 @@ namespace Fierce {
 		m_swapchain = newSwapchain;
 		delete oldSwapchain;
 
-		m_framebuffers = new VK_Framebuffers(m_device,m_renderpass->getId(), m_swapchain);
-		m_framebuffers->create();
+		VK_Framebuffers* framebuffers = nullptr;
+		framebuffers = new VK_Framebuffers(m_device,m_renderpasses->get("Main")->getId(), m_swapchain);
+		framebuffers->create();
+		m_framebuffers->add("Main",framebuffers);
 
 		for (int i = 0;i<NUM_FRAMES_IN_FLIGHT;i++) {
 			framesData[i].commandBuffer->updateRenderArea();
@@ -287,7 +284,7 @@ namespace Fierce {
 		m_uploadContext->startAndWaitForUpload();
 
 		m_textures[0]->createImageViewAndSampler();
-		m_textures[0]->createDescriptorSet(m_descriptorPoolSampler,m_pipeline->getDescriptorSetLayoutSampler());
+		m_textures[0]->createDescriptorSet(m_descriptorPoolSampler,m_pipelines->get("Main")->getDescriptorSetLayoutSampler());
 
 		for (int i = 0; i < NUM_FRAMES_IN_FLIGHT; i++) {
 			framesData[i].uboViewProjection->update(framesData[i].uboViewProjection);
@@ -350,6 +347,49 @@ namespace Fierce {
 
 		//Update frame counter
 		currentFrame = (currentFrame + 1) % NUM_FRAMES_IN_FLIGHT;
+	}
+
+	void RenderSystem::createRenderpasses(){
+		VK_Renderpass* renderpass = nullptr;
+
+		renderpass= new VK_Renderpass(m_device);
+		renderpass->create();
+		m_renderpasses->add("Main",renderpass);
+	}
+
+	void RenderSystem::createFramebuffers(){
+		VK_Framebuffers* framebuffers=nullptr;
+
+		framebuffers = new VK_Framebuffers(m_device, m_renderpasses->get("Main")->getId(), m_swapchain);
+		framebuffers->create();
+		m_framebuffers->add("Main",framebuffers);
+	}
+
+	void RenderSystem::createShaders(){
+		VK_Shader* shader = nullptr;
+
+		shader = new VK_Shader(m_device);
+		shader->setSourceCode("fifthShader_vert.spv");
+		shader->create();
+		m_shaders->add("fifthShader_vert.spv",shader);
+
+		shader = new VK_Shader(m_device);
+		shader->setSourceCode("fifthShader_frag.spv");
+		shader->create();
+		m_shaders->add("fifthShader_frag.spv",shader);
+	}
+
+	void RenderSystem::createPipelines(){
+		VK_Pipeline* pipeline = nullptr;
+
+		pipeline = new VK_Pipeline(m_device, m_renderpasses->get("Main")->getId());
+		pipeline->addVertexShader(m_shaders->get("fifthShader_vert.spv")->getId());
+		pipeline->addFragmentShader(m_shaders->get("fifthShader_frag.spv")->getId());
+		pipeline->addVertexInput(0, VK_FORMAT_R32G32_SFLOAT);
+		pipeline->addVertexInput(1, VK_FORMAT_R32G32B32_SFLOAT);
+		pipeline->addVertexInput(2, VK_FORMAT_R32G32_SFLOAT);
+		pipeline->create();
+		m_pipelines->add("Main",pipeline);
 	}
 
 }//end namespace

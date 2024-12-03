@@ -1,8 +1,8 @@
 #include "VK_Instance.h"
 
-#include "renderSystem/RenderSystem.h"
+#include "src/renderSystem/RenderSystem.h"
 
-#include "vulkanObjects/VK_DebugTools.h"
+#include "src/vulkanObjects/VK_DebugTools.h"
 
 #include "VK_Helper_Extensions_ValidationLayers.h"
 

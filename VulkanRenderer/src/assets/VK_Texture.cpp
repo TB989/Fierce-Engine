@@ -1,11 +1,11 @@
 #include "VK_Texture.h"
 
-#include "vulkanObjects/VK_Device.h"
-#include "vulkanObjects/VK_Buffer.h"
-#include "vulkanObjects/VK_Image.h"
-#include "vulkanObjects/VK_ImageView.h"
-#include "vulkanObjects/VK_Sampler.h"
-#include "vulkanObjects/VK_DescriptorPool.h"
+#include "src/vulkanObjects/VK_Device.h"
+#include "src/vulkanObjects/VK_Buffer.h"
+#include "src/vulkanObjects/VK_Image.h"
+#include "src/vulkanObjects/VK_ImageView.h"
+#include "src/vulkanObjects/VK_Sampler.h"
+#include "src/vulkanObjects/VK_DescriptorPool.h"
 
 namespace Fierce {
 	VK_Texture::VK_Texture(VK_Device* device, int width, int height, int numChannels){

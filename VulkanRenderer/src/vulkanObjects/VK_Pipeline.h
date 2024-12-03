@@ -24,6 +24,8 @@ namespace Fierce {
 		void addVertexShader(VkShaderModule shader);
 		void addFragmentShader(VkShaderModule shader);
 
+		void addVertexInput(uint32_t location, VkFormat format);
+
 	private:
 		//Create info
 		VkGraphicsPipelineCreateInfo m_createInfo={};
@@ -46,6 +48,7 @@ namespace Fierce {
 		//Mesh
 		VkVertexInputBindingDescription m_inputBindingDescription={};
 		std::vector<VkVertexInputAttributeDescription> m_attributeDescriptions;
+		int m_vertexSize = 0;
 
 		//Descriptors
 		VkDescriptorSetLayoutBinding m_uboViewProjectionLayoutBinding = {};

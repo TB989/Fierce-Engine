@@ -1,7 +1,7 @@
 #include "VK_UBO.h"
 
-#include "vulkanObjects/VK_Device.h"
-#include "vulkanObjects/VK_DescriptorPool.h"
+#include "src/vulkanObjects/VK_Device.h"
+#include "src/vulkanObjects/VK_DescriptorPool.h"
 
 namespace Fierce {
 	VK_UBO::VK_UBO(VK_Device* device, int size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties):VK_Buffer(device,size,usage,properties){

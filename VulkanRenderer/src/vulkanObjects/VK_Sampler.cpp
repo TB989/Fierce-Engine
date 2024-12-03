@@ -1,8 +1,8 @@
 #include "VK_Sampler.h"
 
-#include "vulkanObjects/VK_Device.h"
+#include "src/vulkanObjects/VK_Device.h"
 
-#include "renderSystem/RenderSystem.h"
+#include "src/renderSystem/RenderSystem.h"
 
 namespace Fierce {
 	VK_Sampler::VK_Sampler(VK_Device* device){

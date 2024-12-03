@@ -1,8 +1,8 @@
 #include "VK_Shader.h"
 
-#include "renderSystem/RenderSystem.h"
+#include "src/renderSystem/RenderSystem.h"
 
-#include "vulkanObjects/VK_Device.h"
+#include "src/vulkanObjects/VK_Device.h"
 
 #include <fstream>
 

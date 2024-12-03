@@ -2,8 +2,8 @@
 
 #include "vulkan/vulkan.h"
 
-#include "vulkanObjects/VK_Buffer.h"
-#include "vulkanObjects/VK_DescriptorSet.h"
+#include "src/vulkanObjects/VK_Buffer.h"
+#include "src/vulkanObjects/VK_DescriptorSet.h"
 
 namespace Fierce {
 

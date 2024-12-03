@@ -1,14 +1,14 @@
 #include "UploadContext.h"
 
-#include "vulkanObjects/VK_Device.h"
-#include "vulkanObjects/VK_CommandBuffer.h"
-#include "vulkanObjects/VK_Buffer.h"
-#include "vulkanObjects/VK_Image.h"
+#include "src/vulkanObjects/VK_Device.h"
+#include "src/vulkanObjects/VK_CommandBuffer.h"
+#include "src/vulkanObjects/VK_Buffer.h"
+#include "src/vulkanObjects/VK_Image.h"
 
-#include "assets/VK_Mesh.h"
-#include "assets/VK_Texture.h"
+#include "src/assets/VK_Mesh.h"
+#include "src/assets/VK_Texture.h"
 
-#include "renderSystem/RenderSystem.h"
+#include "src/renderSystem/RenderSystem.h"
 
 namespace Fierce {
 

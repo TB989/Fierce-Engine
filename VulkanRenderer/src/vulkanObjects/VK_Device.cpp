@@ -1,10 +1,10 @@
 #include "VK_Device.h"
 
-#include "renderSystem/RenderSystem.h"
+#include "src/renderSystem/RenderSystem.h"
 
-#include "vulkanObjects/VK_Instance.h"
-#include "vulkanObjects/VK_CommandPool.h"
-#include "vulkanObjects/VK_CommandBuffer.h"
+#include "src/vulkanObjects/VK_Instance.h"
+#include "src/vulkanObjects/VK_CommandPool.h"
+#include "src/vulkanObjects/VK_CommandBuffer.h"
 
 #include "VK_Helper_Extensions_ValidationLayers.h"
 #include "VK_HelperDevice.h"

@@ -1,7 +1,7 @@
 #include "VK_Mesh.h"
 
-#include "vulkanObjects/VK_Device.h"
-#include "vulkanObjects/VK_Buffer.h"
+#include "src/vulkanObjects/VK_Device.h"
+#include "src/vulkanObjects/VK_Buffer.h"
 
 namespace Fierce {
 

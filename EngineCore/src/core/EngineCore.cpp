@@ -1,6 +1,6 @@
 #include "EngineCore.h"
 
-#include "io/Parser.h"
+#include "src/io/Parser.h"
 
 #include "src/LoggingSystem.h"
 #include "src/WindowSystem.h"

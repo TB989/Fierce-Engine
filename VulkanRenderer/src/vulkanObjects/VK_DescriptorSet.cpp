@@ -1,9 +1,9 @@
 #include "VK_DescriptorSet.h"
 
-#include "vulkanObjects/VK_Pipeline.h"
-#include "vulkanObjects/VK_Buffer.h"
+#include "src/vulkanObjects/VK_Pipeline.h"
+#include "src/vulkanObjects/VK_Buffer.h"
 
-#include "renderSystem/RenderSystem.h"
+#include "src/renderSystem/RenderSystem.h"
 
 namespace Fierce {
 	Fierce::VK_DescriptorSet::VK_DescriptorSet(VkDevice device, VkDescriptorPool descriptorPool, VkDescriptorSetLayout descriptorLayout){

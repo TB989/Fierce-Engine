@@ -3,7 +3,7 @@
 #include "src/Matrix.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "io/stb_image.h"
+#include "src/io/stb_image.h"
 
 namespace Fierce {
 

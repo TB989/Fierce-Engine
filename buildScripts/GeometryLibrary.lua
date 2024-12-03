@@ -21,7 +21,7 @@ project "GeometryLibrary"
 
 	includedirs
 	{
-		"%{wks.location}/%{prj.name}/src",
+		"%{wks.location}/%{prj.name}",
 		"%{IncludeDir.Logger}",
 		"%{IncludeDir.Utils}"
 	}

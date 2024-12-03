@@ -1,9 +1,9 @@
 #include "VK_CommandBuffer.h"
 
-#include "vulkanObjects/VK_Device.h"
-#include "vulkanObjects/VK_Pipeline.h"
+#include "src/vulkanObjects/VK_Device.h"
+#include "src/vulkanObjects/VK_Pipeline.h"
 
-#include "renderSystem/RenderSystem.h"
+#include "src/renderSystem/RenderSystem.h"
 
 namespace Fierce {
 

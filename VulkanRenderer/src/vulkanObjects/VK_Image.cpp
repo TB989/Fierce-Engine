@@ -1,8 +1,8 @@
 #include "VK_Image.h"
 
-#include "vulkanObjects/VK_Device.h"
+#include "src/vulkanObjects/VK_Device.h"
 
-#include "renderSystem/RenderSystem.h"
+#include "src/renderSystem/RenderSystem.h"
 
 namespace Fierce {
 	VK_Image::VK_Image(VK_Device* device, uint32_t width, uint32_t height,VkDeviceSize size, VkMemoryPropertyFlags properties){

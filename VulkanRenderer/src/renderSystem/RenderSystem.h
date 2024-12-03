@@ -7,6 +7,8 @@
 #include "src/System.h"
 #include "src/LoggingSystem.h"
 
+#include "src/manager/VK_Manager.h"
+
 namespace Fierce {
 
 	class LoggingSystem;
@@ -82,21 +84,32 @@ namespace Fierce {
 		void beginFrame();
 		void endFrame();
 
+		void createRenderpasses();
+		void createFramebuffers();
+		void createShaders();
+		void createPipelines();
+
 	private:
 		LoggingSystem* m_loggingSystem=nullptr;
 		HWND m_windowHandle=NULL;
 
 		UploadContext* m_uploadContext=nullptr;
 
+		//Managers
+		VK_Manager<VK_Renderpass*>* m_renderpasses=nullptr;
+		VK_Manager<VK_Shader*>* m_shaders=nullptr;
+		VK_Manager<VK_Pipeline*>* m_pipelines=nullptr;
+		VK_Manager<VK_Framebuffers*>* m_framebuffers=nullptr;
+		
 		VK_Instance* m_instance = nullptr;
 		VK_Surface* m_surface = nullptr;
 		VK_Device* m_device = nullptr;
 		VK_Swapchain* m_swapchain = nullptr;
-		VK_Renderpass* m_renderpass=nullptr;
-		VK_Shader* m_vertexShader=nullptr;
-		VK_Shader* m_fragmentShader = nullptr;
-		VK_Pipeline* m_pipeline=nullptr;
-		VK_Framebuffers* m_framebuffers=nullptr;
+		//VK_Renderpass* m_renderpass=nullptr;
+		//VK_Shader* m_vertexShader=nullptr;
+		//VK_Shader* m_fragmentShader = nullptr;
+		//VK_Pipeline* m_pipeline=nullptr;
+		//VK_Framebuffers* m_framebuffers=nullptr;
 
 		const static int NUM_FRAMES_IN_FLIGHT = 2;
 		uint32_t imageIndex=0;
