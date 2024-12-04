@@ -16,15 +16,14 @@ namespace Fierce {
 		void create();
 		VkPipeline getId() { return m_graphicsPipeline; }
 		VkPipelineLayout getLayout() { return m_pipelineLayout; }
-		VkDescriptorSetLayout getDescriptorSetLayoutViewProjection() { return m_descriptorSetLayoutViewProjection; }
-		VkDescriptorSetLayout getDescriptorSetLayoutModel() { return m_descriptorSetLayoutModel; }
-		VkDescriptorSetLayout getDescriptorSetLayoutSampler() { return m_descriptorSetLayoutSampler; }
 
 	public:
 		void addVertexShader(VkShaderModule shader);
 		void addFragmentShader(VkShaderModule shader);
 
 		void addVertexInput(uint32_t location, VkFormat format);
+
+		void addDescriptorSetLayout(VkDescriptorSetLayout descriptorSetLayout);
 
 	private:
 		//Create info
@@ -51,18 +50,7 @@ namespace Fierce {
 		int m_vertexSize = 0;
 
 		//Descriptors
-		VkDescriptorSetLayoutBinding m_uboViewProjectionLayoutBinding = {};
-		VkDescriptorSetLayoutBinding m_uboModelLayoutBinding = {};
-		VkDescriptorSetLayoutBinding m_samplerLayoutBinding = {};
-
-		VkDescriptorSetLayoutCreateInfo m_descriptorSetViewProjectionLayoutCreateInfo = {};
-		VkDescriptorSetLayoutCreateInfo m_descriptorSetModelLayoutCreateInfo = {};
-		VkDescriptorSetLayoutCreateInfo m_descriptorSetSamplerLayoutCreateInfo = {};
-		std::vector<VkDescriptorSetLayoutBinding> m_layoutBindings;
-		VkDescriptorSetLayout m_descriptorSetLayoutViewProjection = VK_NULL_HANDLE;
-		VkDescriptorSetLayout m_descriptorSetLayoutModel = VK_NULL_HANDLE;
-		VkDescriptorSetLayout m_descriptorSetLayoutSampler = VK_NULL_HANDLE;
-		std::vector<VkDescriptorSetLayout> m_descriptorLayouts;
+		std::vector<VkDescriptorSetLayout> m_descriptorSetLayouts;
 
 		//Vulkan objects
 		VkRenderPass m_renderpass=VK_NULL_HANDLE;

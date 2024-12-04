@@ -24,6 +24,8 @@ namespace Fierce {
 	class VK_DescriptorPool;
 	class VK_UBO;
 
+	class VK_DescriptorSetLayout;
+
 	class Mat4;
 
 	class VK_Mesh;
@@ -68,6 +70,7 @@ namespace Fierce {
 	private:
 		void createRenderpasses();
 		void createFramebuffers();
+		void createDescriptorSetLayouts();
 		void createShaders();
 		void createPipelines();
 
@@ -80,9 +83,10 @@ namespace Fierce {
 
 		//Managers
 		VK_Manager<VK_Renderpass*>* m_renderpasses=nullptr;
+		VK_Manager<VK_Framebuffers*>* m_framebuffers = nullptr;
+		VK_Manager<VK_DescriptorSetLayout*>* m_descriptorSetLayouts = nullptr;
 		VK_Manager<VK_Shader*>* m_shaders=nullptr;
 		VK_Manager<VK_Pipeline*>* m_pipelines=nullptr;
-		VK_Manager<VK_Framebuffers*>* m_framebuffers=nullptr;
 
 		const static int NUM_FRAMES_IN_FLIGHT = 2;
 		UBOs ubos[NUM_FRAMES_IN_FLIGHT];

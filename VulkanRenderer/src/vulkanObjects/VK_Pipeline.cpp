@@ -114,53 +114,6 @@ namespace Fierce {
         m_dynamicState.dynamicStateCount = static_cast<uint32_t>(m_dynamicStates.size());
         m_dynamicState.pDynamicStates = m_dynamicStates.data();
 
-        //############################ Descriptors #####################################################################
-        m_uboViewProjectionLayoutBinding = {};
-        m_uboViewProjectionLayoutBinding.binding = 0;
-        m_uboViewProjectionLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        m_uboViewProjectionLayoutBinding.descriptorCount = 1;
-        m_uboViewProjectionLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-        m_uboViewProjectionLayoutBinding.pImmutableSamplers = nullptr;
-        m_layoutBindings.push_back(m_uboViewProjectionLayoutBinding);
-
-        m_uboModelLayoutBinding = {};
-        m_uboModelLayoutBinding.binding = 0;
-        m_uboModelLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        m_uboModelLayoutBinding.descriptorCount = 1;
-        m_uboModelLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-        m_uboModelLayoutBinding.pImmutableSamplers = nullptr;
-        m_layoutBindings.push_back(m_uboModelLayoutBinding);
-
-        m_samplerLayoutBinding = {};
-        m_samplerLayoutBinding.binding = 0;
-        m_samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        m_samplerLayoutBinding.descriptorCount = 1;
-        m_samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-        m_samplerLayoutBinding.pImmutableSamplers = nullptr;
-        m_layoutBindings.push_back(m_samplerLayoutBinding);
-
-        m_descriptorSetViewProjectionLayoutCreateInfo = {};
-        m_descriptorSetViewProjectionLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-        m_descriptorSetViewProjectionLayoutCreateInfo.pNext = nullptr;
-        m_descriptorSetViewProjectionLayoutCreateInfo.flags = 0;
-        m_descriptorSetViewProjectionLayoutCreateInfo.bindingCount = 1;
-        m_descriptorSetViewProjectionLayoutCreateInfo.pBindings = &m_uboViewProjectionLayoutBinding;
-
-        m_descriptorSetModelLayoutCreateInfo = {};
-        m_descriptorSetModelLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-        m_descriptorSetModelLayoutCreateInfo.pNext = nullptr;
-        m_descriptorSetModelLayoutCreateInfo.flags = 0;
-        m_descriptorSetModelLayoutCreateInfo.bindingCount = 1;
-        m_descriptorSetModelLayoutCreateInfo.pBindings = &m_uboModelLayoutBinding;
-
-        m_descriptorSetSamplerLayoutCreateInfo = {};
-        m_descriptorSetSamplerLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-        m_descriptorSetSamplerLayoutCreateInfo.pNext = nullptr;
-        m_descriptorSetSamplerLayoutCreateInfo.flags = 0;
-        m_descriptorSetSamplerLayoutCreateInfo.bindingCount = 1;
-        m_descriptorSetSamplerLayoutCreateInfo.pBindings = &m_samplerLayoutBinding;
-        //###############################################################################################################
-
         m_pipelineLayoutInfo={};
         m_pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         m_pipelineLayoutInfo.pNext = nullptr;
@@ -172,7 +125,6 @@ namespace Fierce {
         m_createInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
         m_createInfo.pNext = nullptr;
         m_createInfo.flags = 0;
-        m_createInfo.pVertexInputState = &m_vertexInputInfo;
         m_createInfo.pInputAssemblyState = &m_inputAssembly;
         m_createInfo.pTessellationState = nullptr;
         m_createInfo.pViewportState = &m_viewportState;
@@ -190,12 +142,10 @@ namespace Fierce {
 	VK_Pipeline::~VK_Pipeline(){
         vkDestroyPipeline(m_device->getDevice(), m_graphicsPipeline, nullptr);
         vkDestroyPipelineLayout(m_device->getDevice(), m_pipelineLayout, nullptr);
-        vkDestroyDescriptorSetLayout(m_device->getDevice(),m_descriptorSetLayoutViewProjection,nullptr);
-        vkDestroyDescriptorSetLayout(m_device->getDevice(), m_descriptorSetLayoutModel, nullptr);
-        vkDestroyDescriptorSetLayout(m_device->getDevice(), m_descriptorSetLayoutSampler, nullptr);
 	}
 
 	void VK_Pipeline::create(){
+        //Vertex input
         m_inputBindingDescription = {};
         m_inputBindingDescription.binding = 0;
         m_inputBindingDescription.stride = m_vertexSize * sizeof(float);
@@ -210,41 +160,27 @@ namespace Fierce {
         m_vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(m_attributeDescriptions.size());
         m_vertexInputInfo.pVertexAttributeDescriptions = m_attributeDescriptions.data();
 
-        if (vkCreateDescriptorSetLayout(m_device->getDevice(), &m_descriptorSetViewProjectionLayoutCreateInfo, nullptr, &m_descriptorSetLayoutViewProjection) != VK_SUCCESS) {
-            RenderSystem::LOGGER->error("Failed to create descriptor set layout.");
-        }
-        if (vkCreateDescriptorSetLayout(m_device->getDevice(), &m_descriptorSetModelLayoutCreateInfo, nullptr, &m_descriptorSetLayoutModel) != VK_SUCCESS) {
-            RenderSystem::LOGGER->error("Failed to create descriptor set layout.");
-        }
-        if (vkCreateDescriptorSetLayout(m_device->getDevice(), &m_descriptorSetSamplerLayoutCreateInfo, nullptr, &m_descriptorSetLayoutSampler) != VK_SUCCESS) {
-            RenderSystem::LOGGER->error("Failed to create descriptor set layout.");
-        }
+        m_createInfo.pVertexInputState = &m_vertexInputInfo;
 
-        m_device->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT, (uint64_t)m_descriptorSetLayoutViewProjection, "DescriptorSetLayout view/projection");
-        m_device->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT, (uint64_t)m_descriptorSetLayoutModel, "DescriptorSetLayout model");
-        m_device->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT, (uint64_t)m_descriptorSetLayoutSampler, "DescriptorSetLayout sampler");
-
-        m_descriptorLayouts.push_back(m_descriptorSetLayoutViewProjection);
-        m_descriptorLayouts.push_back(m_descriptorSetLayoutModel);
-        m_descriptorLayouts.push_back(m_descriptorSetLayoutSampler);
-
-        m_pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(m_descriptorLayouts.size());
-        m_pipelineLayoutInfo.pSetLayouts = m_descriptorLayouts.data();
+        //Pipeline layout
+        m_pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(m_descriptorSetLayouts.size());
+        m_pipelineLayoutInfo.pSetLayouts = m_descriptorSetLayouts.data();
 
         if (vkCreatePipelineLayout(m_device->getDevice(), &m_pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS) {
             RenderSystem::LOGGER->error("Failed to create pipeline layout.");
         }
-
+        m_createInfo.layout = m_pipelineLayout;
         m_device->debug_setName(VK_OBJECT_TYPE_PIPELINE_LAYOUT, (uint64_t)m_pipelineLayout, "Pipeline layout 2D");
 
-        m_createInfo.layout = m_pipelineLayout;
+        //Shaders
         VkPipelineShaderStageCreateInfo shaderStages[] = { m_vertexShaderStageInfo ,m_fragmentShaderStageInfo };
         m_createInfo.stageCount = 2;
         m_createInfo.pStages = shaderStages;
+
+        //Create pipeline
         if (vkCreateGraphicsPipelines(m_device->getDevice(), VK_NULL_HANDLE, 1, &m_createInfo, nullptr, &m_graphicsPipeline) != VK_SUCCESS) {
             RenderSystem::LOGGER->error("Failed to create pipeline.");
         }
-
         m_device->debug_setName(VK_OBJECT_TYPE_PIPELINE, (uint64_t)m_graphicsPipeline, "Pipeline 2D");
 	}
 
@@ -271,6 +207,10 @@ namespace Fierce {
             m_vertexSize += 3;
             break;
         }
+    }
+
+    void VK_Pipeline::addDescriptorSetLayout(VkDescriptorSetLayout descriptorSetLayout){
+        m_descriptorSetLayouts.push_back(descriptorSetLayout);
     }
 
 }//end namespace
