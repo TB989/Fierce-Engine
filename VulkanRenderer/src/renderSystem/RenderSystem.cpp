@@ -1,32 +1,19 @@
 #include "RenderSystem.h"
 
+#include "src/core/CoreContext.h"
 #include "src/uploading/UploadContext.h"
-
-#include "glm.hpp"
-#include <gtc/matrix_transform.hpp>
-
-#include <iostream>
 
 #include "src/Matrix.h"
 
-#include "src/vulkanObjects/VK_Instance.h"
-#include "src/vulkanObjects/VK_Surface.h"
-#include "src/vulkanObjects/VK_Device.h"
-#include "src/vulkanObjects/VK_Swapchain.h"
 #include "src/vulkanObjects/VK_Renderpass.h"
 #include "src/vulkanObjects/VK_Shader.h"
 #include "src/vulkanObjects/VK_Pipeline.h"
 #include "src/vulkanObjects/VK_Framebuffers.h"
 #include "src/vulkanObjects/VK_CommandBuffer.h"
-#include "src/vulkanObjects/VK_Semaphore.h"
-#include "src/vulkanObjects/VK_Fence.h"
-#include "src/vulkanObjects/VK_Buffer.h"
 #include "src/vulkanObjects/VK_DescriptorPool.h"
-#include "src/vulkanObjects/VK_DescriptorSet.h"
-#include "src/vulkanObjects/VK_Image.h"
-#include "src/vulkanObjects//VK_ImageView.h"
-#include "src/vulkanObjects/VK_Sampler.h"
 #include "src/vulkanObjects/VK_UBO.h"
+#include "src/vulkanObjects/VK_ImageView.h"
+#include "src/vulkanObjects/VK_Sampler.h"
 
 #include "src/assets/VK_Mesh.h"
 #include "src/assets/VK_Texture.h"
@@ -48,33 +35,9 @@ namespace Fierce {
 	void RenderSystem::initSystem(){
 		LOGGER = m_loggingSystem->createLogger("VK",true,"VULKAN");
 
-		m_instance = new VK_Instance();
-		m_instance->addCheck(new VK_Check_Device_Extensions(true, { VK_KHR_SURFACE_EXTENSION_NAME, "VK_KHR_win32_surface" }));
-		m_instance->addCheck(new VK_Check_Device_Extensions(false, { VK_EXT_DEBUG_UTILS_EXTENSION_NAME }));
-		m_instance->addCheck(new VK_Check_Device_ValidationLayers(false, { "VK_LAYER_KHRONOS_validation" }));
-		m_instance->create();
-		//m_instance->printActiveExtensions();
-		//m_instance->printActiveValidationLayers();
-
-		m_surface = new VK_Surface(m_instance->getId(), m_windowHandle);
-		m_surface->create();
-
-		m_device = new VK_Device(m_instance, m_surface->getId());
-		m_device->addCheck(new VK_Check_Device_Extensions(true, { VK_KHR_SWAPCHAIN_EXTENSION_NAME }));
-		m_device->addCheck(new VK_Check_Device_ValidationLayers(false, { "VK_LAYER_KHRONOS_validation" }));
-		m_device->addCheck(new VK_Check_Device_General());
-		m_device->addCheck(new VK_Check_Device_Queues());
-		m_device->addCheck(new VK_Check_Device_Surface_Format({ VK_FORMAT_B8G8R8A8_SRGB }));
-		m_device->addCheck(new VK_Check_Device_Surface_PresentMode({ VK_PRESENT_MODE_MAILBOX_KHR, VK_PRESENT_MODE_FIFO_KHR }));
-		m_device->addCheck(new VK_Check_Sampler_Anisotropy());
-		//m_device->printSupportedData(false, false, true, false, false, false, true, false);
-		m_device->create();
-		//m_device->printActiveData(false,false,true,false,false,false,true,false);
-
-		m_uploadContext = new UploadContext(m_device);
-
-		m_swapchain = new VK_Swapchain(m_device, m_surface->getId(),VK_NULL_HANDLE);
-		m_swapchain->create();
+		//Create contexts
+		m_coreContext = new CoreContext(m_windowHandle);
+		m_uploadContext = new UploadContext(m_coreContext->getDevice());
 
 		//Create managers
 		m_renderpasses= new VK_Manager<VK_Renderpass*>();
@@ -88,48 +51,36 @@ namespace Fierce {
 		createShaders();
 		createPipelines();
 
-		m_descriptorPoolViewProjection = new VK_DescriptorPool(m_device->getDevice());
-		m_descriptorPoolViewProjection->addDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,NUM_FRAMES_IN_FLIGHT);
+		//Descriptor pools
+		m_descriptorPoolViewProjection = new VK_DescriptorPool(m_coreContext->getDevice()->getDevice());
+		m_descriptorPoolViewProjection->addDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,2);//TODO: NumFrames für 2
 		m_descriptorPoolViewProjection->create();
-		m_device->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_POOL, (uint64_t)m_descriptorPoolViewProjection->getId(), "DescriptorPool View/Projection");
+		m_coreContext->getDevice()->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_POOL, (uint64_t)m_descriptorPoolViewProjection->getId(), "DescriptorPool View/Projection");
 
-		m_descriptorPoolModel = new VK_DescriptorPool(m_device->getDevice());
+		m_descriptorPoolModel = new VK_DescriptorPool(m_coreContext->getDevice()->getDevice());
 		m_descriptorPoolModel->addDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 200);
 		m_descriptorPoolModel->create();
-		m_device->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_POOL, (uint64_t)m_descriptorPoolModel->getId(), "DescriptorPool Model");
+		m_coreContext->getDevice()->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_POOL, (uint64_t)m_descriptorPoolModel->getId(), "DescriptorPool Model");
 
-		m_descriptorPoolSampler = new VK_DescriptorPool(m_device->getDevice());
+		m_descriptorPoolSampler = new VK_DescriptorPool(m_coreContext->getDevice()->getDevice());
 		m_descriptorPoolSampler->addDescriptorType(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 200);
 		m_descriptorPoolSampler->create();
-		m_device->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_POOL, (uint64_t)m_descriptorPoolSampler->getId(), "DescriptorPool Sampler");
+		m_coreContext->getDevice()->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_POOL, (uint64_t)m_descriptorPoolSampler->getId(), "DescriptorPool Sampler");
+
+		//TODO: Code this better
+		m_coreContext->linkFramebuffersManager(m_framebuffers,m_renderpasses);
 
 		//Create per frame ressources
-		for (int i = 0;i<NUM_FRAMES_IN_FLIGHT;i++) {
-			framesData[i].commandBuffer = m_device->getCommandBuffer(VK_Device::GRAPHICS);
-			framesData[i].commandBuffer->create();
-			m_device->debug_setName(VK_OBJECT_TYPE_COMMAND_BUFFER, (uint64_t)framesData[i].commandBuffer->getId(), "CommandBuffer frame");
+		for (int i = 0; i < NUM_FRAMES_IN_FLIGHT; i++) {
+			ubos[i].uboViewProjection = new VK_UBO(m_coreContext->getDevice(), 2 * 16 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+			ubos[i].uboViewProjection->create();
+			ubos[i].uboViewProjection->createDescriptorSet(m_descriptorPoolViewProjection, m_pipelines->get("Main")->getDescriptorSetLayoutViewProjection());
+			m_coreContext->getDevice()->debug_setName(VK_OBJECT_TYPE_BUFFER, (uint64_t)ubos[i].uboViewProjection->getId(), "Buffer UBO View/Projection");
 
-			framesData[i].uboViewProjection = new VK_UBO(m_device, 2*16 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-			framesData[i].uboViewProjection->create();
-			framesData[i].uboViewProjection->createDescriptorSet(m_descriptorPoolViewProjection, m_pipelines->get("Main")->getDescriptorSetLayoutViewProjection());
-			m_device->debug_setName(VK_OBJECT_TYPE_BUFFER, (uint64_t)framesData[i].uboViewProjection->getId(), "Buffer UBO View/Projection");
-
-			framesData[i].uboModel = new VK_UBO(m_device, 16 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-			framesData[i].uboModel->create();
-			framesData[i].uboModel->createDescriptorSet(m_descriptorPoolModel, m_pipelines->get("Main")->getDescriptorSetLayoutModel());
-			m_device->debug_setName(VK_OBJECT_TYPE_BUFFER, (uint64_t)framesData[i].uboModel->getId(), "Buffer UBO Model");
-
-			framesData[i].imageAvailableSemaphore = new VK_Semaphore(m_device->getDevice());
-			framesData[i].imageAvailableSemaphore->create();
-			m_device->debug_setName(VK_OBJECT_TYPE_SEMAPHORE, (uint64_t)framesData[i].imageAvailableSemaphore->getId(), "Semaphore imageAvailable");
-
-			framesData[i].renderFinishedSemaphore = new VK_Semaphore(m_device->getDevice());
-			framesData[i].renderFinishedSemaphore->create();
-			m_device->debug_setName(VK_OBJECT_TYPE_SEMAPHORE, (uint64_t)framesData[i].renderFinishedSemaphore->getId(), "Semaphore renderFinished");
-
-			framesData[i].renderFinishedFence = new VK_Fence(m_device->getDevice());
-			framesData[i].renderFinishedFence->create();
-			m_device->debug_setName(VK_OBJECT_TYPE_FENCE, (uint64_t)framesData[i].renderFinishedFence->getId(), "Fence renderFinished");
+			ubos[i].uboModel = new VK_UBO(m_coreContext->getDevice(), 16 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+			ubos[i].uboModel->create();
+			ubos[i].uboModel->createDescriptorSet(m_descriptorPoolModel, m_pipelines->get("Main")->getDescriptorSetLayoutModel());
+			m_coreContext->getDevice()->debug_setName(VK_OBJECT_TYPE_BUFFER, (uint64_t)ubos[i].uboModel->getId(), "Buffer UBO Model");
 		}
 
 		m_modelMatrix = new Mat4();
@@ -140,14 +91,14 @@ namespace Fierce {
 	}
 
 	void RenderSystem::updateSystem(){
-		beginFrame();
+		m_coreContext->beginFrame();
 		updateUniformBuffer();
 		recordCommandBuffer();
-		endFrame();
+		m_coreContext->endFrame();
 	}
 
 	void RenderSystem::cleanUpSystem(){
-		if (vkDeviceWaitIdle(m_device->getDevice())!=VK_SUCCESS) {
+		if (vkDeviceWaitIdle(m_coreContext->getDevice()->getDevice())!=VK_SUCCESS) {
 			LOGGER->error("Failed to wait for idle device.");
 		}
 
@@ -162,13 +113,9 @@ namespace Fierce {
 			delete texture;
 		}
 
-		for (int i = 0;i<NUM_FRAMES_IN_FLIGHT;i++) {
-			delete framesData[i].renderFinishedFence;
-			delete framesData[i].renderFinishedSemaphore;
-			delete framesData[i].imageAvailableSemaphore;
-			delete framesData[i].uboViewProjection;
-			delete framesData[i].uboModel;
-			m_device->releaseCommandBuffer(framesData[i].commandBuffer);
+		for (int i = 0; i<NUM_FRAMES_IN_FLIGHT; i++) {
+			delete ubos[i].uboViewProjection;
+			delete ubos[i].uboModel;
 		}
 
 		delete m_descriptorPoolViewProjection;
@@ -181,34 +128,29 @@ namespace Fierce {
 		delete m_framebuffers;
 		delete m_renderpasses;
 
-		delete m_swapchain;
-
 		delete m_uploadContext;
+		delete m_coreContext;
 
-		delete m_device;
-		delete m_surface;
-		delete m_instance;
 		m_loggingSystem->deleteLogger(LOGGER);
 	}
 
 	void RenderSystem::recordCommandBuffer(){
-		FrameData& frameData = framesData[currentFrame];
-
-		frameData.commandBuffer->startRecording();
-		frameData.commandBuffer->beginRenderpass(m_renderpasses->get("Main")->getId(), m_framebuffers->get("Main")->getFramebuffer(imageIndex));
-		frameData.commandBuffer->bindPipeline(m_pipelines->get("Main")->getId());
-		frameData.commandBuffer->setViewport(static_cast<float>(m_device->getSurfaceData()->swapchainWidth), static_cast<float>(m_device->getSurfaceData()->swapchainHeight));
-		frameData.commandBuffer->setScissor(m_device->getSurfaceData()->swapchainWidth, m_device->getSurfaceData()->swapchainHeight);
-		frameData.commandBuffer->bindDescriptorSet(m_pipelines->get("Main"), frameData.uboViewProjection->getDescriptorSet(), 0);
-		frameData.commandBuffer->bindDescriptorSet(m_pipelines->get("Main"), frameData.uboModel->getDescriptorSet(), 1);
-		frameData.commandBuffer->bindDescriptorSet(m_pipelines->get("Main"), m_textures[0]->getDescriptorSet(), 2);
+		VK_CommandBuffer* commandBuffer=m_coreContext->getActiveCommandBuffer();
+		commandBuffer->startRecording();
+		commandBuffer->beginRenderpass(m_renderpasses->get("Main")->getId(), m_framebuffers->get("Main")->getFramebuffer(m_coreContext->getActiveImageIndex()));
+		commandBuffer->bindPipeline(m_pipelines->get("Main")->getId());
+		commandBuffer->setViewport(m_coreContext->getSwapchainWidth(), m_coreContext->getSwapchainHeight());
+		commandBuffer->setScissor(m_coreContext->getSwapchainWidth(), m_coreContext->getSwapchainHeight());
+		commandBuffer->bindDescriptorSet(m_pipelines->get("Main"), ubos[m_coreContext->getCurrentFrame()].uboViewProjection->getDescriptorSet(), 0);
+		commandBuffer->bindDescriptorSet(m_pipelines->get("Main"),ubos[m_coreContext->getCurrentFrame()].uboModel->getDescriptorSet(), 1);
+		commandBuffer->bindDescriptorSet(m_pipelines->get("Main"), m_textures[0]->getDescriptorSet(), 2);
 		for (VK_Mesh* mesh:m_meshes) {
-			frameData.commandBuffer->bindVertexBuffer(mesh->getVertexBuffer()->getId());
-			frameData.commandBuffer->bindIndexBuffer(mesh->getIndexBuffer()->getId());
-			frameData.commandBuffer->renderIndexed(mesh->getNumIndices());
+			commandBuffer->bindVertexBuffer(mesh->getVertexBuffer()->getId());
+			commandBuffer->bindIndexBuffer(mesh->getIndexBuffer()->getId());
+			commandBuffer->renderIndexed(mesh->getNumIndices());
 		}
-		frameData.commandBuffer->endRenderpass();
-		frameData.commandBuffer->endRecording();
+		commandBuffer->endRenderpass();
+		commandBuffer->endRecording();
 	}
 
 	void RenderSystem::updateUniformBuffer(){
@@ -218,47 +160,21 @@ namespace Fierce {
 		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
 		m_modelMatrix->rotateZ(0.01f);
-		m_projMatrix->setToOrthographicProjection(false, (float)m_device->getSurfaceData()->swapchainWidth,(float)m_device->getSurfaceData()->swapchainHeight,0.0f,1.0f);
+		m_projMatrix->setToOrthographicProjection(false, m_coreContext->getSwapchainWidth(), m_coreContext->getSwapchainHeight(),0.0f,1.0f);
 
-		FrameData& frameData = framesData[currentFrame];
-		frameData.uboViewProjection->loadData(2*16 * sizeof(float),m_viewMatrix->get(), m_projMatrix->get());
-		frameData.uboModel->loadData(16 * sizeof(float), m_modelMatrix->get());
-	}
-
-	void RenderSystem::recreateSwapchain(){
-		if (vkDeviceWaitIdle(m_device->getDevice()) != VK_SUCCESS) {
-			LOGGER->error("Failed to wait for idle device.");
-		}
-
-		m_device->requerySurfaceData();
-
-		delete m_framebuffers->get("Main");
-
-		VK_Swapchain* oldSwapchain = m_swapchain;
-		VK_Swapchain* newSwapchain = new VK_Swapchain(m_device,m_surface->getId(),oldSwapchain->getId());
-		newSwapchain->create();
-		m_swapchain = newSwapchain;
-		delete oldSwapchain;
-
-		VK_Framebuffers* framebuffers = nullptr;
-		framebuffers = new VK_Framebuffers(m_device,m_renderpasses->get("Main")->getId(), m_swapchain);
-		framebuffers->create();
-		m_framebuffers->add("Main",framebuffers);
-
-		for (int i = 0;i<NUM_FRAMES_IN_FLIGHT;i++) {
-			framesData[i].commandBuffer->updateRenderArea();
-		}
+		ubos[m_coreContext->getCurrentFrame()].uboViewProjection->loadData(2 * 16 * sizeof(float), m_viewMatrix->get(), m_projMatrix->get());
+		ubos[m_coreContext->getCurrentFrame()].uboModel->loadData(16 * sizeof(float), m_modelMatrix->get());
 	}
 
 	int RenderSystem::newMesh(int numVertices,int numIndices){
 		m_numMeshes++;
-		m_meshes.push_back(new VK_Mesh(m_device, numVertices, numIndices));
+		m_meshes.push_back(new VK_Mesh(m_coreContext->getDevice(), numVertices, numIndices));
 		return m_numMeshes;
 	}
 
 	int RenderSystem::newTexture(int width, int height,int numChannels){
 		m_numTextures++;
-		m_textures.push_back(new VK_Texture(m_device, width,height,numChannels));
+		m_textures.push_back(new VK_Texture(m_coreContext->getDevice(), width,height,numChannels));
 		return m_numTextures;
 	}
 
@@ -286,73 +202,18 @@ namespace Fierce {
 		m_textures[0]->createImageViewAndSampler();
 		m_textures[0]->createDescriptorSet(m_descriptorPoolSampler,m_pipelines->get("Main")->getDescriptorSetLayoutSampler());
 
-		for (int i = 0; i < NUM_FRAMES_IN_FLIGHT; i++) {
-			framesData[i].uboViewProjection->update(framesData[i].uboViewProjection);
-			framesData[i].uboModel->update(framesData[i].uboModel);
+		//TODO: Replace NUM_FRAMES mit 2
+		for (int i = 0; i < 2; i++) {
+			ubos[i].uboViewProjection->update(ubos[i].uboViewProjection);
+			ubos[i].uboModel->update(ubos[i].uboModel);
 			m_textures[0]->update(m_textures[0]->getImageView()->getId(), m_textures[0]->getSampler()->getId());
 		}
-	}
-
-	void RenderSystem::beginFrame(){
-		FrameData& frameData = framesData[currentFrame];
-		VkFence fence = frameData.renderFinishedFence->getId();
-
-		//Fences logic
-		if (vkWaitForFences(m_device->getDevice(), 1, &fence, VK_TRUE, UINT64_MAX) != VK_SUCCESS) {
-			LOGGER->error("Failed to wait for fences.");
-		}
-		if (vkResetFences(m_device->getDevice(), 1, &fence)!=VK_SUCCESS) {
-			LOGGER->error("Failed to reset fence.");
-		}
-
-		//Vk Acquire image
-		VkResult result = vkAcquireNextImageKHR(m_device->getDevice(), m_swapchain->getId(), UINT64_MAX, frameData.imageAvailableSemaphore->getId(), VK_NULL_HANDLE, &imageIndex);
-		if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-			recreateSwapchain();
-		}
-		else if (result != VK_SUBOPTIMAL_KHR && result != VK_SUCCESS) {
-			LOGGER->error("Failed to aquire image.");
-		}
-
-		//Reset command buffer
-		frameData.commandBuffer->reset();
-	}
-
-	void RenderSystem::endFrame(){
-		FrameData& frameData = framesData[currentFrame];
-
-		//Submit command buffer
-		m_device->submitCommandBuffer(VK_Device::QUEUE_TYPE::GRAPHICS,frameData.commandBuffer->getId(), frameData.imageAvailableSemaphore->getId(), frameData.renderFinishedSemaphore->getId(), VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, frameData.renderFinishedFence->getId());
-
-		//Present image
-		VkSwapchainKHR swapchain = m_swapchain->getId();
-		VkSemaphore semaphore = frameData.renderFinishedSemaphore->getId();
-
-		VkPresentInfoKHR m_presentInfo = {};
-		m_presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-		m_presentInfo.pNext = nullptr;
-		m_presentInfo.pResults = nullptr;
-		m_presentInfo.swapchainCount = 1;
-		m_presentInfo.pSwapchains = &swapchain;
-		m_presentInfo.pImageIndices = &imageIndex;
-		m_presentInfo.waitSemaphoreCount = 1;
-		m_presentInfo.pWaitSemaphores = &semaphore;
-		VkResult result = vkQueuePresentKHR(m_device->getGraphicsQueue(), &m_presentInfo);
-		if (result==VK_ERROR_OUT_OF_DATE_KHR||result==VK_SUBOPTIMAL_KHR) {
-			recreateSwapchain();
-		}
-		else if (result!=VK_SUCCESS) {
-			LOGGER->error("Failed to present image.");
-		}
-
-		//Update frame counter
-		currentFrame = (currentFrame + 1) % NUM_FRAMES_IN_FLIGHT;
 	}
 
 	void RenderSystem::createRenderpasses(){
 		VK_Renderpass* renderpass = nullptr;
 
-		renderpass= new VK_Renderpass(m_device);
+		renderpass= new VK_Renderpass(m_coreContext->getDevice());
 		renderpass->create();
 		m_renderpasses->add("Main",renderpass);
 	}
@@ -360,7 +221,7 @@ namespace Fierce {
 	void RenderSystem::createFramebuffers(){
 		VK_Framebuffers* framebuffers=nullptr;
 
-		framebuffers = new VK_Framebuffers(m_device, m_renderpasses->get("Main")->getId(), m_swapchain);
+		framebuffers = new VK_Framebuffers(m_coreContext->getDevice(), m_renderpasses->get("Main")->getId(), m_coreContext->getSwapchain());
 		framebuffers->create();
 		m_framebuffers->add("Main",framebuffers);
 	}
@@ -368,12 +229,12 @@ namespace Fierce {
 	void RenderSystem::createShaders(){
 		VK_Shader* shader = nullptr;
 
-		shader = new VK_Shader(m_device);
+		shader = new VK_Shader(m_coreContext->getDevice());
 		shader->setSourceCode("fifthShader_vert.spv");
 		shader->create();
 		m_shaders->add("fifthShader_vert.spv",shader);
 
-		shader = new VK_Shader(m_device);
+		shader = new VK_Shader(m_coreContext->getDevice());
 		shader->setSourceCode("fifthShader_frag.spv");
 		shader->create();
 		m_shaders->add("fifthShader_frag.spv",shader);
@@ -382,7 +243,7 @@ namespace Fierce {
 	void RenderSystem::createPipelines(){
 		VK_Pipeline* pipeline = nullptr;
 
-		pipeline = new VK_Pipeline(m_device, m_renderpasses->get("Main")->getId());
+		pipeline = new VK_Pipeline(m_coreContext->getDevice(), m_renderpasses->get("Main")->getId());
 		pipeline->addVertexShader(m_shaders->get("fifthShader_vert.spv")->getId());
 		pipeline->addFragmentShader(m_shaders->get("fifthShader_frag.spv")->getId());
 		pipeline->addVertexInput(0, VK_FORMAT_R32G32_SFLOAT);

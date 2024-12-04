@@ -13,25 +13,15 @@ namespace Fierce {
 
 	class LoggingSystem;
 
+	class CoreContext;
 	class UploadContext;
 
-	class VK_Instance;
-	class VK_Surface;
-	class VK_Device;
-	class VK_Swapchain;
 	class VK_Renderpass;
 	class VK_Shader;
 	class VK_Pipeline;
 	class VK_Framebuffers;
-	class VK_CommandBuffer;
-	class VK_Semaphore;
-	class VK_Fence;
-	class VK_Buffer;
+
 	class VK_DescriptorPool;
-	class VK_DescriptorSet;
-	class VK_Image;
-	class VK_ImageView;
-	class VK_Sampler;
 	class VK_UBO;
 
 	class Mat4;
@@ -53,7 +43,7 @@ namespace Fierce {
 		void recordCommandBuffer();
 		void updateUniformBuffer();
 
-		void recreateSwapchain();
+		//void recreateSwapchain();
 
 		//########################### INTERFACE ##############################################################################
 		int newMesh(int numVertices, int numIndices);
@@ -67,23 +57,15 @@ namespace Fierce {
 		//########################### INTERFACE ##############################################################################
 
 	public:
-		struct FrameData {
-			VK_CommandBuffer* commandBuffer;
+		struct UBOs {
 			VK_UBO* uboViewProjection;
 			VK_UBO* uboModel;
-
-			VK_Semaphore* imageAvailableSemaphore;
-			VK_Semaphore* renderFinishedSemaphore;
-			VK_Fence* renderFinishedFence;
 		};
 
 	public:
 		static Logger* LOGGER;
 
 	private:
-		void beginFrame();
-		void endFrame();
-
 		void createRenderpasses();
 		void createFramebuffers();
 		void createShaders();
@@ -93,6 +75,7 @@ namespace Fierce {
 		LoggingSystem* m_loggingSystem=nullptr;
 		HWND m_windowHandle=NULL;
 
+		CoreContext* m_coreContext = nullptr;
 		UploadContext* m_uploadContext=nullptr;
 
 		//Managers
@@ -100,21 +83,9 @@ namespace Fierce {
 		VK_Manager<VK_Shader*>* m_shaders=nullptr;
 		VK_Manager<VK_Pipeline*>* m_pipelines=nullptr;
 		VK_Manager<VK_Framebuffers*>* m_framebuffers=nullptr;
-		
-		VK_Instance* m_instance = nullptr;
-		VK_Surface* m_surface = nullptr;
-		VK_Device* m_device = nullptr;
-		VK_Swapchain* m_swapchain = nullptr;
-		//VK_Renderpass* m_renderpass=nullptr;
-		//VK_Shader* m_vertexShader=nullptr;
-		//VK_Shader* m_fragmentShader = nullptr;
-		//VK_Pipeline* m_pipeline=nullptr;
-		//VK_Framebuffers* m_framebuffers=nullptr;
 
 		const static int NUM_FRAMES_IN_FLIGHT = 2;
-		uint32_t imageIndex=0;
-		int currentFrame = 0;
-		FrameData framesData[NUM_FRAMES_IN_FLIGHT];
+		UBOs ubos[NUM_FRAMES_IN_FLIGHT];
 
 		VK_DescriptorPool* m_descriptorPoolViewProjection = nullptr;
 		VK_DescriptorPool* m_descriptorPoolModel = nullptr;
