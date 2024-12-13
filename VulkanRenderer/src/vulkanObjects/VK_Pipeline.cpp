@@ -118,8 +118,6 @@ namespace Fierce {
         m_pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         m_pipelineLayoutInfo.pNext = nullptr;
         m_pipelineLayoutInfo.flags = 0;
-        m_pipelineLayoutInfo.pushConstantRangeCount = 0;
-        m_pipelineLayoutInfo.pPushConstantRanges = nullptr;
 
         m_createInfo = {};
         m_createInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -165,6 +163,8 @@ namespace Fierce {
         //Pipeline layout
         m_pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(m_descriptorSetLayouts.size());
         m_pipelineLayoutInfo.pSetLayouts = m_descriptorSetLayouts.data();
+        m_pipelineLayoutInfo.pushConstantRangeCount = static_cast<uint32_t>(m_pushConstantRanges.size());
+        m_pipelineLayoutInfo.pPushConstantRanges = m_pushConstantRanges.data();
 
         if (vkCreatePipelineLayout(m_device->getDevice(), &m_pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS) {
             RenderSystem::LOGGER->error("Failed to create pipeline layout.");
@@ -211,6 +211,14 @@ namespace Fierce {
 
     void VK_Pipeline::addDescriptorSetLayout(VkDescriptorSetLayout descriptorSetLayout){
         m_descriptorSetLayouts.push_back(descriptorSetLayout);
+    }
+
+    void VK_Pipeline::addPushConstantRange(VkShaderStageFlags shaderStages,uint32_t size,uint32_t offset) {
+        VkPushConstantRange range = {};
+        range.stageFlags = shaderStages;
+        range.size = size;
+        range.offset = offset;
+        m_pushConstantRanges.push_back(range);
     }
 
 }//end namespace

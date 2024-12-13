@@ -34,6 +34,7 @@ namespace Fierce {
 		float getSwapchainHeight() { return static_cast<float>(m_device->getSurfaceData()->swapchainHeight); }
 		void linkFramebuffersManager(VK_Manager<VK_Framebuffers*>* manager1, VK_Manager<VK_Renderpass*>* manager2) { m_managerFramebuffers = manager1; m_managerRenderpass = manager2;}
 		VK_Swapchain* getSwapchain() { return m_swapchain; }
+		int getNumFramesInFlight() { return NUM_FRAMES_IN_FLIGHT; }
 
 		void beginFrame();
 		void endFrame();
@@ -54,12 +55,13 @@ namespace Fierce {
 		};
 
 	private:
+		const static int NUM_FRAMES_IN_FLIGHT = 2;
+
 		VK_Instance* m_instance = nullptr;
 		VK_Surface* m_surface = nullptr;
 		VK_Device* m_device = nullptr;
 		VK_Swapchain* m_swapchain = nullptr;
 
-		const static int NUM_FRAMES_IN_FLIGHT = 2;
 		uint32_t imageIndex = 0;
 		int currentFrame = 0;
 		FrameData framesData[NUM_FRAMES_IN_FLIGHT];

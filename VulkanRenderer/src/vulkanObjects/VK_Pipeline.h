@@ -22,8 +22,8 @@ namespace Fierce {
 		void addFragmentShader(VkShaderModule shader);
 
 		void addVertexInput(uint32_t location, VkFormat format);
-
 		void addDescriptorSetLayout(VkDescriptorSetLayout descriptorSetLayout);
+		void addPushConstantRange(VkShaderStageFlags shaderStages, uint32_t size, uint32_t offset);
 
 	private:
 		//Create info
@@ -51,6 +51,9 @@ namespace Fierce {
 
 		//Descriptors
 		std::vector<VkDescriptorSetLayout> m_descriptorSetLayouts;
+
+		//Push constants
+		std::vector<VkPushConstantRange> m_pushConstantRanges;
 
 		//Vulkan objects
 		VkRenderPass m_renderpass=VK_NULL_HANDLE;
