@@ -122,6 +122,10 @@ namespace Fierce {
 		vkCmdPushConstants(m_commandBuffer,pipeline->getLayout(),shaderStages,0,size,data);
 	}
 
+	void VK_CommandBuffer::pushConstants(VK_Pipeline* pipeline, VkShaderStageFlagBits shaderStages, uint32_t size, uint32_t* data) {
+		vkCmdPushConstants(m_commandBuffer, pipeline->getLayout(), shaderStages, 0, size, data);
+	}
+
 	void VK_CommandBuffer::setViewport(float width,float height){
 		VkViewport viewport={};
 		viewport.x = 0.0f;

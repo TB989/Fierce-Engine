@@ -2,8 +2,6 @@
 
 #include "vulkan/vulkan.h"
 
-#include "glm.hpp"
-
 namespace Fierce {
 
 	class VK_Device;
@@ -18,12 +16,12 @@ namespace Fierce {
 
 	public:
 		void shareRessourcesWithTransferQueue() { m_shareRessourcesWithTransferQueue = true; }
+		void setKeepMapped(bool keepMapped) { m_keepMapped = keepMapped; }
 
 		VkDeviceSize getSize() { return m_size; }
 
 		void loadData(int size, float* vertices);
 		void loadData(int size, uint16_t* indices);
-		void loadData(int size, glm::mat4 model, glm::mat4 view, glm::mat4 proj);
 		void loadData(int size, float* view, float* proj);
 		void loadData(int size, float* model, float* view, float* proj);
 		void loadData(int size, unsigned char* data);
@@ -46,6 +44,8 @@ namespace Fierce {
 
 		//Misc
 		bool m_shareRessourcesWithTransferQueue = false;
+		bool m_keepMapped=false;
+		void* m_mappedRegion;
 	};
 
 }//end namespace

@@ -5,7 +5,7 @@
 
 namespace Fierce {
 	VK_UBO::VK_UBO(VK_Device* device, int size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties):VK_Buffer(device,size,usage,properties){
-
+		setKeepMapped(true);
 	}
 
 	VK_UBO::~VK_UBO(){

@@ -37,11 +37,8 @@ namespace Fierce {
 		void setWindowHandle(HWND m_windowHandle);
 
 		void initSystem() override;
-		void updateSystem() override;
+		void updateSystem() override {};
 		void cleanUpSystem() override;
-
-		void recordCommandBuffer();
-		void updateUniformBuffer();
 
 		//########################### INTERFACE ##############################################################################
 		int newMesh(int numVertices, int numIndices);
@@ -50,6 +47,13 @@ namespace Fierce {
 
 		int newTexture(int width, int height, int numChannels);
 		void textureLoadData(int textureId, unsigned char* pixels);
+
+		void setOrthographicProjection(float* projectionMatrix);
+		void loadModelMatrix(float* modelMatrix);
+
+		void startFrame();
+		void drawMesh(int m_meshId);
+		void endFrame();
 
 		void postInit();
 		//########################### INTERFACE ##############################################################################
@@ -86,11 +90,7 @@ namespace Fierce {
 		VK_Manager<VK_UBO*>* m_ubosViewProjection=nullptr;
 		VK_Manager<VK_UBO*>* m_ubosModel=nullptr;
 
-		Mat4* m_modelMatrix=nullptr;
-		Mat4* m_viewMatrix=nullptr;
-		Mat4* m_projMatrix=nullptr;
-
-		float* m_color;
+		uint32_t m_matrixIndex = 0;
 
 	private:
 		int m_numMeshes = -1;

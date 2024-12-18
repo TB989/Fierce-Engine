@@ -26,13 +26,6 @@ namespace Fierce {
 
 	RenderSystem::RenderSystem(LoggingSystem* loggingSystem){
 		m_loggingSystem = loggingSystem;
-
-		m_color = new float[4];
-
-		m_color[0] = 1.0f;
-		m_color[1] = 0.0f;
-		m_color[2] = 0.0f;
-		m_color[3] = 0.0f;
 	}
 
 	RenderSystem::~RenderSystem(){}
@@ -69,29 +62,13 @@ namespace Fierce {
 
 		//TODO: Code this better
 		m_coreContext->linkFramebuffersManager(m_framebuffers,m_renderpasses);
-
-		m_modelMatrix = new Mat4();
-		m_modelMatrix->scale(100.0f, 100.0f, 1.0f);
-		m_viewMatrix = new Mat4();
-		m_projMatrix = new Mat4();
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////
-	}
-
-	void RenderSystem::updateSystem(){
-		m_coreContext->beginFrame();
-		updateUniformBuffer();
-		recordCommandBuffer();
-		m_coreContext->endFrame();
 	}
 
 	void RenderSystem::cleanUpSystem(){
 		if (vkDeviceWaitIdle(m_coreContext->getDevice()->getDevice())!=VK_SUCCESS) {
 			LOGGER->error("Failed to wait for idle device.");
 		}
-
-		delete m_modelMatrix;
-		delete m_viewMatrix;
-		delete m_projMatrix;
 
 		for (VK_Mesh* mesh:m_meshes) {
 			delete mesh;
@@ -117,39 +94,6 @@ namespace Fierce {
 		m_loggingSystem->deleteLogger(LOGGER);
 	}
 
-	void RenderSystem::recordCommandBuffer(){
-		VK_CommandBuffer* commandBuffer=m_coreContext->getActiveCommandBuffer();
-		commandBuffer->startRecording();
-		commandBuffer->beginRenderpass(m_renderpasses->get("Main")->getId(), m_framebuffers->get("Main")->getFramebuffer(m_coreContext->getActiveImageIndex()));
-		commandBuffer->bindPipeline(m_pipelines->get("Main")->getId());
-		commandBuffer->setViewport(m_coreContext->getSwapchainWidth(), m_coreContext->getSwapchainHeight());
-		commandBuffer->setScissor(m_coreContext->getSwapchainWidth(), m_coreContext->getSwapchainHeight());
-		commandBuffer->bindDescriptorSet(m_pipelines->get("Main"), m_ubosViewProjection->get(m_coreContext->getCurrentFrame())->getDescriptorSet(), 0);
-		commandBuffer->bindDescriptorSet(m_pipelines->get("Main"),m_ubosModel->get(m_coreContext->getCurrentFrame())->getDescriptorSet(), 1);
-		commandBuffer->bindDescriptorSet(m_pipelines->get("Main"), m_textures[0]->getDescriptorSet(), 2);
-		commandBuffer->pushConstants(m_pipelines->get("Main"), VK_SHADER_STAGE_VERTEX_BIT, 4 * sizeof(float), m_color);
-		for (VK_Mesh* mesh:m_meshes) {
-			commandBuffer->bindVertexBuffer(mesh->getVertexBuffer()->getId());
-			commandBuffer->bindIndexBuffer(mesh->getIndexBuffer()->getId());
-			commandBuffer->renderIndexed(mesh->getNumIndices());
-		}
-		commandBuffer->endRenderpass();
-		commandBuffer->endRecording();
-	}
-
-	void RenderSystem::updateUniformBuffer(){
-		static auto startTime = std::chrono::high_resolution_clock::now();
-
-		auto currentTime = std::chrono::high_resolution_clock::now();
-		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-
-		m_modelMatrix->rotateZ(0.01f);
-		m_projMatrix->setToOrthographicProjection(false, m_coreContext->getSwapchainWidth(), m_coreContext->getSwapchainHeight(),0.0f,1.0f);
-
-		m_ubosViewProjection->get(m_coreContext->getCurrentFrame())->loadData(2 * 16 * sizeof(float), m_viewMatrix->get(), m_projMatrix->get());
-		m_ubosModel->get(m_coreContext->getCurrentFrame())->loadData(16 * sizeof(float), m_modelMatrix->get());
-	}
-
 	int RenderSystem::newMesh(int numVertices,int numIndices){
 		m_numMeshes++;
 		m_meshes.push_back(new VK_Mesh(m_coreContext->getDevice(), numVertices, numIndices));
@@ -166,12 +110,55 @@ namespace Fierce {
 		m_textures[textureId]->loadData(m_textures[textureId]->getSize(), pixels);
 	}
 
+	void RenderSystem::setOrthographicProjection(float* projectionMatrix){
+		Mat4* viewMatrix = new Mat4();
+		for (int i = 0;i<m_coreContext->getNumFramesInFlight();i++) {
+			m_ubosViewProjection->get(i)->loadData(2 * 16 * sizeof(float), viewMatrix->get(), projectionMatrix);
+		}
+	}
+
+	void RenderSystem::loadModelMatrix(float* modelMatrix){
+		m_ubosModel->get(m_coreContext->getCurrentFrame())->loadData(16 * sizeof(float), modelMatrix);
+	}
+
+	void RenderSystem::startFrame(){
+		m_coreContext->beginFrame();
+
+		VK_CommandBuffer* commandBuffer = m_coreContext->getActiveCommandBuffer();
+		commandBuffer->startRecording();
+		commandBuffer->beginRenderpass(m_renderpasses->get("Main")->getId(), m_framebuffers->get("Main")->getFramebuffer(m_coreContext->getActiveImageIndex()));
+		commandBuffer->bindPipeline(m_pipelines->get("Main")->getId());
+		commandBuffer->setViewport(m_coreContext->getSwapchainWidth(), m_coreContext->getSwapchainHeight());
+		commandBuffer->setScissor(m_coreContext->getSwapchainWidth(), m_coreContext->getSwapchainHeight());
+		commandBuffer->bindDescriptorSet(m_pipelines->get("Main"), m_ubosViewProjection->get(m_coreContext->getCurrentFrame())->getDescriptorSet(), 0);
+		commandBuffer->bindDescriptorSet(m_pipelines->get("Main"), m_ubosModel->get(m_coreContext->getCurrentFrame())->getDescriptorSet(), 1);
+		commandBuffer->bindDescriptorSet(m_pipelines->get("Main"), m_textures[0]->getDescriptorSet(), 2);
+		commandBuffer->pushConstants(m_pipelines->get("Main"), VK_SHADER_STAGE_VERTEX_BIT, sizeof(uint32_t), &m_matrixIndex);
+	}
+
 	void RenderSystem::meshLoadVertices(int meshId, int numVertices, float* vertices){
 		m_meshes[meshId]->loadVertices(numVertices,vertices);
 	}
 
 	void RenderSystem::meshLoadIndices(int meshId, int numIndices, uint16_t* indices){
 		m_meshes[meshId]->loadIndices(numIndices, indices);
+	}
+
+	void RenderSystem::drawMesh(int meshId){
+		VK_Mesh* mesh = m_meshes[meshId];
+
+		VK_CommandBuffer* commandBuffer = m_coreContext->getActiveCommandBuffer();
+		commandBuffer->bindVertexBuffer(mesh->getVertexBuffer()->getId());
+		commandBuffer->bindIndexBuffer(mesh->getIndexBuffer()->getId());
+		commandBuffer->renderIndexed(mesh->getNumIndices());
+	}
+
+	void RenderSystem::endFrame(){
+		VK_CommandBuffer* commandBuffer = m_coreContext->getActiveCommandBuffer();
+		commandBuffer->endRenderpass();
+		commandBuffer->endRecording();
+
+		m_coreContext->endFrame();
 	}
 
 	void RenderSystem::postInit(){
@@ -216,13 +203,13 @@ namespace Fierce {
 		VK_DescriptorPool* descriptorPool = nullptr;
 
 		descriptorPool = new VK_DescriptorPool(m_coreContext->getDevice()->getDevice());
-		descriptorPool->addDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2);//TODO: NumFrames für 2
+		descriptorPool->addDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, m_coreContext->getNumFramesInFlight());
 		descriptorPool->create();
 		m_coreContext->getDevice()->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_POOL, (uint64_t)descriptorPool->getId(), "DescriptorPool View/Projection");
 		m_descriptorPools->add("ViewProjection",descriptorPool);
 
 		descriptorPool = new VK_DescriptorPool(m_coreContext->getDevice()->getDevice());
-		descriptorPool->addDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 200);
+		descriptorPool->addDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, m_coreContext->getNumFramesInFlight());
 		descriptorPool->create();
 		m_coreContext->getDevice()->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_POOL, (uint64_t)descriptorPool->getId(), "DescriptorPool Model");
 		m_descriptorPools->add("Model",descriptorPool);
@@ -279,7 +266,7 @@ namespace Fierce {
 		pipeline->addDescriptorSetLayout(m_descriptorSetLayouts->get("ViewProjection")->getId());
 		pipeline->addDescriptorSetLayout(m_descriptorSetLayouts->get("Model")->getId());
 		pipeline->addDescriptorSetLayout(m_descriptorSetLayouts->get("Sampler")->getId());
-		pipeline->addPushConstantRange(VK_SHADER_STAGE_VERTEX_BIT,4*sizeof(float), 0);
+		pipeline->addPushConstantRange(VK_SHADER_STAGE_VERTEX_BIT,sizeof(uint32_t), 0);
 		pipeline->create();
 		m_pipelines->add("Main",pipeline);
 	}

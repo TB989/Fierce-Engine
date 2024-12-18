@@ -57,79 +57,76 @@ namespace Fierce {
 		if (vkBindBufferMemory(m_device->getDevice(), m_buffer, m_memory, 0) != VK_SUCCESS) {
 			RenderSystem::LOGGER->error("Failed to bind buffer memory.");
 		}
+
+		//Mapping
+		if (m_keepMapped) {
+			if (vkMapMemory(m_device->getDevice(), m_memory, 0, m_size, 0, &m_mappedRegion) != VK_SUCCESS) {
+				RenderSystem::LOGGER->error("Failed to map buffer memory.");
+			}
+		}
 	}
 
 	void VK_Buffer::loadData(int size, float* vertices){
-		void* data;
-		if (vkMapMemory(m_device->getDevice(), m_memory, 0, size, 0, &data) != VK_SUCCESS) {
-			RenderSystem::LOGGER->error("Failed to map buffer memory.");
+		if (!m_keepMapped) {
+			if (vkMapMemory(m_device->getDevice(), m_memory, 0, size, 0, &m_mappedRegion) != VK_SUCCESS) {
+				RenderSystem::LOGGER->error("Failed to map buffer memory.");
+			}
 		}
-		memcpy(data, vertices, (size_t)size);
-		vkUnmapMemory(m_device->getDevice(), m_memory);
+		memcpy(m_mappedRegion, vertices, (size_t)size);
+		if (!m_keepMapped) {
+			vkUnmapMemory(m_device->getDevice(), m_memory);
+		}
 	}
 
 	void VK_Buffer::loadData(int size, uint16_t* indices){
-		void* data;
-		if (vkMapMemory(m_device->getDevice(), m_memory, 0, size, 0, &data) != VK_SUCCESS) {
-			RenderSystem::LOGGER->error("Failed to map buffer memory.");
+		if (!m_keepMapped) {
+			if (vkMapMemory(m_device->getDevice(), m_memory, 0, size, 0, &m_mappedRegion) != VK_SUCCESS) {
+				RenderSystem::LOGGER->error("Failed to map buffer memory.");
+			}
 		}
-		memcpy(data, indices, (size_t)size);
-		vkUnmapMemory(m_device->getDevice(), m_memory);
-	}
-
-	void VK_Buffer::loadData(int size, glm::mat4 model, glm::mat4 view, glm::mat4 proj){
-		void* data1;
-		vkMapMemory(m_device->getDevice(), m_memory, 0, 16 * sizeof(float), 0, &data1);
-		memcpy(data1, &model, (size_t)(16 * sizeof(float)));
-		vkUnmapMemory(m_device->getDevice(), m_memory);
-
-		void* data2;
-		vkMapMemory(m_device->getDevice(), m_memory, 16 * sizeof(float), 16 * sizeof(float), 0, &data2);
-		memcpy(data2, &view, (size_t)(16 * sizeof(float)));
-		vkUnmapMemory(m_device->getDevice(), m_memory);
-
-		void* data3;
-		vkMapMemory(m_device->getDevice(), m_memory, 2*16 * sizeof(float), 16 * sizeof(float), 0, &data3);
-		memcpy(data3, &proj, (size_t)(16 * sizeof(float)));
-		vkUnmapMemory(m_device->getDevice(), m_memory);
+		memcpy(m_mappedRegion, indices, (size_t)size);
+		if (!m_keepMapped) {
+			vkUnmapMemory(m_device->getDevice(), m_memory);
+		}
 	}
 
 	void VK_Buffer::loadData(int size, float* view, float* proj) {
-		void* data2;
-		vkMapMemory(m_device->getDevice(), m_memory, 0, 16 * sizeof(float), 0, &data2);
-		memcpy(data2, view, (size_t)(16 * sizeof(float)));
-		vkUnmapMemory(m_device->getDevice(), m_memory);
-
-		void* data3;
-		vkMapMemory(m_device->getDevice(), m_memory, 16 * sizeof(float), 16 * sizeof(float), 0, &data3);
-		memcpy(data3, proj, (size_t)(16 * sizeof(float)));
-		vkUnmapMemory(m_device->getDevice(), m_memory);
+		if (!m_keepMapped) {
+			if (vkMapMemory(m_device->getDevice(), m_memory, 0, size, 0, &m_mappedRegion) != VK_SUCCESS) {
+				RenderSystem::LOGGER->error("Failed to map buffer memory.");
+			}
+		}
+		memcpy((uint8_t*)m_mappedRegion, view, (size_t)(16 * sizeof(float)));
+		memcpy((uint8_t*)m_mappedRegion+16*sizeof(float), proj, (size_t)(16 * sizeof(float)));
+		if (!m_keepMapped) {
+			vkUnmapMemory(m_device->getDevice(), m_memory);
+		}
 	}
 
 	void VK_Buffer::loadData(int size, float* model, float* view, float* proj) {
-		void* data1;
-		vkMapMemory(m_device->getDevice(), m_memory, 0, 16 * sizeof(float), 0, &data1);
-		memcpy(data1, model, (size_t)(16 * sizeof(float)));
-		vkUnmapMemory(m_device->getDevice(), m_memory);
-
-		void* data2;
-		vkMapMemory(m_device->getDevice(), m_memory, 16 * sizeof(float), 16 * sizeof(float), 0, &data2);
-		memcpy(data2, view, (size_t)(16 * sizeof(float)));
-		vkUnmapMemory(m_device->getDevice(), m_memory);
-
-		void* data3;
-		vkMapMemory(m_device->getDevice(), m_memory, 2 * 16 * sizeof(float), 16 * sizeof(float), 0, &data3);
-		memcpy(data3, proj, (size_t)(16 * sizeof(float)));
-		vkUnmapMemory(m_device->getDevice(), m_memory);
+		if (!m_keepMapped) {
+			if (vkMapMemory(m_device->getDevice(), m_memory, 0, size, 0, &m_mappedRegion) != VK_SUCCESS) {
+				RenderSystem::LOGGER->error("Failed to map buffer memory.");
+			}
+		}
+		memcpy((uint8_t*)m_mappedRegion, model, (size_t)(16 * sizeof(float)));
+		memcpy((uint8_t*)m_mappedRegion + 16 * sizeof(float), view, (size_t)(16 * sizeof(float)));
+		memcpy((uint8_t*)m_mappedRegion + 32 * sizeof(float), proj, (size_t)(16 * sizeof(float)));
+		if (!m_keepMapped) {
+			vkUnmapMemory(m_device->getDevice(), m_memory);
+		}
 	}
 
 	void VK_Buffer::loadData(int size, unsigned char* data){
-		void* temp;
-		if (vkMapMemory(m_device->getDevice(), m_memory, 0, size, 0, &temp) != VK_SUCCESS) {
-			RenderSystem::LOGGER->error("Failed to map buffer memory.");
+		if (!m_keepMapped) {
+			if (vkMapMemory(m_device->getDevice(), m_memory, 0, size, 0, &m_mappedRegion) != VK_SUCCESS) {
+				RenderSystem::LOGGER->error("Failed to map buffer memory.");
+			}
 		}
-		memcpy(temp, data, (size_t)size);
-		vkUnmapMemory(m_device->getDevice(), m_memory);
+		memcpy(m_mappedRegion, data, (size_t)size);
+		if (!m_keepMapped) {
+			vkUnmapMemory(m_device->getDevice(), m_memory);
+		}
 	}
 
 }//end namespace
