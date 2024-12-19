@@ -1,6 +1,8 @@
 #include "UnitTests.h"
 
+#include "src/Transform.h"
 #include "src/Matrix.h"
+#include "src/Vector.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "src/io/stb_image.h"
@@ -43,8 +45,12 @@ namespace Fierce {
 		stbi_image_free(pixels);
 
 		//################################################ Matrices ######################################################################
-		m_modelMatrix = new Mat4();
-		m_modelMatrix->scale(100.0f, 100.0f, 1.0f);
+		transform1 = new Transform2D(100.0f,0.0f,100.0f,100.0f,0.0f);
+		transform2 = new Transform2D(-100.0f, 0.0f, 100.0f, 100.0f, 0.0f);
+
+		m_modelMatrix1 = new Mat4();
+		m_modelMatrix2 = new Mat4();
+
 		m_viewMatrix = new Mat4();
 		m_projectionMatrix = new Mat4(); 
 		m_projectionMatrix->setToOrthographicProjection(false, 800.0f,600.0f, 0.0f, 1.0f);
@@ -53,18 +59,32 @@ namespace Fierce {
 	}
 
 	void TestWindow::update() {
-		m_modelMatrix->rotateZ(0.01f);
+		float angle1 = transform1->getRotation();
+		transform1->setRotation(angle1+0.01f);
+
+		float angle2 = transform2->getRotation();
+		transform2->setRotation(angle2 + 0.01f);
 	}
 
 	void TestWindow::render() {
 		m_renderSystem->startFrame();
-		m_renderSystem->loadModelMatrix(m_modelMatrix->get());
+		//Quad1
+		m_modelMatrix1->setToTransform(transform1);
+		m_renderSystem->loadModelMatrix(m_modelMatrix1->get());
 		m_renderSystem->drawMesh(m_meshId);
+		//Quad2
+		m_modelMatrix2->setToTransform(transform2);
+		m_renderSystem->loadModelMatrix(m_modelMatrix2->get());
+		m_renderSystem->drawMesh(m_meshId);
+		//
 		m_renderSystem->endFrame();
 	}
 
 	void TestWindow::cleanUp() {
-		delete m_modelMatrix;
+		delete transform1;
+		delete transform2;
+		delete m_modelMatrix1;
+		delete m_modelMatrix2;
 		delete m_viewMatrix;
 		delete m_projectionMatrix;
 	}

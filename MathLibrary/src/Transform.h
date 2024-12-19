@@ -21,6 +21,8 @@ namespace Fierce {
 		Vector2f getPosition(){ return m_position; }
 		Vector2f getScale() { return m_scale; }
 		float getRotation() { return m_rotation; }
+
+		void setRotation(float rotation) { m_rotation = rotation; }
 	};
 
 	class Transform3D : Transform {

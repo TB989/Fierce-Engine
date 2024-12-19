@@ -118,10 +118,17 @@ namespace Fierce {
 	}
 
 	void RenderSystem::loadModelMatrix(float* modelMatrix){
-		m_ubosModel->get(m_coreContext->getCurrentFrame())->loadData(16 * sizeof(float), modelMatrix);
+		m_ubosModel->get(m_coreContext->getCurrentFrame())->loadData(16 * sizeof(float), m_matrixIndex,modelMatrix);
+
+		VK_CommandBuffer* commandBuffer = m_coreContext->getActiveCommandBuffer();
+		commandBuffer->pushConstants(m_pipelines->get("Main"), VK_SHADER_STAGE_VERTEX_BIT, sizeof(uint32_t), &m_matrixIndex);
+
+		m_matrixIndex++;
 	}
 
 	void RenderSystem::startFrame(){
+		m_matrixIndex = 0;
+
 		m_coreContext->beginFrame();
 
 		VK_CommandBuffer* commandBuffer = m_coreContext->getActiveCommandBuffer();
@@ -133,7 +140,6 @@ namespace Fierce {
 		commandBuffer->bindDescriptorSet(m_pipelines->get("Main"), m_ubosViewProjection->get(m_coreContext->getCurrentFrame())->getDescriptorSet(), 0);
 		commandBuffer->bindDescriptorSet(m_pipelines->get("Main"), m_ubosModel->get(m_coreContext->getCurrentFrame())->getDescriptorSet(), 1);
 		commandBuffer->bindDescriptorSet(m_pipelines->get("Main"), m_textures[0]->getDescriptorSet(), 2);
-		commandBuffer->pushConstants(m_pipelines->get("Main"), VK_SHADER_STAGE_VERTEX_BIT, sizeof(uint32_t), &m_matrixIndex);
 	}
 
 	void RenderSystem::meshLoadVertices(int meshId, int numVertices, float* vertices){

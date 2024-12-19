@@ -22,6 +22,7 @@ namespace Fierce {
 
 		void loadData(int size, float* vertices);
 		void loadData(int size, uint16_t* indices);
+		void loadData(int size, int index,float* matrix);
 		void loadData(int size, float* view, float* proj);
 		void loadData(int size, float* model, float* view, float* proj);
 		void loadData(int size, unsigned char* data);

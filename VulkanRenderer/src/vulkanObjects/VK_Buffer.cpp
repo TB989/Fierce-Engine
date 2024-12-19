@@ -90,6 +90,18 @@ namespace Fierce {
 		}
 	}
 
+	void VK_Buffer::loadData(int size, int index, float* matrix){
+		if (!m_keepMapped) {
+			if (vkMapMemory(m_device->getDevice(), m_memory, 0, size, 0, &m_mappedRegion) != VK_SUCCESS) {
+				RenderSystem::LOGGER->error("Failed to map buffer memory.");
+			}
+		}
+		memcpy((uint8_t*)m_mappedRegion + index*16 * sizeof(float), matrix, (size_t)(16 * sizeof(float)));
+		if (!m_keepMapped) {
+			vkUnmapMemory(m_device->getDevice(), m_memory);
+		}
+	}
+
 	void VK_Buffer::loadData(int size, float* view, float* proj) {
 		if (!m_keepMapped) {
 			if (vkMapMemory(m_device->getDevice(), m_memory, 0, size, 0, &m_mappedRegion) != VK_SUCCESS) {

@@ -8,23 +8,23 @@
 namespace Fierce {
 
 	#define M00 m[0]
-	#define M10 m[1]
-	#define M20 m[2]
-	#define M30 m[3]
+	#define M01 m[1]
+	#define M02 m[2]
+	#define M03 m[3]
 
-	#define M01 m[4]
+	#define M10 m[4]
 	#define M11 m[5]
-	#define M21 m[6]
-	#define M31 m[7]
+	#define M12 m[6]
+	#define M13 m[7]
 
-	#define M02 m[8]
-	#define M12 m[9]
+	#define M20 m[8]
+	#define M21 m[9]
 	#define M22 m[10]
-	#define M32 m[11]
+	#define M23 m[11]
 
-	#define M03 m[12]
-	#define M13 m[13]
-	#define M23 m[14]
+	#define M30 m[12]
+	#define M31 m[13]
+	#define M32 m[14]
 	#define M33 m[15]
 
 	class Logger;
@@ -51,6 +51,7 @@ namespace Fierce {
 		void setToOrthographicProjection(bool forOpenGL, float width, float height,float n,float f);
 		void setToPerspectiveProjection(bool forOpenGL, float aspect, float FOV, float n, float f);
 		void setToTransform(Transform2D transform);
+		void setToTransform(Transform2D* transform);
 		void setToTransform(Transform3D transform);
 		void setToView(Transform3D transform);
 

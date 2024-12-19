@@ -349,6 +349,12 @@ namespace Fierce {
 		this->translate(transform.getPosition().getX(),transform.getPosition().getY(),0);
 	}
 
+	void Mat4::setToTransform(Transform2D* transform){
+		this->setToScale(transform->getScale().getX(), transform->getScale().getY(), 1);
+		this->rotateZ(transform->getRotation());
+		this->translate(transform->getPosition().getX(), transform->getPosition().getY(), 0);
+	}
+
 	void Mat4::setToTransform(Transform3D transform){
 		this->setToScale(transform.getScale().getX(), transform.getScale().getY(), transform.getScale().getZ());
 		this->rotateX(transform.getRotation().getX());
