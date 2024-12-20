@@ -13,7 +13,7 @@ namespace Fierce {
 		addVertex3D(vertices, 0.0f, 0.0f, 0.5f);
 	}
 
-	void Sphere3D::getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings) {
+	void Sphere3D::getIndices(std::vector<uint16_t>& indices, int numPoints, float angle, float innerRadius, int numRings) {
 		addCircleIndices(indices, numPoints, angle, 0, 1, false);
 		for (int i = 0; i < numRings - 1; i++) {
 			addCircleRingIndices(indices, numPoints, angle, i * numPoints + 1, (i + 1) * numPoints + 1, false);

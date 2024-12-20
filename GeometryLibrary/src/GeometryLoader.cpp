@@ -1,7 +1,7 @@
 #include "GeometryLoader.h"
 
 namespace Fierce {
-	void GeometryLoader::loadGeometry(GeometryType type, int numPoints, float angle, float innerRadius, int numRings, std::vector<float>& vertices, std::vector<unsigned int>& indices) {
+	void GeometryLoader::loadGeometry(GeometryType type, int numPoints, float angle, float innerRadius, int numRings, std::vector<float>& vertices, std::vector<uint16_t>& indices) {
 		Geometry* geom = geometries[type];
 
 		geom->getVertices(vertices, numPoints, angle, innerRadius, numRings);

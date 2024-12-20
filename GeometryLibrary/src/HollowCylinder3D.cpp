@@ -8,7 +8,7 @@ namespace Fierce {
 		addCircleVertices3D(vertices, 0.0f, 0.0f, 0.5f, numPoints, 0.5f, angle);
 	}
 
-	void HollowCylinder3D::getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings) {
+	void HollowCylinder3D::getIndices(std::vector<uint16_t>& indices, int numPoints, float angle, float innerRadius, int numRings) {
 		addCircleRingIndices(indices, numPoints, angle, 0, numPoints, false);
 		addCircleRingIndices(indices, numPoints, angle, 2 * numPoints, 3 * numPoints, true);
 		addCircleRingIndices(indices, numPoints, angle, numPoints, 3 * numPoints, false);

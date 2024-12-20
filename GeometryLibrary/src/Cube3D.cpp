@@ -13,7 +13,7 @@ namespace Fierce {
 		addVertex3D(vertices, -0.5f, 0.5f, -0.5f);
 	}
 
-	void Cube3D::getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings) {
+	void Cube3D::getIndices(std::vector<uint16_t>& indices, int numPoints, float angle, float innerRadius, int numRings) {
 		//Bottom
 		addQuadIndices(indices, 3, 2, 1, 0, false);
 

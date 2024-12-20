@@ -111,9 +111,8 @@ namespace Fierce {
 	}
 
 	void RenderSystem::setOrthographicProjection(float* projectionMatrix){
-		Mat4* viewMatrix = new Mat4();
 		for (int i = 0;i<m_coreContext->getNumFramesInFlight();i++) {
-			m_ubosViewProjection->get(i)->loadData(2 * 16 * sizeof(float), viewMatrix->get(), projectionMatrix);
+			m_ubosViewProjection->get(i)->loadData(16 * sizeof(float), projectionMatrix);
 		}
 	}
 
@@ -121,9 +120,14 @@ namespace Fierce {
 		m_ubosModel->get(m_coreContext->getCurrentFrame())->loadData(16 * sizeof(float), m_matrixIndex,modelMatrix);
 
 		VK_CommandBuffer* commandBuffer = m_coreContext->getActiveCommandBuffer();
-		commandBuffer->pushConstants(m_pipelines->get("Main"), VK_SHADER_STAGE_VERTEX_BIT, sizeof(uint32_t), &m_matrixIndex);
+		commandBuffer->pushConstants(m_pipelines->get("Main"), VK_SHADER_STAGE_VERTEX_BIT, sizeof(uint32_t),4*sizeof(float), & m_matrixIndex);
 
 		m_matrixIndex++;
+	}
+
+	void RenderSystem::loadColor(float* color){
+		VK_CommandBuffer* commandBuffer = m_coreContext->getActiveCommandBuffer();
+		commandBuffer->pushConstants(m_pipelines->get("Main"), VK_SHADER_STAGE_VERTEX_BIT, 4*sizeof(float),0, color);
 	}
 
 	void RenderSystem::startFrame(){
@@ -139,7 +143,7 @@ namespace Fierce {
 		commandBuffer->setScissor(m_coreContext->getSwapchainWidth(), m_coreContext->getSwapchainHeight());
 		commandBuffer->bindDescriptorSet(m_pipelines->get("Main"), m_ubosViewProjection->get(m_coreContext->getCurrentFrame())->getDescriptorSet(), 0);
 		commandBuffer->bindDescriptorSet(m_pipelines->get("Main"), m_ubosModel->get(m_coreContext->getCurrentFrame())->getDescriptorSet(), 1);
-		commandBuffer->bindDescriptorSet(m_pipelines->get("Main"), m_textures[0]->getDescriptorSet(), 2);
+		//commandBuffer->bindDescriptorSet(m_pipelines->get("Main"), m_textures[0]->getDescriptorSet(), 2);
 	}
 
 	void RenderSystem::meshLoadVertices(int meshId, int numVertices, float* vertices){
@@ -178,41 +182,46 @@ namespace Fierce {
 		m_uploadContext->startAndWaitForUpload();
 
 		//Finish texture
-		m_textures[0]->createImageViewAndSampler();
-		m_textures[0]->createDescriptorSet(m_descriptorPools->get("Sampler"), m_descriptorSetLayouts->get("Sampler")->getId());
+		//m_textures[0]->createImageViewAndSampler();
+		//m_textures[0]->createDescriptorSet(m_descriptorPools->get("Sampler"), m_descriptorSetLayouts->get("Sampler")->getId());
 
 		//Finish UBOs and textures
 		for (int i = 0;i<m_coreContext->getNumFramesInFlight();i++) {
 			m_ubosViewProjection->get(i)->update(m_ubosViewProjection->get(i));
 			m_ubosModel->get(i)->update(m_ubosModel->get(i));
-			m_textures[0]->update(m_textures[0]->getImageView()->getId(), m_textures[0]->getSampler()->getId());
+			//m_textures[0]->update(m_textures[0]->getImageView()->getId(), m_textures[0]->getSampler()->getId());
 		}
 	}
 
 	void RenderSystem::createRenderpasses(){
+		RenderSystem::LOGGER->info("##### Creating renderpasses #####");
 		VK_Renderpass* renderpass = nullptr;
 
 		renderpass= new VK_Renderpass(m_coreContext->getDevice());
 		renderpass->create();
 		m_renderpasses->add("Main",renderpass);
+		RenderSystem::LOGGER->info("##### Done creating renderpasses #####");
 	}
 
 	void RenderSystem::createFramebuffers(){
+		RenderSystem::LOGGER->info("##### Creating framebuffers #####");
 		VK_Framebuffers* framebuffers=nullptr;
 
 		framebuffers = new VK_Framebuffers(m_coreContext->getDevice(), m_renderpasses->get("Main")->getId(), m_coreContext->getSwapchain());
 		framebuffers->create();
 		m_framebuffers->add("Main",framebuffers);
+		RenderSystem::LOGGER->info("##### Done creating framebuffers #####");
 	}
 
 	void RenderSystem::createDescriptorPools(){
+		RenderSystem::LOGGER->info("##### Creating descriptor pools #####");
 		VK_DescriptorPool* descriptorPool = nullptr;
 
 		descriptorPool = new VK_DescriptorPool(m_coreContext->getDevice()->getDevice());
 		descriptorPool->addDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, m_coreContext->getNumFramesInFlight());
 		descriptorPool->create();
-		m_coreContext->getDevice()->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_POOL, (uint64_t)descriptorPool->getId(), "DescriptorPool View/Projection");
-		m_descriptorPools->add("ViewProjection",descriptorPool);
+		m_coreContext->getDevice()->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_POOL, (uint64_t)descriptorPool->getId(), "DescriptorPool Projection");
+		m_descriptorPools->add("Projection",descriptorPool);
 
 		descriptorPool = new VK_DescriptorPool(m_coreContext->getDevice()->getDevice());
 		descriptorPool->addDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, m_coreContext->getNumFramesInFlight());
@@ -220,73 +229,82 @@ namespace Fierce {
 		m_coreContext->getDevice()->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_POOL, (uint64_t)descriptorPool->getId(), "DescriptorPool Model");
 		m_descriptorPools->add("Model",descriptorPool);
 
-		descriptorPool = new VK_DescriptorPool(m_coreContext->getDevice()->getDevice());
+		/**descriptorPool = new VK_DescriptorPool(m_coreContext->getDevice()->getDevice());
 		descriptorPool->addDescriptorType(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 200);
 		descriptorPool->create();
 		m_coreContext->getDevice()->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_POOL, (uint64_t)descriptorPool->getId(), "DescriptorPool Sampler");
-		m_descriptorPools->add("Sampler",descriptorPool);
+		m_descriptorPools->add("Sampler",descriptorPool);*/
+		RenderSystem::LOGGER->info("##### Done creating descriptor pools #####");
 	}
 
 	void RenderSystem::createDescriptorSetLayouts(){
+		RenderSystem::LOGGER->info("##### Creating descriptor set layouts #####");
 		VK_DescriptorSetLayout* descriptorSetLayout = nullptr;
 
 		descriptorSetLayout = new VK_DescriptorSetLayout(m_coreContext->getDevice()->getDevice());
 		descriptorSetLayout->addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,1, VK_SHADER_STAGE_VERTEX_BIT);
 		descriptorSetLayout->create();
-		m_descriptorSetLayouts->add("ViewProjection",descriptorSetLayout);
+		m_descriptorSetLayouts->add("Projection",descriptorSetLayout);
 
 		descriptorSetLayout = new VK_DescriptorSetLayout(m_coreContext->getDevice()->getDevice());
 		descriptorSetLayout->addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT);
 		descriptorSetLayout->create();
 		m_descriptorSetLayouts->add("Model", descriptorSetLayout);
 
-		descriptorSetLayout = new VK_DescriptorSetLayout(m_coreContext->getDevice()->getDevice());
+		/**descriptorSetLayout = new VK_DescriptorSetLayout(m_coreContext->getDevice()->getDevice());
 		descriptorSetLayout->addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
 		descriptorSetLayout->create();
-		m_descriptorSetLayouts->add("Sampler", descriptorSetLayout);
+		m_descriptorSetLayouts->add("Sampler", descriptorSetLayout);*/
+		RenderSystem::LOGGER->info("##### Done creating descriptor set layouts #####");
 	}
 
 	void RenderSystem::createShaders(){
+		RenderSystem::LOGGER->info("##### Creating shaders #####");
 		VK_Shader* shader = nullptr;
 
 		shader = new VK_Shader(m_coreContext->getDevice());
-		shader->setSourceCode("sixthShader_vert.spv");
+		shader->setSourceCode("Shader_Flat_Color_2D_vert.spv");
 		shader->create();
-		m_shaders->add("sixthShader_vert.spv",shader);
+		m_shaders->add("Shader_Flat_Color_2D_vert.spv",shader);
 
 		shader = new VK_Shader(m_coreContext->getDevice());
-		shader->setSourceCode("sixthShader_frag.spv");
+		shader->setSourceCode("Shader_Flat_Color_2D_frag.spv");
 		shader->create();
-		m_shaders->add("sixthShader_frag.spv",shader);
+		m_shaders->add("Shader_Flat_Color_2D_frag.spv",shader);
+		RenderSystem::LOGGER->info("##### Done creating shaders #####");
 	}
 
 	void RenderSystem::createPipelines(){
+		RenderSystem::LOGGER->info("##### Creating pipelines #####");
 		VK_Pipeline* pipeline = nullptr;
 
 		pipeline = new VK_Pipeline(m_coreContext->getDevice(), m_renderpasses->get("Main")->getId());
-		pipeline->addVertexShader(m_shaders->get("sixthShader_vert.spv")->getId());
-		pipeline->addFragmentShader(m_shaders->get("sixthShader_frag.spv")->getId());
+		pipeline->addVertexShader(m_shaders->get("Shader_Flat_Color_2D_vert.spv")->getId());
+		pipeline->addFragmentShader(m_shaders->get("Shader_Flat_Color_2D_frag.spv")->getId());
 		pipeline->addVertexInput(0, VK_FORMAT_R32G32_SFLOAT);
-		pipeline->addVertexInput(1, VK_FORMAT_R32G32B32_SFLOAT);
-		pipeline->addVertexInput(2, VK_FORMAT_R32G32_SFLOAT);
-		pipeline->addDescriptorSetLayout(m_descriptorSetLayouts->get("ViewProjection")->getId());
+		//pipeline->addVertexInput(1, VK_FORMAT_R32G32B32_SFLOAT);
+		//pipeline->addVertexInput(2, VK_FORMAT_R32G32_SFLOAT);
+		pipeline->addDescriptorSetLayout(m_descriptorSetLayouts->get("Projection")->getId());
 		pipeline->addDescriptorSetLayout(m_descriptorSetLayouts->get("Model")->getId());
-		pipeline->addDescriptorSetLayout(m_descriptorSetLayouts->get("Sampler")->getId());
-		pipeline->addPushConstantRange(VK_SHADER_STAGE_VERTEX_BIT,sizeof(uint32_t), 0);
+		//pipeline->addDescriptorSetLayout(m_descriptorSetLayouts->get("Sampler")->getId());
+		pipeline->addPushConstantRange(VK_SHADER_STAGE_VERTEX_BIT, 4 * sizeof(float)+sizeof(uint32_t), 0);
+		//pipeline->addPushConstantRange(VK_SHADER_STAGE_VERTEX_BIT,sizeof(uint32_t), 4*sizeof(float));
 		pipeline->create();
 		m_pipelines->add("Main",pipeline);
+		RenderSystem::LOGGER->info("##### Done creating pipelines #####");
 	}
 
 	void RenderSystem::createUbos(){
+		RenderSystem::LOGGER->info("##### Creating UBOs #####");
 		VK_UBO* ubo = nullptr;
 
 		for (int i = 0;i<m_coreContext->getNumFramesInFlight();i++) {
-			//View_Projection
-			ubo = new VK_UBO(m_coreContext->getDevice(), 2 * 16 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+			//Projection
+			ubo = new VK_UBO(m_coreContext->getDevice(), 16 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 			ubo->create();
-			ubo->createDescriptorSet(m_descriptorPools->get("ViewProjection"), m_descriptorSetLayouts->get("ViewProjection")->getId());
-			m_coreContext->getDevice()->debug_setName(VK_OBJECT_TYPE_BUFFER, (uint64_t)ubo->getId(), "Buffer UBO View/Projection");
-			m_ubosViewProjection->add("View/Projection",ubo);
+			ubo->createDescriptorSet(m_descriptorPools->get("Projection"), m_descriptorSetLayouts->get("Projection")->getId());
+			m_coreContext->getDevice()->debug_setName(VK_OBJECT_TYPE_BUFFER, (uint64_t)ubo->getId(), "Buffer UBO Projection");
+			m_ubosViewProjection->add("Projection",ubo);
 
 			//Model
 			ubo = new VK_UBO(m_coreContext->getDevice(), MAX_NUM_MODEL_MATRICES*16 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
@@ -295,6 +313,7 @@ namespace Fierce {
 			m_coreContext->getDevice()->debug_setName(VK_OBJECT_TYPE_BUFFER, (uint64_t)ubo->getId(), "Buffer UBO Model");
 			m_ubosModel->add("Model",ubo);
 		}
+		RenderSystem::LOGGER->info("##### Done creating UBOs #####");
 	}
 
 }//end namespace

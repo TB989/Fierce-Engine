@@ -37,6 +37,8 @@ namespace Fierce {
 		float getB() { return m_b; }
 		float getA() { return m_a; }
 
+		float* get() { return new float[4] {m_r,m_g,m_b,m_a}; }
+
 		void setR(float r) { m_r = r; }
 		void setG(float g) { m_g = g; }
 		void setB(float b) { m_b = b; }

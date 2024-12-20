@@ -21,7 +21,7 @@ namespace Fierce {
 		}
 	}
 
-	void Geometry::addTriangleIndices(std::vector<unsigned int>& indices, int i1, int i2, int i3, bool flip) {
+	void Geometry::addTriangleIndices(std::vector<uint16_t>& indices, int i1, int i2, int i3, bool flip) {
 		if (flip) {
 			indices.push_back(i2);
 			indices.push_back(i1);
@@ -34,7 +34,7 @@ namespace Fierce {
 		}
 	}
 
-	void Geometry::addQuadIndices(std::vector<unsigned int>& indices, int i1, int i2, int i3, int i4, bool flip) {
+	void Geometry::addQuadIndices(std::vector<uint16_t>& indices, int i1, int i2, int i3, int i4, bool flip) {
 		if (flip) {
 			indices.push_back(i2);
 			indices.push_back(i1);
@@ -55,7 +55,7 @@ namespace Fierce {
 		}
 	}
 
-	void Geometry::addCircleIndices(std::vector<unsigned int>& indices, int numPoints, float angle, int center, int start, bool flip) {
+	void Geometry::addCircleIndices(std::vector<uint16_t>& indices, int numPoints, float angle, int center, int start, bool flip) {
 		for (int i = 0; i < numPoints - 1; i++) {
 			if (flip) {
 				indices.push_back(i + start);
@@ -83,7 +83,7 @@ namespace Fierce {
 		}
 	}
 
-	void Geometry::addCircleRingIndices(std::vector<unsigned int>& indices, int numPoints, float angle, int start1, int start2, bool flip) {
+	void Geometry::addCircleRingIndices(std::vector<uint16_t>& indices, int numPoints, float angle, int start1, int start2, bool flip) {
 		for (int i = 0; i < numPoints - 1; i++) {
 			if (flip) {
 				//First triangle

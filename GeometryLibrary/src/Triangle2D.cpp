@@ -7,7 +7,7 @@ namespace Fierce {
 		addVertex2D(vertices, 1, 0);
 	}
 
-	void Triangle2D::getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings) {
+	void Triangle2D::getIndices(std::vector<uint16_t>& indices, int numPoints, float angle, float innerRadius, int numRings) {
 		addTriangleIndices(indices, 0, 1, 2, false);
 	}
 }//end namespace

@@ -28,7 +28,8 @@ project "EngineCore"
 		"%{IncludeDir.WindowSystem}",
 		"%{IncludeDir.Vulkan}",
 		"%{IncludeDir.VulkanRenderer}",
-		"%{IncludeDir.MathLibrary}"
+		"%{IncludeDir.MathLibrary}",
+		"%{IncludeDir.GeometryLibrary}"
 	}
 
 	libdirs 
@@ -41,7 +42,8 @@ project "EngineCore"
 		"%{Library.Logger}",
 		"%{Library.WindowSystem}",
 		"%{Library.VulkanRenderer}",
-		"%{Library.MathLibrary}"
+		"%{Library.MathLibrary}",
+		"%{Library.GeometryLibrary}"
 	}
 
 	filter "system:windows"

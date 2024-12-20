@@ -50,6 +50,7 @@ namespace Fierce {
 
 		void setOrthographicProjection(float* projectionMatrix);
 		void loadModelMatrix(float* modelMatrix);
+		void loadColor(float* color);
 
 		void startFrame();
 		void drawMesh(int m_meshId);

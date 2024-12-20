@@ -8,7 +8,7 @@ namespace Fierce {
 		addVertex3D(vertices, 0.5f, 0, -0.5f);
 	}
 
-	void Plane3D::getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings) {
+	void Plane3D::getIndices(std::vector<uint16_t>& indices, int numPoints, float angle, float innerRadius, int numRings) {
 		addQuadIndices(indices, 0, 1, 2, 3, false);
 	}
 }//end namespace

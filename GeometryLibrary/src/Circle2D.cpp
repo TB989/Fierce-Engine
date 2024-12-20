@@ -6,7 +6,7 @@ namespace Fierce{
 		addCircleVertices2D(vertices, 0.5f, 0.5f, numPoints, 0.5f, angle);
 	}
 
-	void Circle2D::getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings) {
+	void Circle2D::getIndices(std::vector<uint16_t>& indices, int numPoints, float angle, float innerRadius, int numRings) {
 		addCircleIndices(indices, numPoints, angle, 0, 1, false);
 	}
 }//end namespace

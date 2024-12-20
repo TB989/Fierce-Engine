@@ -8,7 +8,7 @@ namespace Fierce {
 		addVertex2D(vertices, 1, 0);
 	}
 
-	void Rectangle2D::getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings) {
+	void Rectangle2D::getIndices(std::vector<uint16_t>& indices, int numPoints, float angle, float innerRadius, int numRings) {
 		addQuadIndices(indices, 0, 1, 2, 3, false);
 	}
 }//end namespace

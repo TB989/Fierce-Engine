@@ -118,12 +118,12 @@ namespace Fierce {
 		vkCmdBindDescriptorSets(m_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getLayout(), index,1, &descriptorSet, 0, nullptr);
 	}
 
-	void VK_CommandBuffer::pushConstants(VK_Pipeline* pipeline,VkShaderStageFlagBits shaderStages,uint32_t size,float* data) {
-		vkCmdPushConstants(m_commandBuffer,pipeline->getLayout(),shaderStages,0,size,data);
+	void VK_CommandBuffer::pushConstants(VK_Pipeline* pipeline,VkShaderStageFlagBits shaderStages,uint32_t size, uint32_t offset, float* data) {
+		vkCmdPushConstants(m_commandBuffer,pipeline->getLayout(),shaderStages,offset,size,data);
 	}
 
-	void VK_CommandBuffer::pushConstants(VK_Pipeline* pipeline, VkShaderStageFlagBits shaderStages, uint32_t size, uint32_t* data) {
-		vkCmdPushConstants(m_commandBuffer, pipeline->getLayout(), shaderStages, 0, size, data);
+	void VK_CommandBuffer::pushConstants(VK_Pipeline* pipeline, VkShaderStageFlagBits shaderStages, uint32_t size, uint32_t offset, uint32_t* data) {
+		vkCmdPushConstants(m_commandBuffer, pipeline->getLayout(), shaderStages, offset, size, data);
 	}
 
 	void VK_CommandBuffer::setViewport(float width,float height){

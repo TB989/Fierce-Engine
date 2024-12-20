@@ -23,12 +23,12 @@ namespace Fierce {
 	class Geometry {
 	public:
 		virtual void getVertices(std::vector<float>& vertices, int numPoints, float angle, float innerRadius, int numRings) = 0;
-		virtual void getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings) = 0;
+		virtual void getIndices(std::vector<uint16_t>& indices, int numPoints, float angle, float innerRadius, int numRings) = 0;
 	protected:
-		void addTriangleIndices(std::vector<unsigned int>& indices, int i1, int i2, int i3, bool flip);
-		void addQuadIndices(std::vector<unsigned int>& indices, int i1, int i2, int i3, int i4, bool flip);
-		void addCircleIndices(std::vector<unsigned int>& indices, int numPoints, float angle, int center, int start, bool flip);
-		void addCircleRingIndices(std::vector<unsigned int>& indices, int numPoints, float angle, int start1, int start2, bool flip);
+		void addTriangleIndices(std::vector<uint16_t>& indices, int i1, int i2, int i3, bool flip);
+		void addQuadIndices(std::vector<uint16_t>& indices, int i1, int i2, int i3, int i4, bool flip);
+		void addCircleIndices(std::vector<uint16_t>& indices, int numPoints, float angle, int center, int start, bool flip);
+		void addCircleRingIndices(std::vector<uint16_t>& indices, int numPoints, float angle, int start1, int start2, bool flip);
 	};
 
 	class Geometry2D :public Geometry {
@@ -40,25 +40,25 @@ namespace Fierce {
 	class Rectangle2D :public Geometry2D {
 	public:
 		void getVertices(std::vector<float>& vertices, int numPoints, float angle, float innerRadius, int numRings);
-		void getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings);
+		void getIndices(std::vector<uint16_t>& indices, int numPoints, float angle, float innerRadius, int numRings);
 	};
 
 	class Circle2D :public Geometry2D {
 	public:
 		void getVertices(std::vector<float>& vertices, int numPoints, float angle, float innerRadius, int numRings);
-		void getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings);
+		void getIndices(std::vector<uint16_t>& indices, int numPoints, float angle, float innerRadius, int numRings);
 	};
 
 	class CircleRing2D :public Geometry2D {
 	public:
 		void getVertices(std::vector<float>& vertices, int numPoints, float angle, float innerRadius, int numRings);
-		void getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings);
+		void getIndices(std::vector<uint16_t>& indices, int numPoints, float angle, float innerRadius, int numRings);
 	};
 
 	class Triangle2D :public Geometry2D {
 	public:
 		void getVertices(std::vector<float>& vertices, int numPoints, float angle, float innerRadius, int numRings);
-		void getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings);
+		void getIndices(std::vector<uint16_t>& indices, int numPoints, float angle, float innerRadius, int numRings);
 	};
 
 	class Geometry3D :public Geometry {
@@ -70,36 +70,36 @@ namespace Fierce {
 	class Plane3D :public Geometry3D {
 	public:
 		void getVertices(std::vector<float>& vertices, int numPoints, float angle, float innerRadius, int numRings);
-		void getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings);
+		void getIndices(std::vector<uint16_t>& indices, int numPoints, float angle, float innerRadius, int numRings);
 	};
 
 	class Cube3D :public Geometry3D {
 	public:
 		void getVertices(std::vector<float>& vertices, int numPoints, float angle, float innerRadius, int numRings);
-		void getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings);
+		void getIndices(std::vector<uint16_t>& indices, int numPoints, float angle, float innerRadius, int numRings);
 	};
 
 	class Cylinder3D :public Geometry3D {
 	public:
 		void getVertices(std::vector<float>& vertices, int numPoints, float angle, float innerRadius, int numRings);
-		void getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings);
+		void getIndices(std::vector<uint16_t>& indices, int numPoints, float angle, float innerRadius, int numRings);
 	};
 
 	class HollowCylinder3D :public Geometry3D {
 	public:
 		void getVertices(std::vector<float>& vertices, int numPoints, float angle, float innerRadius, int numRings);
-		void getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings);
+		void getIndices(std::vector<uint16_t>& indices, int numPoints, float angle, float innerRadius, int numRings);
 	};
 
 	class Cone3D :public Geometry3D {
 	public:
 		void getVertices(std::vector<float>& vertices, int numPoints, float angle, float innerRadius, int numRings);
-		void getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings);
+		void getIndices(std::vector<uint16_t>& indices, int numPoints, float angle, float innerRadius, int numRings);
 	};
 
 	class Sphere3D :public Geometry3D {
 	public:
 		void getVertices(std::vector<float>& vertices, int numPoints, float angle, float innerRadius, int numRings);
-		void getIndices(std::vector<unsigned int>& indices, int numPoints, float angle, float innerRadius, int numRings);
+		void getIndices(std::vector<uint16_t>& indices, int numPoints, float angle, float innerRadius, int numRings);
 	};
 }//end namespace

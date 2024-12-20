@@ -8,7 +8,7 @@
 namespace Fierce {
 	class GeometryLoader {
 	public:
-		void loadGeometry(GeometryType type, int numPoints, float angle, float innerRadius, int numRings, std::vector<float>& vertices, std::vector<unsigned int>& indices);
+		void loadGeometry(GeometryType type, int numPoints, float angle, float innerRadius, int numRings, std::vector<float>& vertices, std::vector<uint16_t>& indices);
 		void registerGeometry(GeometryType type, Geometry* geometry);
 		void unregisterGeometry(GeometryType type);
 	private:
