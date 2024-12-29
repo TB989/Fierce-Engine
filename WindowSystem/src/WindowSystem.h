@@ -5,6 +5,9 @@
 #include "src/FierceStrings.h"
 #include "src/System.h"
 #include <vector>
+#include <unordered_map>
+
+#include "src/InputSystem.h"
 
 namespace Fierce {
 
@@ -14,14 +17,12 @@ namespace Fierce {
 
 	class WindowSystem :public System{
 	public:
-		WindowSystem(LoggingSystem* loggingSystem);
+		WindowSystem(LoggingSystem* loggingSystem,InputSystem* inputSystem);
 		~WindowSystem();
 
 		void initSystem() override;
 		void updateSystem() override;
 		void cleanUpSystem() override;
-
-		void setWindowCloseFunction(FunctionPtr onWindowClosed) { m_onWindowClosed = onWindowClosed; }
 
 		Window* createWindow(std::string title, Window::WINDOW_MODE windowMode, int width, int height);
 		void deleteWindow(Window* window);
@@ -35,11 +36,13 @@ namespace Fierce {
 		LPCWSTR m_fierceWindowClassName = L"FierceWindow";
 		std::vector<Window*> m_windows;
 
-		LoggingSystem* m_loggingSystem;
-		Logger* m_logger;
+		LoggingSystem* m_loggingSystem=nullptr;
+		Logger* m_logger=nullptr;
+
+		InputSystem* m_inputSystem=nullptr;
 
 	public:
-		FunctionPtr m_onWindowClosed = nullptr;
+		static std::unordered_map<int, InputSystem::BINDING> m_bindings;
 	};
 
 }//end namespace

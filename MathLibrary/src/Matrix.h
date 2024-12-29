@@ -53,7 +53,9 @@ namespace Fierce {
 		void setToTransform(Transform2D transform);
 		void setToTransform(Transform2D* transform);
 		void setToTransform(Transform3D transform);
+		void setToTransform(Transform3D* transform);
 		void setToView(Transform3D transform);
+		void setToView(Transform3D* transform);
 
 		Mat4* translate(float x,float y,float z);
 		Mat4* rotateX(float angle);

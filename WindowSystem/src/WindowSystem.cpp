@@ -4,25 +4,22 @@
 
 namespace Fierce {
 
+	std::unordered_map<int, InputSystem::BINDING> WindowSystem::m_bindings = {
+		{VK_ESCAPE, InputSystem::BINDING::KEY_ESC},
+	};
+
 	LRESULT CALLBACK wndProcFierceWindow(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
-		WindowSystem* windowSystem = static_cast<WindowSystem*>(GetProp(hWnd, L"windowSystem"));
+		InputSystem* inputSystem = static_cast<InputSystem*>(GetProp(hWnd, L"inputSystem"));
 
 		switch (message) {
 			//*** Window ***//
 		case WM_CLOSE:
-			if (windowSystem->m_onWindowClosed != nullptr) {
-				windowSystem->m_onWindowClosed();
-			}
 			return 0;
 		case WM_SIZE:
 			return 0;
 			//*** Keyboard ***//
 		case WM_KEYDOWN:
-			if (wParam == VK_ESCAPE) {
-				if (windowSystem->m_onWindowClosed != nullptr) {
-					windowSystem->m_onWindowClosed();
-				}
-			}
+			inputSystem->onKeyDown(WindowSystem::m_bindings[wParam]);
 			return 0;
 		case WM_KEYUP:
 			return 0;
@@ -55,8 +52,9 @@ namespace Fierce {
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 
-	WindowSystem::WindowSystem(LoggingSystem* loggingSystem) {
+	WindowSystem::WindowSystem(LoggingSystem* loggingSystem, InputSystem* inputSystem) {
 		m_loggingSystem = loggingSystem;
+		m_inputSystem = inputSystem;
 	}
 
 	WindowSystem::~WindowSystem() {
@@ -67,6 +65,8 @@ namespace Fierce {
 		m_logger = m_loggingSystem->createLogger("WIN", true, "ALL_LOGS");
 		hInstance = GetModuleHandle(NULL);
 		registerWindowClass(m_fierceWindowClassName, wndProcFierceWindow);
+
+		m_bindings.insert({VK_ESCAPE,InputSystem::BINDING::KEY_ESC});
 	}
 
 	void WindowSystem::updateSystem(){
@@ -81,7 +81,7 @@ namespace Fierce {
 
 	Window* WindowSystem::createWindow(std::string title, Window::WINDOW_MODE windowMode, int width, int height){
 		Window* window= new Window(m_logger,m_fierceWindowClassName,title,windowMode,width,height);
-		SetProp(window->getHandle(), L"windowSystem", this);
+		SetProp(window->getHandle(), L"inputSystem", m_inputSystem);
 		m_windows.push_back(window);
 		return window;
 	}

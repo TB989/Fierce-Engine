@@ -1,5 +1,5 @@
-project "EngineCore"
-	kind "ConsoleApp"
+project "InputSystem"
+	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
 	staticruntime "off"
@@ -16,36 +16,24 @@ project "EngineCore"
 	files
 	{
 		"%{wks.location}/%{prj.name}/src/**.h",
-		"%{wks.location}/%{prj.name}/src/**.cpp",
-		"%{wks.location}/%{prj.name}/**.ini"
+		"%{wks.location}/%{prj.name}/src/**.cpp"
 	}
 
 	includedirs
 	{
 		"%{wks.location}/%{prj.name}",
 		"%{IncludeDir.Logger}",
-		"%{IncludeDir.Utils}",
-		"%{IncludeDir.WindowSystem}",
-		"%{IncludeDir.Vulkan}",
-		"%{IncludeDir.VulkanRenderer}",
-		"%{IncludeDir.MathLibrary}",
-		"%{IncludeDir.GeometryLibrary}",
-		"%{IncludeDir.InputSystem}",
+		"%{IncludeDir.Utils}"
 	}
 
-	libdirs 
+	libdirs
 	{
 		"%{LibraryDir.Common}"
 	}
 
 	links
 	{
-		"%{Library.Logger}",
-		"%{Library.WindowSystem}",
-		"%{Library.VulkanRenderer}",
-		"%{Library.MathLibrary}",
-		"%{Library.GeometryLibrary}",
-		"%{Library.InputSystem}"
+		"%{Library.Logger}"
 	}
 
 	filter "system:windows"

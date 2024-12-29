@@ -8,6 +8,7 @@ namespace Fierce {
 
 	class LoggingSystem;
 	class Logger;
+	class InputSystem;
 	class WindowSystem;
 
 	class EngineCore {
@@ -39,6 +40,8 @@ namespace Fierce {
 	protected:
 		LoggingSystem* m_loggingSystem = nullptr;
 		Logger* m_logger = nullptr;
+
+		InputSystem* m_inputSystem=nullptr;
 
 		WindowSystem* m_windowSystem=nullptr;
 		Window* m_window=nullptr;

@@ -2,10 +2,13 @@
 
 #include "src/core/EngineCore.h"
 
+#include "src/actions/Action_StopEngine.h"
+
 namespace Fierce {
 
 	class Mat4;
 	class Transform2D;
+	class Transform3D;
 	class Color4f;
 
 	class GeometryLoader;
@@ -21,16 +24,23 @@ namespace Fierce {
 		void cleanUp() override;
 
 	private:
+		Action* m_action = nullptr;
+
 		Mat4* m_modelMatrix1=nullptr;
 		Mat4* m_modelMatrix2 = nullptr;
 		Mat4* m_modelMatrix3 = nullptr;
 		Mat4* m_modelMatrix4 = nullptr;
-		Mat4* m_projectionMatrix = nullptr;
+		Mat4* m_modelMatrixPlane = nullptr;
+		Mat4* m_orthographicProjectionMatrix = nullptr;
+		Mat4* m_perspectiveProjectionMatrix = nullptr;
+		Mat4* m_viewMatrix=nullptr;
 
 		int m_meshId_rectangle=0;
 		int m_meshId_circle = 0;
 		int m_meshId_circleRing = 0;
 		int m_meshId_triangle = 0;
+
+		int m_meshId_plane = 0;
 
 		int m_textureId = 0;
 
@@ -39,12 +49,17 @@ namespace Fierce {
 		Color4f* m_color3 = nullptr;
 		Color4f* m_color4 = nullptr;
 
-		Transform2D* transform1 = nullptr;
-		Transform2D* transform2 = nullptr;
-		Transform2D* transform3 = nullptr;
-		Transform2D* transform4 = nullptr;
+		Color4f* m_colorPlane = nullptr;
 
-		GeometryLoader* loader = nullptr;
+		Transform3D* m_viewTransform=nullptr;
+		Transform2D* m_transform1 = nullptr;
+		Transform2D* m_transform2 = nullptr;
+		Transform2D* m_transform3 = nullptr;
+		Transform2D* m_transform4 = nullptr;
+
+		Transform3D* m_transformPlane = nullptr;
+
+		GeometryLoader* m_loader = nullptr;
 	};
 
 }//end namespace

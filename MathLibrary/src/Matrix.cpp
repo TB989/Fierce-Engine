@@ -264,12 +264,12 @@ namespace Fierce {
 			M00 = 2.0f / width;
 			M10 = 0;
 			M20 = 0;
-			M30 = 0;
+			M30 = -1.0f;
 
 			M01 = 0;
-			M11 = -2.0f / height;
+			M11 = 2.0f / height;
 			M21 = 0;
-			M31 = 0;
+			M31 = -1.0f;
 
 			M02 = 0;
 			M12 = 0;
@@ -363,12 +363,28 @@ namespace Fierce {
 		this->translate(transform.getPosition().getX(), transform.getPosition().getY(), transform.getPosition().getZ());
 	}
 
+	void Mat4::setToTransform(Transform3D* transform){
+		this->setToScale(transform->getScale().getX(), transform->getScale().getY(), transform->getScale().getZ());
+		this->rotateX(transform->getRotation().getX());
+		this->rotateY(transform->getRotation().getY());
+		this->rotateZ(transform->getRotation().getZ());
+		this->translate(transform->getPosition().getX(), transform->getPosition().getY(), transform->getPosition().getZ());
+	}
+
 	void Mat4::setToView(Transform3D transform){
 		this->setToTranslation(-transform.getPosition().getX(), -transform.getPosition().getY(), -transform.getPosition().getZ());
 		this->rotateZ(transform.getRotation().getZ());
 		this->rotateY(transform.getRotation().getY());
 		this->rotateX(transform.getRotation().getX());
 		this->scale(transform.getScale().getX(), transform.getScale().getY(), transform.getScale().getZ());
+	}
+
+	void Mat4::setToView(Transform3D* transform){
+		this->setToTranslation(-transform->getPosition().getX(), -transform->getPosition().getY(), -transform->getPosition().getZ());
+		this->rotateZ(transform->getRotation().getZ());
+		this->rotateY(transform->getRotation().getY());
+		this->rotateX(transform->getRotation().getX());
+		this->scale(transform->getScale().getX(), transform->getScale().getY(), transform->getScale().getZ());
 	}
 
 	Mat4* Mat4::translate(float x, float y, float z){

@@ -3,6 +3,7 @@
 #include "src/io/Parser.h"
 
 #include "src/LoggingSystem.h"
+#include "src/InputSystem.h"
 #include "src/WindowSystem.h"
 
 namespace Fierce {
@@ -50,8 +51,10 @@ namespace Fierce {
 		m_loggingSystem->initSystem();
 		m_logger = m_loggingSystem->createLogger("CORE", true, "ALL_LOGS");
 
-		m_windowSystem = new WindowSystem(m_loggingSystem);
-		m_windowSystem->setWindowCloseFunction(stop);
+		m_inputSystem = new InputSystem(m_loggingSystem);
+		m_inputSystem->initSystem();
+
+		m_windowSystem = new WindowSystem(m_loggingSystem,m_inputSystem);
 		m_windowSystem->initSystem();
 		m_window = m_windowSystem->createWindow("Fierce Engine", m_settings.windowMode, m_settings.width, m_settings.height);
 
@@ -71,6 +74,9 @@ namespace Fierce {
 		m_windowSystem->deleteWindow(m_window);
 		m_windowSystem->cleanUpSystem();
 		delete m_windowSystem;
+
+		m_inputSystem->cleanUpSystem();
+		delete m_inputSystem;
 
 		m_loggingSystem->deleteLogger(m_logger);
 		m_loggingSystem->cleanUpSystem();

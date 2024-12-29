@@ -17,11 +17,11 @@ layout(push_constant) uniform PushConstants {
     uint modelMatrixIndex;
 } pushConstants;
 
-layout(location = 0) in vec2 inPosition;
+layout(location = 0) in vec3 inPosition;
 
 layout(location = 0) out vec4 vs_color;
 
 void main() {
-    gl_Position = uboViewProjection.orthographicProjection * uboModel.model[pushConstants.modelMatrixIndex] * vec4(inPosition, 0.0, 1.0);
+    gl_Position = uboViewProjection.perspectiveProjection * uboViewProjection.view * uboModel.model[pushConstants.modelMatrixIndex] * vec4(inPosition, 1.0);
     vs_color=pushConstants.color;
 }

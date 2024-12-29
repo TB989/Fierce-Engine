@@ -142,6 +142,8 @@ namespace Fierce {
 
 		m_device->requerySurfaceData();
 
+		//TODO: Update projection matrices
+
 		delete m_managerFramebuffers->get("Main");
 
 		VK_Swapchain* oldSwapchain = m_swapchain;

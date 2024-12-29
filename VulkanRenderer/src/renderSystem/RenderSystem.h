@@ -9,6 +9,8 @@
 
 #include "src/manager/VK_Manager.h"
 
+#include "src/FierceStrings.h"
+
 namespace Fierce {
 
 	class LoggingSystem;
@@ -48,7 +50,10 @@ namespace Fierce {
 		int newTexture(int width, int height, int numChannels);
 		void textureLoadData(int textureId, unsigned char* pixels);
 
+		void bindPipeline(std::string name);
 		void setOrthographicProjection(float* projectionMatrix);
+		void setPerspectiveProjection(float* projectionMatrix);
+		void setViewMatrix(float* viewMatrix);
 		void loadModelMatrix(float* modelMatrix);
 		void loadColor(float* color);
 

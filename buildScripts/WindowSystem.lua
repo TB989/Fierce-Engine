@@ -23,7 +23,8 @@ project "WindowSystem"
 	{
 		"%{wks.location}/%{prj.name}",
 		"%{IncludeDir.Logger}",
-		"%{IncludeDir.Utils}"
+		"%{IncludeDir.Utils}",
+		"%{IncludeDir.InputSystem}"
 	}
 
 	libdirs
@@ -33,7 +34,8 @@ project "WindowSystem"
 
 	links
 	{
-		"%{Library.Logger}"
+		"%{Library.Logger}",
+		"%{Library.InputSystem}"
 	}
 
 	filter "system:windows"
