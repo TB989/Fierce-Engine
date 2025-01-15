@@ -45,9 +45,7 @@ project "VulkanRenderer"
 	{
 		"%{Library.Logger}",
 		"%{Library.Vulkan}",
-		"%{Library.MathLibrary}",
-
-		"glfw3.lib"
+		"%{Library.MathLibrary}"
 	}
 
 	filter "system:windows"

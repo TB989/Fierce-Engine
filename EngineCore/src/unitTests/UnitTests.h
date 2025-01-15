@@ -3,6 +3,9 @@
 #include "src/core/EngineCore.h"
 
 #include "src/actions/Action_StopEngine.h"
+#include "src/actions/State_Test.h"
+#include "src/actions/Range_lookUpDown.h"
+#include "src/actions/Range_lookRightLeft.h"
 
 namespace Fierce {
 
@@ -25,6 +28,9 @@ namespace Fierce {
 
 	private:
 		Action* m_action = nullptr;
+		State* m_state = nullptr;
+		Range* m_lookUpDown = nullptr;
+		Range* m_lookRightLeft = nullptr;
 
 		Mat4* m_modelMatrix1=nullptr;
 		Mat4* m_modelMatrix2 = nullptr;

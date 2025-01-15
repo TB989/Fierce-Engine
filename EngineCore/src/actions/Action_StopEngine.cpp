@@ -8,7 +8,7 @@ namespace Fierce {
 		m_core = core;
 	}
 
-	void Fierce::Action_StopEngine::run(){
+	void Fierce::Action_StopEngine::onAction(){
 		m_core->stop();
 	}
 

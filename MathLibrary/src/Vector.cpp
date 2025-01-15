@@ -22,9 +22,9 @@ namespace Fierce {
 		VY = y;
 	}
 
-	Vector2f::Vector2f(const Vector2f& vector){
-		VX = vector.VX;
-		VY = vector.VY;
+	Vector2f::Vector2f(const Vector2f* vector){
+		VX = vector->VX;
+		VY = vector->VY;
 	}
 
 	Vector2f::Vector2f(float* vector){
@@ -45,12 +45,12 @@ namespace Fierce {
 		return VX * VX + VY * VY;
 	}
 
-	float Vector2f::distance(const Vector2f& vector){
-		return std::sqrtf((VX - vector.VX)*(VX - vector.VX) + (VY - vector.VY)*(VY - vector.VY));
+	float Vector2f::distance(const Vector2f* vector){
+		return std::sqrtf((VX - vector->VX)*(VX - vector->VX) + (VY - vector->VY)*(VY - vector->VY));
 	}
 
-	float Vector2f::distanceSquared(const Vector2f& vector){
-		return (VX - vector.VX) * (VX - vector.VX) + (VY - vector.VY) * (VY - vector.VY);
+	float Vector2f::distanceSquared(const Vector2f* vector){
+		return (VX - vector->VX) * (VX - vector->VX) + (VY - vector->VY) * (VY - vector->VY);
 	}
 
 	void Vector2f::normalize() {
@@ -181,10 +181,10 @@ namespace Fierce {
 		VZ = z;
 	}
 
-	Vector3f::Vector3f(const Vector3f& vector){
-		VX = vector.VX;
-		VY = vector.VY;
-		VZ = vector.VZ;
+	Vector3f::Vector3f(const Vector3f* vector){
+		VX = vector->VX;
+		VY = vector->VY;
+		VZ = vector->VZ;
 	}
 
 	Vector3f::Vector3f(float* vector){
@@ -205,12 +205,12 @@ namespace Fierce {
 		return VX * VX + VY * VY + VZ * VZ;
 	}
 
-	float Vector3f::distance(const Vector3f& vector){
-		return std::sqrtf((VX - vector.VX) * (VX - vector.VX) + (VY - vector.VY) * (VY - vector.VY)+ (VZ - vector.VZ) * (VZ - vector.VZ));
+	float Vector3f::distance(const Vector3f* vector){
+		return std::sqrtf((VX - vector->VX) * (VX - vector->VX) + (VY - vector->VY) * (VY - vector->VY)+ (VZ - vector->VZ) * (VZ - vector->VZ));
 	}
 
-	float Vector3f::distanceSquared(const Vector3f& vector){
-		return (VX - vector.VX) * (VX - vector.VX) + (VY - vector.VY) * (VY - vector.VY) + (VZ - vector.VZ) * (VZ - vector.VZ);
+	float Vector3f::distanceSquared(const Vector3f* vector){
+		return (VX - vector->VX) * (VX - vector->VX) + (VY - vector->VY) * (VY - vector->VY) + (VZ - vector->VZ) * (VZ - vector->VZ);
 	}
 
 	void Vector3f::normalize() {
@@ -225,11 +225,11 @@ namespace Fierce {
 		logger->info("%1.3f %1.3f %1.3f", VX, VY, VZ);
 	}
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	Vector3f Vector3f::cross(const Vector3f& v1, const Vector3f& v2){
+	Vector3f Vector3f::cross(const Vector3f* v1, const Vector3f* v2){
 		return Vector3f(
-			v1.VY * v2.VZ - v1.VZ * v2.VY,
-			v1.VZ * v2.VX - v1.VX * v2.VZ,
-			v1.VX * v2.VY - v1.VY * v2.VX
+			v1->VY * v2->VZ - v1->VZ * v2->VY,
+			v1->VZ * v2->VX - v1->VX * v2->VZ,
+			v1->VX * v2->VY - v1->VY * v2->VX
 			);
 	}
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -354,11 +354,11 @@ namespace Fierce {
 		VW = w;
 	}
 
-	Vector4f::Vector4f(const Vector4f& vector){
-		VX = vector.VX;
-		VY = vector.VY;
-		VZ = vector.VZ;
-		VW = vector.VW;
+	Vector4f::Vector4f(const Vector4f* vector){
+		VX = vector->VX;
+		VY = vector->VY;
+		VZ = vector->VZ;
+		VW = vector->VW;
 	}
 
 	Vector4f::Vector4f(float* vector){
@@ -379,12 +379,12 @@ namespace Fierce {
 		return VX * VX + VY * VY + VZ * VZ + VW * VW;
 	}
 
-	float Vector4f::distance(const Vector4f& vector){
-		return std::sqrtf((VX - vector.VX) * (VX - vector.VX) + (VY - vector.VY) * (VY - vector.VY) + (VZ - vector.VZ) * (VZ - vector.VZ) + (VW - vector.VW) * (VW - vector.VW));
+	float Vector4f::distance(const Vector4f* vector){
+		return std::sqrtf((VX - vector->VX) * (VX - vector->VX) + (VY - vector->VY) * (VY - vector->VY) + (VZ - vector->VZ) * (VZ - vector->VZ) + (VW - vector->VW) * (VW - vector->VW));
 	}
 
-	float Vector4f::distanceSquared(const Vector4f& vector){
-		return (VX - vector.VX) * (VX - vector.VX) + (VY - vector.VY) * (VY - vector.VY) + (VZ - vector.VZ) * (VZ - vector.VZ) + (VW - vector.VW) * (VW - vector.VW);
+	float Vector4f::distanceSquared(const Vector4f* vector){
+		return (VX - vector->VX) * (VX - vector->VX) + (VY - vector->VY) * (VY - vector->VY) + (VZ - vector->VZ) * (VZ - vector->VZ) + (VW - vector->VW) * (VW - vector->VW);
 	}
 
 	void Vector4f::normalize() {

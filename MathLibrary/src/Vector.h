@@ -16,15 +16,15 @@ namespace Fierce {
 		Vector2f();
 		Vector2f(float value);
 		Vector2f(float x, float y);
-		Vector2f(const Vector2f& vector);
+		Vector2f(const Vector2f* vector);
 		Vector2f(float* vector);
 		~Vector2f();
 
 	public:
 		float length();
 		float lengthSquared();
-		float distance(const Vector2f& vector);
-		float distanceSquared(const Vector2f& vector);
+		float distance(const Vector2f* vector);
+		float distanceSquared(const Vector2f* vector);
 
 		void normalize();
 
@@ -36,7 +36,7 @@ namespace Fierce {
 		float getY() { return VY; }
 		void setX(float x) { VX = x; }
 		void setY(float y) { VY = y; }
-		void setTo(const Vector2f& vector) { VX = vector.VX; VY = vector.VY; }
+		void setTo(const Vector2f* vector) { VX = vector->VX; VY = vector->VY; }
 		void setTo(float x,float y) { VX = x; VY = y; }
 
 	public:
@@ -69,22 +69,22 @@ namespace Fierce {
 		Vector3f();
 		Vector3f(float value);
 		Vector3f(float x, float y, float z);
-		Vector3f(const Vector3f& vector);
+		Vector3f(const Vector3f* vector);
 		Vector3f(float* vector);
 		~Vector3f();
 
 	public:
 		float length();
 		float lengthSquared();
-		float distance(const Vector3f& vector);
-		float distanceSquared(const Vector3f& vector);
+		float distance(const Vector3f* vector);
+		float distanceSquared(const Vector3f* vector);
 
 		void normalize();
 
 		void print(Logger* logger, std::string name);
 
 	public:
-		static Vector3f cross(const Vector3f& v1,const Vector3f& v2);
+		static Vector3f cross(const Vector3f* v1,const Vector3f* v2);
 
 	public:
 		float* get() { return v; };
@@ -94,7 +94,7 @@ namespace Fierce {
 		void setX(float x) { VX = x; }
 		void setY(float y) { VY = y; }
 		void setZ(float z) { VZ = z; }
-		void setTo(const Vector3f& vector) { VX = vector.VX; VY = vector.VY; VZ = vector.VZ; }
+		void setTo(const Vector3f* vector) { VX = vector->VX; VY = vector->VY; VZ = vector->VZ; }
 		void setTo(float x, float y, float z) { VX = x; VY = y; VZ = z; }
 
 	public:
@@ -127,15 +127,15 @@ namespace Fierce {
 		Vector4f();
 		Vector4f(float value);
 		Vector4f(float x, float y, float z, float w);
-		Vector4f(const Vector4f& vector);
+		Vector4f(const Vector4f* vector);
 		Vector4f(float* vector);
 		~Vector4f();
 
 	public:
 		float length();
 		float lengthSquared();
-		float distance(const Vector4f& vector);
-		float distanceSquared(const Vector4f& vector);
+		float distance(const Vector4f* vector);
+		float distanceSquared(const Vector4f* vector);
 
 		void normalize();
 
@@ -151,7 +151,7 @@ namespace Fierce {
 		void setY(float y) { VY = y; }
 		void setZ(float z) { VZ = z; }
 		void setW(float w) { VW = w; }
-		void setTo(const Vector4f& vector) { VX = vector.VX; VY = vector.VY; VZ = vector.VZ; VW = vector.VW;}
+		void setTo(const Vector4f* vector) { VX = vector->VX; VY = vector->VY; VZ = vector->VZ; VW = vector->VW;}
 		void setTo(float x, float y, float z, float w) { VX = x; VY = y; VZ = z; VW = w; }
 
 	public:

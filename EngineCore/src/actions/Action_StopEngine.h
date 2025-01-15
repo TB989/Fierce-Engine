@@ -1,6 +1,6 @@
 #pragma once
 
-#include "src/Action.h"
+#include "src/Bindable.h"
 
 namespace Fierce {
 
@@ -10,7 +10,7 @@ namespace Fierce {
 	public:
 		Action_StopEngine(EngineCore* core);
 
-		void run() override;
+		void onAction() override;
 
 	private:
 		EngineCore* m_core;

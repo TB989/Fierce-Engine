@@ -22,3 +22,5 @@ workspace "Fierce-Engine"
 	include "MathLibrary.lua"
 	include "GeometryLibrary.lua"
 	include "InputSystem.lua"
+
+	include "Interpreter.lua"

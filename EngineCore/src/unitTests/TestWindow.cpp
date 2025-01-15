@@ -32,7 +32,9 @@ namespace Fierce {
 
 	void TestWindow::init() {
 		m_action = new Action_StopEngine(this);
+		m_state = new State_Test(m_logger);
 		m_inputSystem->addAction(InputSystem::BINDING::KEY_ESC, m_action);
+		m_inputSystem->addState(InputSystem::BINDING::MOUSE_BUTTON_RIGHT,m_state);
 		//###################################### MESHES ###############################################################################
 		std::vector<float> vertices;
 		std::vector<uint16_t> indices;
@@ -96,7 +98,7 @@ namespace Fierce {
 		m_transform1 = new Transform2D(10.0f,10.0f,100.0f,100.0f,0.0f);
 		m_transform2 = new Transform2D(120.0f, 10.0f, 100.0f, 100.0f, 0.0f);
 		m_transform3 = new Transform2D(230.0f, 10.0f, 100.0f, 100.0f, 0.0f);
-		m_transform4 = new Transform2D(340.0f, 10.0f, 100.0f, 100.0f, 0.0f);
+		m_transform4 = new Transform2D(340.0f, 10.0f, 50.0f, 50.0f, 0.0f);
 
 		m_transformPlane = new Transform3D(0.0f,0.0f,0.0f,100.0f,1.0f,100.0f,0.0f,0.0f,0.0f);
 
@@ -117,9 +119,13 @@ namespace Fierce {
 
 		m_viewTransform = new Transform3D(0.0f,2.0f,0.0f,1.0f,1.0f,1.0f,-5.0f,0.0f,0.0f);
 		m_viewMatrix = new Mat4();
-		m_viewMatrix->setToView(m_viewTransform);
 
 		m_logger->info("Setup matrices");
+
+		m_lookUpDown = new Range_lookUpDown(m_viewTransform);
+		m_inputSystem->addRange(InputSystem::BINDING::MOUSE_Y_AXIS, m_lookUpDown);
+		m_lookRightLeft = new Range_lookRightLeft(m_viewTransform);
+		m_inputSystem->addRange(InputSystem::BINDING::MOUSE_X_AXIS, m_lookRightLeft);
 	}
 
 	void TestWindow::update() {
@@ -133,6 +139,7 @@ namespace Fierce {
 
 		//########### 3D ##########
 		m_renderSystem->bindPipeline("Main3D");
+		m_viewMatrix->setToView(m_viewTransform);
 		m_renderSystem->setViewMatrix(m_viewMatrix->get());
 		//#########################
 
