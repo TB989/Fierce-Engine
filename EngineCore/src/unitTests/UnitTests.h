@@ -66,7 +66,6 @@ namespace Fierce {
 		Transform3D* m_transformPlane = nullptr;
 
 		GeometryLoader* m_loader = nullptr;
-
 	};
 
 }//end namespace
