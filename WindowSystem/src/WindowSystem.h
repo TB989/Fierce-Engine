@@ -14,6 +14,7 @@ namespace Fierce {
 	typedef void (*FunctionPtr)();
 
 	class LoggingSystem;
+	enum BINDING;
 
 	class WindowSystem :public System{
 	public:
@@ -42,7 +43,7 @@ namespace Fierce {
 		InputSystem* m_inputSystem=nullptr;
 
 	public:
-		static std::unordered_map<int, InputSystem::BINDING> m_bindings;
+		static std::unordered_map<int, BINDING> m_bindings;
 	};
 
 }//end namespace

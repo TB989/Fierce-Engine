@@ -2,6 +2,8 @@
 
 #include "src/LoggingSystem.h"
 
+#include "WinUser.h"
+
 namespace Fierce {
 
 	Window::Window(Logger* logger, LPCWSTR className, std::string title, WINDOW_MODE windowMode, int width, int height) {
@@ -58,12 +60,44 @@ namespace Fierce {
 		if (!m_windowHandle) {
 			m_logger->error("Failed to create window.");
 		}
+
+		activateRawInput();
+		//lockCursor();
 	}
 
 	void Window::destroyWindow() {
 		if (!DestroyWindow(m_windowHandle)) {
 			m_logger->error("Failed to destroy window.");
 		}
+	}
+
+	void Window::activateRawInput(){
+		RAWINPUTDEVICE rid;
+		rid.usUsagePage = 0x01;  // Generic Desktop Controls
+		rid.usUsage = 0x02;      // Mouse
+		rid.dwFlags = RIDEV_NOLEGACY; // Capture input even when not in focus
+		rid.hwndTarget = m_windowHandle;
+
+		if (!RegisterRawInputDevices(&rid, 1, sizeof(rid))) {
+			m_logger->error("Failed to register raw input device.");
+		}
+	}
+
+	void Window::deactivateRawInput(){
+		RAWINPUTDEVICE rid;
+		rid.usUsagePage = 0x01;  // Generic Desktop Controls
+		rid.usUsage = 0x02;      // Mouse
+		rid.dwFlags = RIDEV_REMOVE; // Capture input even when not in focus
+		rid.hwndTarget = NULL;
+
+		if (!RegisterRawInputDevices(&rid, 1, sizeof(rid))) {
+			m_logger->error("Failed to deregister raw input device.");
+		}
+	}
+
+	void Window::onResize(int width, int height){
+		m_width = width;
+		m_height = height;
 	}
 
 	void Window::pollEvents() {

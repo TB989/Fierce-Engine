@@ -4,8 +4,15 @@
 
 #include "src/actions/Action_StopEngine.h"
 #include "src/actions/State_Test.h"
+#include "src/actions/State_MoveForward.h"
+#include "src/actions/State_MoveBackward.h"
+#include "src/actions/Range_MoveForward.h"
+#include "src/actions/Range_MoveBackward.h"
 #include "src/actions/Range_lookUpDown.h"
 #include "src/actions/Range_lookRightLeft.h"
+#include "src/actions/Action_SwitchMouseMode.h"
+
+#include "src/gameplay/Player.h"
 
 namespace Fierce {
 
@@ -22,15 +29,23 @@ namespace Fierce {
 		~TestWindow();
 
 		void init() override;
-		void update() override;
+		void update(double delta) override;
 		void render() override;
 		void cleanUp() override;
 
 	private:
+		Player* m_player = nullptr;
+
 		Action* m_action = nullptr;
+		Action* m_actionSwitchMouseModeRaw = nullptr;
+		Action* m_actionSwitchMouseModeNormal = nullptr;
 		State* m_state = nullptr;
+		State* m_stateMoveForward=nullptr;
+		State* m_stateMoveBackward = nullptr;
 		Range* m_lookUpDown = nullptr;
 		Range* m_lookRightLeft = nullptr;
+		Range* m_rangeMoveForward = nullptr;
+		Range* m_rangeMoveBackward = nullptr;
 
 		Mat4* m_modelMatrix1=nullptr;
 		Mat4* m_modelMatrix2 = nullptr;

@@ -31,10 +31,23 @@ namespace Fierce {
 	}
 
 	void TestWindow::init() {
+		m_player = new Player();
+
 		m_action = new Action_StopEngine(this);
 		m_state = new State_Test(m_logger);
-		m_inputSystem->addAction(InputSystem::BINDING::KEY_ESC, m_action);
-		m_inputSystem->addState(InputSystem::BINDING::MOUSE_BUTTON_RIGHT,m_state);
+		m_stateMoveForward = new State_MoveForward(m_player);
+		m_stateMoveBackward = new State_MoveBackward(m_player);
+		m_inputSystem->addAction(BINDING::KEY_ESC, m_action,true);
+		m_inputSystem->addAction(BINDING::KEY_ESC, m_action, false);
+		m_inputSystem->addState(BINDING::MOUSE_BUTTON_RIGHT,m_state,true);
+		m_inputSystem->addState(BINDING::MOUSE_BUTTON_RIGHT, m_state, false);
+		m_inputSystem->addState(BINDING::KEY_W,m_stateMoveForward,true);
+		m_inputSystem->addState(BINDING::KEY_S, m_stateMoveBackward, true);
+
+		m_actionSwitchMouseModeRaw = new Action_SwitchMouseMode(m_inputSystem,m_window,true);
+		m_actionSwitchMouseModeNormal = new Action_SwitchMouseMode(m_inputSystem,m_window, false);
+		m_inputSystem->addAction(BINDING::KEY_TAB, m_actionSwitchMouseModeRaw, false);
+		m_inputSystem->addAction(BINDING::KEY_TAB, m_actionSwitchMouseModeNormal, true);
 		//###################################### MESHES ###############################################################################
 		std::vector<float> vertices;
 		std::vector<uint16_t> indices;
@@ -123,13 +136,18 @@ namespace Fierce {
 		m_logger->info("Setup matrices");
 
 		m_lookUpDown = new Range_lookUpDown(m_viewTransform);
-		m_inputSystem->addRange(InputSystem::BINDING::MOUSE_Y_AXIS, m_lookUpDown);
+		m_inputSystem->addRange(BINDING::MOUSE_Y_AXIS, m_lookUpDown,true);
 		m_lookRightLeft = new Range_lookRightLeft(m_viewTransform);
-		m_inputSystem->addRange(InputSystem::BINDING::MOUSE_X_AXIS, m_lookRightLeft);
+		m_inputSystem->addRange(BINDING::MOUSE_X_AXIS, m_lookRightLeft,true);
+
+		m_rangeMoveForward = new Range_MoveForward(m_viewTransform, m_player);
+		m_rangeMoveBackward = new Range_MoveBackward(m_viewTransform, m_player);
 	}
 
-	void TestWindow::update() {
-		
+	void TestWindow::update(double delta){
+		m_logger->info("Timer: %1.3f", delta);
+		m_rangeMoveForward->onRangeChanged(delta);
+		m_rangeMoveBackward->onRangeChanged(delta);
 	}
 
 	void TestWindow::render() {

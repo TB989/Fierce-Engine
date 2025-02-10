@@ -2,6 +2,8 @@
 
 #include "src/io/Parser.h"
 
+#include "src/Timer.h"
+
 #include "src/LoggingSystem.h"
 #include "src/InputSystem.h"
 #include "src/WindowSystem.h"
@@ -28,15 +30,17 @@ namespace Fierce {
 
 		m_running = true;
 		m_window->show();
+		m_timer->start();
 		while (m_running) {
 			m_windowSystem->updateSystem();
 			m_renderSystem->updateSystem();
 
 			coreUpdate();
-			update();
+			update(m_timer->getElapsedTime());
 			coreRender();
 			render();
 		}
+		m_timer->stop();
 
 		cleanUp();
 		coreCleanUp();
@@ -47,6 +51,8 @@ namespace Fierce {
 	}
 
 	void EngineCore::coreInit(){
+		m_timer = new Timer();
+
 		m_loggingSystem = new LoggingSystem("C:/Users/tmbal/Desktop/Fierce-Engine/logs/");
 		m_loggingSystem->initSystem();
 		m_logger = m_loggingSystem->createLogger("CORE", true, "ALL_LOGS");
@@ -81,6 +87,8 @@ namespace Fierce {
 		m_loggingSystem->deleteLogger(m_logger);
 		m_loggingSystem->cleanUpSystem();
 		delete m_loggingSystem;
+
+		delete m_timer;
 	}
 
 }

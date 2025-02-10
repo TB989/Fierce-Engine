@@ -1,11 +1,72 @@
 #include "InputSystem.h"
 
+#include "InputContext.h"
+
 #include "src/LoggingSystem.h"
 
 namespace Fierce {
 
     void InputSystem::initSystem(){
         m_logger = m_loggingSystem->createLogger("INP", true, "ALL_LOGS");
+
+        m_inputContext_raw = new InputContext(true);
+        m_inputContext_normal = new InputContext(false);
+
+        m_activeContext = m_inputContext_raw;
+    }
+
+    void InputSystem::addAction(BINDING binding, Action* action, bool rawInput) {
+        if (rawInput) {
+            m_inputContext_raw->addAction(binding,action);
+        }
+        else {
+            m_inputContext_normal->addAction(binding, action);
+        }
+    }
+
+    void InputSystem::removeAction(BINDING binding, bool rawInput) {
+        if (rawInput) {
+            m_inputContext_raw->removeAction(binding);
+        }
+        else {
+            m_inputContext_normal->removeAction(binding);
+        }
+    }
+
+    void InputSystem::addState(BINDING binding, State* state, bool rawInput) {
+        if (rawInput) {
+            m_inputContext_raw->addState(binding, state);
+        }
+        else {
+            m_inputContext_normal->addState(binding, state);
+        }
+    }
+
+    void InputSystem::removeState(BINDING binding, bool rawInput) {
+        if (rawInput) {
+            m_inputContext_raw->removeState(binding);
+        }
+        else {
+            m_inputContext_normal->removeState(binding);
+        }
+    }
+
+    void InputSystem::addRange(BINDING binding, Range* range, bool rawInput) {
+        if (rawInput) {
+            m_inputContext_raw->addRange(binding, range);
+        }
+        else {
+            m_inputContext_normal->addRange(binding, range);
+        }
+    }
+
+    void InputSystem::removeRange(BINDING binding, bool rawInput) {
+        if (rawInput) {
+            m_inputContext_raw->removeRange(binding);
+        }
+        else {
+            m_inputContext_normal->removeRange(binding);
+        }
     }
 
     void InputSystem::updateSystem(){
@@ -13,127 +74,21 @@ namespace Fierce {
     }
 
     void InputSystem::cleanUpSystem(){
+        delete m_inputContext_raw;
+        delete m_inputContext_normal;
+    }
 
+    void InputSystem::switchMouseMode(bool rawMouse){
+        if (rawMouse) {
+            m_activeContext = m_inputContext_raw;
+        }
+        else {
+            m_activeContext = m_inputContext_normal;
+        }
     }
 
     InputSystem::InputSystem(LoggingSystem* loggingSystem){
         m_loggingSystem = loggingSystem;
     }
 
-    void InputSystem::addAction(BINDING binding, Action* action){
-        m_actions.insert({binding,action});
-    }
-
-    void InputSystem::removeAction(BINDING binding){
-        m_actions.erase(binding);
-    }
-
-    void InputSystem::addState(BINDING binding, State* state){
-        m_states.insert({binding,state});
-    }
-
-    void InputSystem::removeState(BINDING binding){
-        m_states.erase(binding);
-    }
-
-    void InputSystem::addRange(BINDING binding, Range* range){
-        m_ranges.insert({binding,range});
-    }
-
-    void InputSystem::removeRange(BINDING binding){
-        m_ranges.erase(binding);
-    }
-
-    void InputSystem::onKeyDown(BINDING binding){
-        auto it = m_states.find(binding);
-        if (it != m_states.end()) {
-            if (it->second != nullptr) {
-                it->second->onStateChanged(true);
-            }
-        }
-
-        auto it2 = m_actions.find(binding);
-        if (it2 != m_actions.end()) {
-            if (it2->second != nullptr) {
-                it2->second->onAction();
-            }
-        }
-    }
-
-    void InputSystem::onKeyUp(BINDING binding){
-        auto it = m_states.find(binding);
-        if (it != m_states.end()) {
-            if (it->second != nullptr) {
-                it->second->onStateChanged(false);
-            }
-        }
-    }
-
-    void InputSystem::onMouseMoveX(BINDING binding, int value){
-        if (first) {
-            first = false;
-            m_mouseX = (float)value;
-            return;
-        }
-
-        float delta = (float)value - m_mouseX;
-        m_mouseX = (float)value;
-        auto it = m_ranges.find(MOUSE_X_AXIS);
-        if (it != m_ranges.end()) {
-            if (it->second != nullptr) {
-                it->second->onRangeChanged(delta);
-            }
-        }
-    }
-
-    void InputSystem::onMouseMoveY(BINDING binding, int value) {
-        if (first) {
-            first = false;
-            m_mouseY = (float)value;
-            return;
-        }
-
-        float delta = (float)value - m_mouseY;
-        m_mouseY = (float)value;
-        auto it = m_ranges.find(MOUSE_Y_AXIS);
-        if (it != m_ranges.end()) {
-            if (it->second != nullptr) {
-                it->second->onRangeChanged(delta);
-            }
-        }
-    }
-
-    void InputSystem::onMouseWheelMove(BINDING binding, int value){
-        auto it = m_ranges.find(binding);
-        if (it!=m_ranges.end()) {
-            if (it->second != nullptr) {
-                it->second->onRangeChanged((float)value);
-            }
-        }
-    }
-
-    void InputSystem::onMouseKeyDown(BINDING binding){
-        auto it = m_states.find(binding);
-        if (it != m_states.end()) {
-            if (it->second != nullptr) {
-                it->second->onStateChanged(true);
-            }
-        }
-
-        auto it2 = m_actions.find(binding);
-        if (it2!=m_actions.end()) {
-            if (it2->second != nullptr) {
-                it2->second->onAction();
-            }
-        }
-    }
-
-    void InputSystem::onMouseKeyUp(BINDING binding){
-        auto it = m_states.find(binding);
-        if (it!=m_states.end()) {
-            if (it->second != nullptr) {
-                it->second->onStateChanged(false);
-            }
-        }
-    }
 }//end namespace

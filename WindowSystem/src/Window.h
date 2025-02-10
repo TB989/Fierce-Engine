@@ -22,9 +22,18 @@ namespace Fierce{
 
 		HWND getHandle() { return m_windowHandle; }
 
+		int getWidth() { return m_width; }
+		int getHeight() { return m_height; }
+
+		void onResize(int width,int height);
+
 	private:
 		void createWindow(LPCWSTR className, std::string title, WINDOW_MODE windowMode, int width, int height);
 		void destroyWindow();
+
+	public:
+		void activateRawInput();
+		void deactivateRawInput();
 
 	private:
 		HWND m_windowHandle = nullptr;

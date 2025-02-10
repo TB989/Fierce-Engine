@@ -7,6 +7,7 @@ IncludeDir["VulkanRenderer"] = "%{wks.location}/VulkanRenderer"
 IncludeDir["MathLibrary"] = "%{wks.location}/MathLibrary"
 IncludeDir["GeometryLibrary"] = "%{wks.location}/GeometryLibrary"
 IncludeDir["InputSystem"] = "%{wks.location}/InputSystem"
+IncludeDir["Timer"] = "%{wks.location}/Timer"
 
 LibraryDir = {}
 LibraryDir["Common"] = "%{wks.location}/bin"
@@ -20,3 +21,4 @@ Library["VulkanRenderer"] = "VulkanRenderer.lib"
 Library["MathLibrary"] = "MathLibrary.lib"
 Library["GeometryLibrary"] = "GeometryLibrary.lib"
 Library["InputSystem"] = "InputSystem.lib"
+Library["Timer"] = "Timer.lib"

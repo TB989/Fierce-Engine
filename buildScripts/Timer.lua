@@ -1,5 +1,5 @@
-project "EngineCore"
-	kind "ConsoleApp"
+project "Timer"
+	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
 	staticruntime "off"
@@ -10,44 +10,30 @@ project "EngineCore"
 
 	defines
 	{
-		
+		"WIN32_LEAN_AND_MEAN"
 	}
 
 	files
 	{
 		"%{wks.location}/%{prj.name}/src/**.h",
-		"%{wks.location}/%{prj.name}/src/**.cpp",
-		"%{wks.location}/%{prj.name}/**.ini"
+		"%{wks.location}/%{prj.name}/src/**.cpp"
 	}
 
 	includedirs
 	{
 		"%{wks.location}/%{prj.name}",
 		"%{IncludeDir.Logger}",
-		"%{IncludeDir.Utils}",
-		"%{IncludeDir.WindowSystem}",
-		"%{IncludeDir.Vulkan}",
-		"%{IncludeDir.VulkanRenderer}",
-		"%{IncludeDir.MathLibrary}",
-		"%{IncludeDir.GeometryLibrary}",
-		"%{IncludeDir.InputSystem}",
-		"%{IncludeDir.Timer}"
+		"%{IncludeDir.Utils}"
 	}
 
-	libdirs 
+	libdirs
 	{
 		"%{LibraryDir.Common}"
 	}
 
 	links
 	{
-		"%{Library.Logger}",
-		"%{Library.WindowSystem}",
-		"%{Library.VulkanRenderer}",
-		"%{Library.MathLibrary}",
-		"%{Library.GeometryLibrary}",
-		"%{Library.InputSystem}",
-		"%{Library.Timer}"
+		"%{Library.Logger}"
 	}
 
 	filter "system:windows"

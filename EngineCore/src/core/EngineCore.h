@@ -10,6 +10,7 @@ namespace Fierce {
 	class Logger;
 	class InputSystem;
 	class WindowSystem;
+	class Timer;
 
 	class EngineCore {
 	public:
@@ -21,7 +22,7 @@ namespace Fierce {
 
 	public:
 		virtual void init()=0;
-		virtual void update()=0;
+		virtual void update(double delta) = 0;
 		virtual void render()=0;
 		virtual void cleanUp()=0;
 
@@ -38,6 +39,8 @@ namespace Fierce {
 		static bool m_running;
 
 	protected:
+		Timer* m_timer = nullptr;
+
 		LoggingSystem* m_loggingSystem = nullptr;
 		Logger* m_logger = nullptr;
 
