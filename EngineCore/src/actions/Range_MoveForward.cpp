@@ -6,9 +6,10 @@
 #include <math.h>
 
 namespace Fierce {
-	Range_MoveForward::Range_MoveForward(Transform3D* viewTransform, Player* player) {
+	Range_MoveForward::Range_MoveForward(Transform3D* viewTransform, Player* player,float speed) {
 		m_viewTransform = viewTransform;
 		m_player = player;
+		m_speed = speed;
 	}
 
 	void Range_MoveForward::onRangeChanged(float delta) {
@@ -21,7 +22,7 @@ namespace Fierce {
 
 		float s = sin(M_PI / 180.0f * angle);
 		float c = cos(M_PI / 180.0f * angle);
-		position->setX(position->getX() - s * 0.1f);
-		position->setZ(position->getZ() + c * 0.1f);
+		position->setX(position->getX() - s * m_speed);
+		position->setZ(position->getZ() + c * m_speed);
 	}
 }

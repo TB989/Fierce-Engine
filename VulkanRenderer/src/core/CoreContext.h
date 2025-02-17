@@ -4,21 +4,21 @@
 
 #include <windows.h>
 
-#include "src/manager/VK_Manager.h"
-
 #include "src/vulkanObjects/VK_Device.h"
+#include "src/vulkanObjects/VK_Swapchain.h"
 
 namespace Fierce {
 
 	class VK_Instance;
 	class VK_Surface;
-	class VK_Swapchain;
+	class VK_Framebuffer;
+	class VK_Renderpass;
 
 	class VK_CommandBuffer;
 	class VK_Semaphore;
 	class VK_Fence;
 
-	class VK_Framebuffers;
+	class VK_Framebuffer;
 	class VK_Renderpass;
 
 	class CoreContext {
@@ -28,13 +28,16 @@ namespace Fierce {
 
 		VK_Device* getDevice() { return m_device; }
 		VK_CommandBuffer* getActiveCommandBuffer() { return framesData[currentFrame].commandBuffer; }
+		VK_Framebuffer* getActiveFramebuffer() { return m_framebuffers[imageIndex]; }
+		VK_Renderpass* getRenderpass() { return m_renderpass; }
 		uint32_t getActiveImageIndex() { return imageIndex; }
 		int getCurrentFrame() { return currentFrame; }
 		float getSwapchainWidth() { return static_cast<float>(m_device->getSurfaceData()->swapchainWidth); }
 		float getSwapchainHeight() { return static_cast<float>(m_device->getSurfaceData()->swapchainHeight); }
-		void linkFramebuffersManager(VK_Manager<VK_Framebuffers*>* manager1, VK_Manager<VK_Renderpass*>* manager2) { m_managerFramebuffers = manager1; m_managerRenderpass = manager2;}
 		VK_Swapchain* getSwapchain() { return m_swapchain; }
 		int getNumFramesInFlight() { return NUM_FRAMES_IN_FLIGHT; }
+		int getNumFramebuffers() { return m_swapchain->getNumImages(); }
+		VK_Framebuffer* getFramebuffer(int index) { return m_framebuffers[index]; }
 
 		void beginFrame();
 		void endFrame();
@@ -61,12 +64,11 @@ namespace Fierce {
 		VK_Surface* m_surface = nullptr;
 		VK_Device* m_device = nullptr;
 		VK_Swapchain* m_swapchain = nullptr;
+		VK_Renderpass* m_renderpass = nullptr;
+		std::vector<VK_Framebuffer*> m_framebuffers;
 
 		uint32_t imageIndex = 0;
 		int currentFrame = 0;
 		FrameData framesData[NUM_FRAMES_IN_FLIGHT];
-
-		VK_Manager<VK_Framebuffers*>* m_managerFramebuffers = nullptr;
-		VK_Manager<VK_Renderpass*>* m_managerRenderpass = nullptr;
 	};
 }//end namespace

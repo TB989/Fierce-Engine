@@ -8,10 +8,11 @@
 #include "src/vulkanObjects/VK_Renderpass.h"
 #include "src/vulkanObjects/VK_Shader.h"
 #include "src/vulkanObjects/VK_Pipeline.h"
-#include "src/vulkanObjects/VK_Framebuffers.h"
+#include "src/vulkanObjects/VK_Framebuffer.h"
 #include "src/vulkanObjects/VK_CommandBuffer.h"
 #include "src/vulkanObjects/VK_DescriptorPool.h"
 #include "src/vulkanObjects/VK_UBO.h"
+#include "src/vulkanObjects/VK_Image.h"
 #include "src/vulkanObjects/VK_ImageView.h"
 #include "src/vulkanObjects/VK_Sampler.h"
 
@@ -37,13 +38,9 @@ namespace Fierce {
 	void RenderSystem::initSystem(){
 		LOGGER = m_loggingSystem->createLogger("VK",true,"VULKAN");
 
-		//Create contexts
-		m_coreContext = new CoreContext(m_windowHandle);
-		m_uploadContext = new UploadContext(m_coreContext->getDevice());
-
 		//Create managers
-		m_renderpasses= new VK_Manager<VK_Renderpass*>();
-		m_framebuffers = new VK_Manager<VK_Framebuffers*>();
+		//m_renderpasses = new VK_Manager<VK_Renderpass*>();
+		//m_framebuffers = new VK_Manager<VK_Framebuffers*>();
 		m_descriptorPools = new VK_Manager<VK_DescriptorPool*>();
 		m_descriptorSetLayouts = new VK_Manager<VK_DescriptorSetLayout*>();
 		m_shaders = new VK_Manager<VK_Shader*>();
@@ -51,17 +48,22 @@ namespace Fierce {
 		m_ubosViewProjection = new VK_Manager<VK_UBO*>();
 		m_ubosModel = new VK_Manager<VK_UBO*>();
 
+		//Create contexts
+		m_coreContext = new CoreContext(m_windowHandle);
+		m_uploadContext = new UploadContext(m_coreContext->getDevice());
+
+		for (int i = 0;i<m_coreContext->getNumFramebuffers();i++) {
+			m_uploadContext->transitionImageLayout(m_coreContext->getFramebuffer(i)->getDepthBuffer()->getId(), VK_IMAGE_LAYOUT_UNDEFINED,VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+		}
+
 		//Create engine ressources
-		createRenderpasses();
-		createFramebuffers();
+		//createRenderpasses();
+		//createFramebuffers();
 		createDescriptorPools();
 		createDescriptorSetLayouts();
 		createShaders();
 		createPipelines();
 		createUbos();
-
-		//TODO: Code this better
-		m_coreContext->linkFramebuffersManager(m_framebuffers,m_renderpasses);
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	}
 
@@ -84,8 +86,8 @@ namespace Fierce {
 		delete m_shaders;
 		delete m_descriptorSetLayouts;
 		delete m_descriptorPools;
-		delete m_framebuffers;
-		delete m_renderpasses;
+		//delete m_framebuffers;
+		//delete m_renderpasses;
 
 		//Delete contexts
 		delete m_uploadContext;
@@ -155,7 +157,12 @@ namespace Fierce {
 
 		VK_CommandBuffer* commandBuffer = m_coreContext->getActiveCommandBuffer();
 		commandBuffer->startRecording();
-		commandBuffer->beginRenderpass(m_renderpasses->get("Main")->getId(), m_framebuffers->get("Main")->getFramebuffer(m_coreContext->getActiveImageIndex()));
+		if (m_coreContext->getRenderpass()->hasDepthBuffer()) {
+			commandBuffer->beginRenderpass(m_coreContext->getRenderpass()->getId(), m_coreContext->getActiveFramebuffer()->getId(),true);
+		}
+		else {
+			commandBuffer->beginRenderpass(m_coreContext->getRenderpass()->getId(), m_coreContext->getActiveFramebuffer()->getId(),false);
+		}
 		commandBuffer->setViewport(m_coreContext->getSwapchainWidth(), m_coreContext->getSwapchainHeight());
 		commandBuffer->setScissor(m_coreContext->getSwapchainWidth(), m_coreContext->getSwapchainHeight());
 		commandBuffer->bindDescriptorSet(m_pipelines->get("Main"), m_ubosViewProjection->get(m_coreContext->getCurrentFrame())->getDescriptorSet(), 0);
@@ -212,21 +219,21 @@ namespace Fierce {
 
 	void RenderSystem::createRenderpasses(){
 		RenderSystem::LOGGER->info("##### Creating renderpasses #####");
-		VK_Renderpass* renderpass = nullptr;
+		/**VK_Renderpass* renderpass = nullptr;
 
 		renderpass= new VK_Renderpass(m_coreContext->getDevice());
 		renderpass->create();
-		m_renderpasses->add("Main",renderpass);
+		m_renderpasses->add("Main",renderpass);*/
 		RenderSystem::LOGGER->info("##### Done creating renderpasses #####");
 	}
 
 	void RenderSystem::createFramebuffers(){
 		RenderSystem::LOGGER->info("##### Creating framebuffers #####");
-		VK_Framebuffers* framebuffers=nullptr;
+		//VK_Framebuffers* framebuffers=nullptr;
 
-		framebuffers = new VK_Framebuffers(m_coreContext->getDevice(), m_renderpasses->get("Main")->getId(), m_coreContext->getSwapchain());
+		/**framebuffers = new VK_Framebuffers(m_coreContext->getDevice(), m_renderpasses->get("Main")->getId(), m_coreContext->getSwapchain());
 		framebuffers->create();
-		m_framebuffers->add("Main",framebuffers);
+		m_framebuffers->add("Main",framebuffers);*/
 		RenderSystem::LOGGER->info("##### Done creating framebuffers #####");
 	}
 
@@ -306,7 +313,7 @@ namespace Fierce {
 		RenderSystem::LOGGER->info("##### Creating pipelines #####");
 		VK_Pipeline* pipeline = nullptr;
 
-		pipeline = new VK_Pipeline(m_coreContext->getDevice(), m_renderpasses->get("Main")->getId());
+		pipeline = new VK_Pipeline(m_coreContext->getDevice(), m_coreContext->getRenderpass()->getId());
 		pipeline->addVertexShader(m_shaders->get("Shader_Flat_Color_2D_vert.spv")->getId());
 		pipeline->addFragmentShader(m_shaders->get("Shader_Flat_Color_2D_frag.spv")->getId());
 		pipeline->addVertexInput(0, VK_FORMAT_R32G32_SFLOAT);
@@ -320,13 +327,14 @@ namespace Fierce {
 		pipeline->create();
 		m_pipelines->add("Main",pipeline);
 
-		pipeline = new VK_Pipeline(m_coreContext->getDevice(), m_renderpasses->get("Main")->getId());
+		pipeline = new VK_Pipeline(m_coreContext->getDevice(), m_coreContext->getRenderpass()->getId());
 		pipeline->addVertexShader(m_shaders->get("Shader_Flat_Color_3D_vert.spv")->getId());
 		pipeline->addFragmentShader(m_shaders->get("Shader_Flat_Color_3D_frag.spv")->getId());
 		pipeline->addVertexInput(0, VK_FORMAT_R32G32B32_SFLOAT);
 		pipeline->addDescriptorSetLayout(m_descriptorSetLayouts->get("Projection")->getId());
 		pipeline->addDescriptorSetLayout(m_descriptorSetLayouts->get("Model")->getId());
 		pipeline->addPushConstantRange(VK_SHADER_STAGE_VERTEX_BIT, 4 * sizeof(float) + sizeof(uint32_t), 0);
+		pipeline->addDepthTest();
 		pipeline->create();
 		m_pipelines->add("Main3D", pipeline);
 

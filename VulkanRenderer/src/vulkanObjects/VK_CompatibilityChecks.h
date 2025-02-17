@@ -14,6 +14,7 @@ namespace Fierce {
 	};
 
 	struct DeviceData {
+		VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 		VkPhysicalDeviceProperties deviceProperties = {};
 		VkPhysicalDeviceFeatures supportedDeviceFeatures = {};
 		VkPhysicalDeviceFeatures enabledDeviceFeatures = {};
@@ -33,6 +34,7 @@ namespace Fierce {
 		std::vector<VkSurfaceFormatKHR> surfaceFormats;
 		std::vector<VkPresentModeKHR> presentModes;
 
+		VkFormat depthFormat = {};
 		VkSurfaceFormatKHR swapchainFormat = {};
 		VkPresentModeKHR swapchainPresentMode = {};
 		uint32_t swapchainWidth = 0;
@@ -93,6 +95,18 @@ namespace Fierce {
 	class VK_Check_Device_Surface_Format :public VK_CompatibilityCheck_Device {
 	public:
 		VK_Check_Device_Surface_Format(std::vector<VkFormat> formats) {
+			m_formats = formats;
+		};
+
+		bool check(ExtensionValidationLayerData* data1, DeviceData* data2, SurfaceData* data3);
+
+	private:
+		std::vector<VkFormat> m_formats;
+	};
+
+	class VK_Check_Device_Depth_Format :public VK_CompatibilityCheck_Device {
+	public:
+		VK_Check_Device_Depth_Format(std::vector<VkFormat> formats) {
 			m_formats = formats;
 		};
 

@@ -11,6 +11,9 @@ namespace Fierce {
 		m_device = device;
 		m_commandPool = commandPool;
 
+		clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
+		clearValues[1].depthStencil = { 1.0f, 0 };
+
 		m_allocateInfo={};
 		m_allocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 		m_allocateInfo.pNext = nullptr;
@@ -29,8 +32,6 @@ namespace Fierce {
 		m_renderPassInfo.pNext = nullptr;
 		m_renderPassInfo.renderArea.offset = { 0, 0 };
 		m_renderPassInfo.renderArea.extent = { m_device->getSurfaceData()->swapchainWidth,  m_device->getSurfaceData()->swapchainHeight };
-		m_renderPassInfo.clearValueCount = 1;
-		m_renderPassInfo.pClearValues = &m_clearColor;
 
 		m_bufferCopy = {};
 		m_bufferCopy.srcOffset = 0;
@@ -51,7 +52,6 @@ namespace Fierce {
 		m_imageMemoryBarrier.pNext = nullptr;
 		m_imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 		m_imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		m_imageMemoryBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		m_imageMemoryBarrier.subresourceRange.baseMipLevel = 0;
 		m_imageMemoryBarrier.subresourceRange.levelCount = 1;
 		m_imageMemoryBarrier.subresourceRange.baseArrayLayer = 0;
@@ -90,7 +90,16 @@ namespace Fierce {
 		}
 	}
 
-	void VK_CommandBuffer::beginRenderpass(VkRenderPass renderpass,VkFramebuffer framebuffer){
+	void VK_CommandBuffer::beginRenderpass(VkRenderPass renderpass,VkFramebuffer framebuffer,bool hasDepthBuffer){
+		if (hasDepthBuffer) {
+			m_renderPassInfo.clearValueCount = 2;
+			m_renderPassInfo.pClearValues = clearValues.data();
+		}
+		else {
+			m_renderPassInfo.clearValueCount = 1;
+			m_renderPassInfo.pClearValues = &m_clearColor;
+		}
+
 		m_renderPassInfo.renderPass = renderpass;
 		m_renderPassInfo.framebuffer = framebuffer;
 		
@@ -177,6 +186,8 @@ namespace Fierce {
 
 			sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 			destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+
+			m_imageMemoryBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		}
 		else if(oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL){
 			m_imageMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
@@ -184,6 +195,17 @@ namespace Fierce {
 
 			sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 			destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+
+			m_imageMemoryBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		}
+		else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) {
+			m_imageMemoryBarrier.srcAccessMask = 0;
+			m_imageMemoryBarrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+
+			sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+			destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+
+			m_imageMemoryBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
 		}
 		else {
 			RenderSystem::LOGGER->error("Defined layout transition is not implemented.");

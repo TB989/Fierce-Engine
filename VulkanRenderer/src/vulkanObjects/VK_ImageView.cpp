@@ -3,7 +3,7 @@
 #include "src/renderSystem/RenderSystem.h"
 
 namespace Fierce {
-	VK_ImageView::VK_ImageView(VkDevice device, VkImage image){
+	VK_ImageView::VK_ImageView(VkDevice device, VkImage image,VkFormat format,VkImageAspectFlags aspectFlags){
 		m_device = device;
 		m_image = image;
 
@@ -13,8 +13,9 @@ namespace Fierce {
 		m_createInfo.flags = 0;
 		m_createInfo.image = m_image;
 		m_createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-		m_createInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
-		m_createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		m_createInfo.format = format;
+		//m_createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		m_createInfo.subresourceRange.aspectMask = aspectFlags;
 		m_createInfo.subresourceRange.baseMipLevel = 0;
 		m_createInfo.subresourceRange.levelCount = 1;
 		m_createInfo.subresourceRange.baseArrayLayer = 0;

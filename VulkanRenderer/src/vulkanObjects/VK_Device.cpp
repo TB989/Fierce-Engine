@@ -53,6 +53,7 @@ namespace Fierce {
             SurfaceData m_surfaceData= {};
             ExtensionValidationLayerData m_extensionLayerData = {};
 
+            m_deviceData.physicalDevice = m_supportedPhysicalDevices[i];
             VK_Helper_Extensions_ValidationLayers::getExtensions(m_supportedPhysicalDevices[i], &m_extensionLayerData.supportedExtensions);
             VK_Helper_Extensions_ValidationLayers::getValidationLayers(m_supportedPhysicalDevices[i], &m_extensionLayerData.supportedValidationLayers);
             VK_Helper_Device::getSurfaceData(m_supportedPhysicalDevices[i], m_surface, &m_surfaceData);

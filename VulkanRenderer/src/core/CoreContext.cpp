@@ -2,13 +2,12 @@
 
 #include "src/vulkanObjects/VK_Instance.h"
 #include "src/vulkanObjects/VK_Surface.h"
-#include "src/vulkanObjects/VK_Swapchain.h"
 
 #include "src/vulkanObjects/VK_CommandBuffer.h"
 #include "src/vulkanObjects/VK_Semaphore.h"
 #include "src/vulkanObjects/VK_Fence.h"
 
-#include "src/vulkanObjects/VK_Framebuffers.h"
+#include "src/vulkanObjects/VK_Framebuffer.h"
 #include "src/vulkanObjects/VK_Renderpass.h"
 
 #include "src/renderSystem/RenderSystem.h"
@@ -27,6 +26,11 @@ namespace Fierce {
 			m_device->releaseCommandBuffer(framesData[i].commandBuffer);
 		}
 
+		for (VK_Framebuffer* framebuffer:m_framebuffers) {
+			delete framebuffer;
+		}
+
+		delete m_renderpass;
 		delete m_swapchain;
 		delete m_device;
 		delete m_surface;
@@ -106,15 +110,28 @@ namespace Fierce {
 		m_device->addCheck(new VK_Check_Device_ValidationLayers(false, { "VK_LAYER_KHRONOS_validation" }));
 		m_device->addCheck(new VK_Check_Device_General());
 		m_device->addCheck(new VK_Check_Device_Queues());
+		m_device->addCheck(new VK_Check_Device_Depth_Format({ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT }));
 		m_device->addCheck(new VK_Check_Device_Surface_Format({ VK_FORMAT_B8G8R8A8_SRGB }));
 		m_device->addCheck(new VK_Check_Device_Surface_PresentMode({ VK_PRESENT_MODE_MAILBOX_KHR, VK_PRESENT_MODE_FIFO_KHR }));
 		m_device->addCheck(new VK_Check_Sampler_Anisotropy());
-		//m_device->printSupportedData(false, false, true, false, false, false, true, false);
+		//m_device->printSupportedData(true, true, true, true, true, true, true, true);
 		m_device->create();
 		//m_device->printActiveData(false,false,true,false,false,false,true,false);
 
 		m_swapchain = new VK_Swapchain(m_device, m_surface->getId(), VK_NULL_HANDLE);
 		m_swapchain->create();
+
+		m_renderpass = new VK_Renderpass(m_device);
+		m_renderpass->addDepthBuffer();
+		m_renderpass->create();
+
+		for (int i = 0;i<m_swapchain->getNumImages();i++) {
+			VK_Framebuffer* framebuffer=new VK_Framebuffer(m_device, m_renderpass->getId());
+			framebuffer->addAttachment(m_swapchain->getImage(i));
+			framebuffer->addDepthBuffer();
+			framebuffer->create();
+			m_framebuffers.push_back(framebuffer);
+		}
 	}
 
 	void CoreContext::createPerFrameRessources() {
@@ -144,7 +161,10 @@ namespace Fierce {
 
 		//TODO: Update projection matrices
 
-		delete m_managerFramebuffers->get("Main");
+		for (VK_Framebuffer* framebuffer:m_framebuffers) {
+			delete framebuffer;
+		}
+		m_framebuffers.empty();
 
 		VK_Swapchain* oldSwapchain = m_swapchain;
 		VK_Swapchain* newSwapchain = new VK_Swapchain(m_device, m_surface->getId(), oldSwapchain->getId());
@@ -152,10 +172,13 @@ namespace Fierce {
 		m_swapchain = newSwapchain;
 		delete oldSwapchain;
 
-		VK_Framebuffers* framebuffers = nullptr;
-		framebuffers = new VK_Framebuffers(m_device, m_managerRenderpass->get("Main")->getId(), m_swapchain);
-		framebuffers->create();
-		m_managerFramebuffers->add("Main", framebuffers);
+		VK_Framebuffer* framebuffer = nullptr;
+		for (int i = 0;i<m_swapchain->getNumImages();i++) {
+			framebuffer = new VK_Framebuffer(m_device, m_renderpass->getId());
+			framebuffer->addAttachment(m_swapchain->getImage(i));
+			framebuffer->create();
+			m_framebuffers.push_back(framebuffer);
+		}
 
 		for (int i = 0; i < NUM_FRAMES_IN_FLIGHT; i++) {
 			framesData[i].commandBuffer->updateRenderArea();

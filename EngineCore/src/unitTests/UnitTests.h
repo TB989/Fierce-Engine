@@ -3,7 +3,6 @@
 #include "src/core/EngineCore.h"
 
 #include "src/actions/Action_StopEngine.h"
-#include "src/actions/State_Test.h"
 #include "src/actions/State_MoveForward.h"
 #include "src/actions/State_MoveBackward.h"
 #include "src/actions/Range_MoveForward.h"
@@ -39,7 +38,6 @@ namespace Fierce {
 		Action* m_action = nullptr;
 		Action* m_actionSwitchMouseModeRaw = nullptr;
 		Action* m_actionSwitchMouseModeNormal = nullptr;
-		State* m_state = nullptr;
 		State* m_stateMoveForward=nullptr;
 		State* m_stateMoveBackward = nullptr;
 		Range* m_lookUpDown = nullptr;
@@ -52,6 +50,11 @@ namespace Fierce {
 		Mat4* m_modelMatrix3 = nullptr;
 		Mat4* m_modelMatrix4 = nullptr;
 		Mat4* m_modelMatrixPlane = nullptr;
+		Mat4* m_modelMatrixCube = nullptr;
+		Mat4* m_modelMatrixCylinder = nullptr;
+		Mat4* m_modelMatrixHollowCylinder = nullptr;
+		Mat4* m_modelMatrixCone = nullptr;
+		Mat4* m_modelMatrixSphere = nullptr;
 		Mat4* m_orthographicProjectionMatrix = nullptr;
 		Mat4* m_perspectiveProjectionMatrix = nullptr;
 		Mat4* m_viewMatrix=nullptr;
@@ -62,6 +65,11 @@ namespace Fierce {
 		int m_meshId_triangle = 0;
 
 		int m_meshId_plane = 0;
+		int m_meshId_Cube = 0;
+		int m_meshId_Cylinder = 0;
+		int m_meshId_HollowCylinder = 0;
+		int m_meshId_Cone = 0;
+		int m_meshId_Sphere = 0;
 
 		int m_textureId = 0;
 
@@ -69,6 +77,8 @@ namespace Fierce {
 		Color4f* m_color2 = nullptr;
 		Color4f* m_color3 = nullptr;
 		Color4f* m_color4 = nullptr;
+		Color4f* m_color5 = nullptr;
+		Color4f* m_color6 = nullptr;
 
 		Color4f* m_colorPlane = nullptr;
 
@@ -79,6 +89,11 @@ namespace Fierce {
 		Transform2D* m_transform4 = nullptr;
 
 		Transform3D* m_transformPlane = nullptr;
+		Transform3D* m_transformCube = nullptr;
+		Transform3D* m_transformCylinder = nullptr;
+		Transform3D* m_transformHollowCylinder = nullptr;
+		Transform3D* m_transformCone = nullptr;
+		Transform3D* m_transformSphere = nullptr;
 
 		GeometryLoader* m_loader = nullptr;
 	};

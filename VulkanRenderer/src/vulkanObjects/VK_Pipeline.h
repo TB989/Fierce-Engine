@@ -25,6 +25,8 @@ namespace Fierce {
 		void addDescriptorSetLayout(VkDescriptorSetLayout descriptorSetLayout);
 		void addPushConstantRange(VkShaderStageFlags shaderStages, uint32_t size, uint32_t offset);
 
+		void addDepthTest();
+
 	private:
 		//Create info
 		VkGraphicsPipelineCreateInfo m_createInfo={};
@@ -43,6 +45,7 @@ namespace Fierce {
 		VkPipelineColorBlendStateCreateInfo m_colorBlending={};
 		std::vector<VkDynamicState> m_dynamicStates;
 		VkPipelineDynamicStateCreateInfo m_dynamicState={};
+		VkPipelineDepthStencilStateCreateInfo m_depthStencil{};
 
 		//Mesh
 		VkVertexInputBindingDescription m_inputBindingDescription={};

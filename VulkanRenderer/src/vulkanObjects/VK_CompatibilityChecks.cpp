@@ -136,6 +136,22 @@ namespace Fierce {
         return false;
     }
 
+    bool VK_Check_Device_Depth_Format::check(ExtensionValidationLayerData* data1, DeviceData* data2, SurfaceData* data3){
+        for (const auto& desiredFormat : m_formats) {
+            VkFormatProperties properties;
+            vkGetPhysicalDeviceFormatProperties(data2->physicalDevice, desiredFormat, &properties);
+
+            if (properties.optimalTilingFeatures & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT) {
+                data3->depthFormat = desiredFormat;
+                RenderSystem::LOGGER->info("Depth check passed for device %s.", data2->deviceProperties.deviceName);
+                return true;
+            }
+        }
+
+        RenderSystem::LOGGER->warn("Depth check failed for device %s.", data2->deviceProperties.deviceName);
+        return false;
+    }
+
     bool VK_Check_Device_Surface_PresentMode::check(ExtensionValidationLayerData* data1, DeviceData* data2, SurfaceData* data3) {
         for (const auto& desiredMode : m_presentModes) {
             for (const auto& availableMode : data3->presentModes) {

@@ -87,8 +87,8 @@ namespace Fierce {
 		UploadContext* m_uploadContext=nullptr;
 
 		//Managers
-		VK_Manager<VK_Renderpass*>* m_renderpasses=nullptr;
-		VK_Manager<VK_Framebuffers*>* m_framebuffers = nullptr;
+		//VK_Manager<VK_Renderpass*>* m_renderpasses=nullptr;
+		//VK_Manager<VK_Framebuffers*>* m_framebuffers = nullptr;
 		VK_Manager<VK_DescriptorPool*>* m_descriptorPools = nullptr;
 		VK_Manager<VK_DescriptorSetLayout*>* m_descriptorSetLayouts = nullptr;
 		VK_Manager<VK_Shader*>* m_shaders=nullptr;

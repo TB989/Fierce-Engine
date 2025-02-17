@@ -37,6 +37,7 @@ namespace Fierce{
 
 	private:
 		HWND m_windowHandle = nullptr;
+		bool m_isFullscreen = false;
 		int m_width;
 		int m_height;
 

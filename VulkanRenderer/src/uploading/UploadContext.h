@@ -24,6 +24,8 @@ namespace Fierce {
 		void copyMesh(VK_Mesh* mesh);
 		void copyTexture(VK_Texture* texture);
 
+		void transitionImageLayout(VkImage image,VkImageLayout oldLayout,VkImageLayout newLayout);
+
 		void startAndWaitForUpload();
 
 	private:

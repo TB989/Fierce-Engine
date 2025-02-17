@@ -5,7 +5,7 @@
 #include "src/renderSystem/RenderSystem.h"
 
 namespace Fierce {
-	VK_Image::VK_Image(VK_Device* device, uint32_t width, uint32_t height,VkDeviceSize size, VkMemoryPropertyFlags properties){
+	VK_Image::VK_Image(VK_Device* device, uint32_t width, uint32_t height,VkDeviceSize size, VkMemoryPropertyFlags properties,VkFormat format,VkImageUsageFlags usage){
 		m_device = device;
 		m_memoryFlags = properties;
 		m_size = size;
@@ -15,7 +15,7 @@ namespace Fierce {
 		m_createInfo.pNext = nullptr;
 		m_createInfo.flags = 0;
 		m_createInfo.imageType = VK_IMAGE_TYPE_2D;
-		m_createInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
+		m_createInfo.format = format;
 		m_createInfo.extent.width = static_cast<uint32_t>(width);
 		m_createInfo.extent.height = static_cast<uint32_t>(height);
 		m_createInfo.extent.depth = 1;
@@ -23,7 +23,7 @@ namespace Fierce {
 		m_createInfo.arrayLayers = 1;
 		m_createInfo.samples = VK_SAMPLE_COUNT_1_BIT;
 		m_createInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-		m_createInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+		m_createInfo.usage = usage;
 		m_createInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
 		m_allocateInfo = {};

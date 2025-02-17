@@ -2,6 +2,8 @@
 
 #include "vulkan/vulkan.h"
 
+#include <array>
+
 namespace Fierce {
 
 	class VK_Device;
@@ -22,7 +24,7 @@ namespace Fierce {
 
 		void startRecording();
 		void endRecording();
-		void beginRenderpass(VkRenderPass renderpass, VkFramebuffer framebuffer);
+		void beginRenderpass(VkRenderPass renderpass, VkFramebuffer framebuffer, bool hasDepthBuffer);
 		void endRenderpass();
 
 		void bindPipeline(VkPipeline pipeline);
@@ -58,6 +60,7 @@ namespace Fierce {
 
 		//Misc
 		VkClearValue m_clearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
+		std::array<VkClearValue, 2> clearValues{};
 
 		//Vulkan objects
 		VK_Device* m_device=nullptr;

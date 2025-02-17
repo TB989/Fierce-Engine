@@ -44,7 +44,7 @@ namespace Fierce {
 	}
 
 	void VK_Texture::createImageViewAndSampler(){
-		m_imageView = new VK_ImageView(m_device->getDevice(), m_image->getId());
+		m_imageView = new VK_ImageView(m_device->getDevice(), m_image->getId(), VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
 		m_imageView->create();
 		m_device->debug_setName(VK_OBJECT_TYPE_IMAGE_VIEW, (uint64_t)m_imageView->getId(), "ImageView texture");
 

@@ -33,6 +33,7 @@ namespace Fierce {
 			r.bottom = height;
 		}
 		else if (windowMode == FULLSCREEN) {
+			m_isFullscreen = true;
 			style = WS_POPUP;
 			m_width= GetSystemMetrics(SM_CXSCREEN);
 			m_height= GetSystemMetrics(SM_CYSCREEN);
@@ -96,8 +97,10 @@ namespace Fierce {
 	}
 
 	void Window::onResize(int width, int height){
-		m_width = width;
-		m_height = height;
+		if (!m_isFullscreen) {
+			m_width = width;
+			m_height = height;
+		}
 	}
 
 	void Window::pollEvents() {

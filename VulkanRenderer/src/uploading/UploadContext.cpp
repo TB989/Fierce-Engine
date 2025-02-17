@@ -66,7 +66,7 @@ namespace Fierce {
 
 	void UploadContext::copyTexture(VK_Texture* texture){
 		VK_Buffer* buffer = nullptr;
-		VK_Image* image= new VK_Image(m_device, texture->getWidth(), texture->getHeight(), texture->getSize(), VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		VK_Image* image= new VK_Image(m_device, texture->getWidth(), texture->getHeight(), texture->getSize(), VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
 		image->shareRessourcesWithTransferQueue();
 		image->create();
 
@@ -83,6 +83,15 @@ namespace Fierce {
 		texture->swapBuffers(buffer,image);
 
 		m_buffersToDelete.push_back(buffer);
+	}
+
+	void UploadContext::transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout){
+		if (m_device->hasDedicatedTransferQueue()) {
+			m_graphicsCommandBuffer->imageBarrier(image, oldLayout,newLayout);
+		}
+		else {
+			m_transferCommandBuffer->imageBarrier(image, oldLayout, newLayout);
+		}
 	}
 
 	void UploadContext::startAndWaitForUpload(){

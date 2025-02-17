@@ -5,7 +5,7 @@
 namespace Fierce {
 	class VK_ImageView {
 	public:
-		VK_ImageView(VkDevice device,VkImage image);
+		VK_ImageView(VkDevice device,VkImage image,VkFormat format, VkImageAspectFlags aspectFlags);
 		~VK_ImageView();
 
 		void create();

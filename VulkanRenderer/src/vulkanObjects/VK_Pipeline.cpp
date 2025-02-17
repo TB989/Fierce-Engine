@@ -114,6 +114,19 @@ namespace Fierce {
         m_dynamicState.dynamicStateCount = static_cast<uint32_t>(m_dynamicStates.size());
         m_dynamicState.pDynamicStates = m_dynamicStates.data();
 
+        m_depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+        m_depthStencil.pNext = nullptr;
+        m_depthStencil.flags = 0;
+        m_depthStencil.depthTestEnable = VK_FALSE;
+        m_depthStencil.depthWriteEnable = VK_FALSE;
+        m_depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+        m_depthStencil.depthBoundsTestEnable = VK_FALSE;
+        m_depthStencil.stencilTestEnable = VK_FALSE;
+        m_depthStencil.front = {};
+        m_depthStencil.back = {};
+        m_depthStencil.minDepthBounds = 0.0f;
+        m_depthStencil.maxDepthBounds = 1.0f;
+
         m_pipelineLayoutInfo={};
         m_pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         m_pipelineLayoutInfo.pNext = nullptr;
@@ -128,7 +141,7 @@ namespace Fierce {
         m_createInfo.pViewportState = &m_viewportState;
         m_createInfo.pRasterizationState = &m_rasterizer;
         m_createInfo.pMultisampleState = &m_multisampling;
-        m_createInfo.pDepthStencilState = nullptr;
+        m_createInfo.pDepthStencilState = &m_depthStencil;
         m_createInfo.pColorBlendState = &m_colorBlending;
         m_createInfo.pDynamicState = &m_dynamicState;
         m_createInfo.renderPass = m_renderpass;
@@ -219,6 +232,11 @@ namespace Fierce {
         range.size = size;
         range.offset = offset;
         m_pushConstantRanges.push_back(range);
+    }
+
+    void VK_Pipeline::addDepthTest(){
+        m_depthStencil.depthTestEnable = VK_TRUE;
+        m_depthStencil.depthWriteEnable = VK_TRUE;
     }
 
 }//end namespace

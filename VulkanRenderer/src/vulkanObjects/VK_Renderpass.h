@@ -11,16 +11,25 @@ namespace Fierce {
 		VK_Renderpass(VK_Device* device);
 		~VK_Renderpass();
 
+		void addDepthBuffer();
+
 		void create();
 		VkRenderPass getId() { return m_renderPass; }
 
+		bool hasDepthBuffer() { return m_hasDepthBuffer; }
+
 	private:
+		bool m_hasDepthBuffer = false;
+
 		//Create info
 		VkRenderPassCreateInfo m_renderPassCreateInfo={};
 
 		//Attachments
 		VkAttachmentDescription m_colorAttachmentDescription={};
 		VkAttachmentReference m_colorAttachmentReference={};
+
+		VkAttachmentDescription m_depthAttachmentDescription = {};
+		VkAttachmentReference m_depthAttachmentReference = {};
 
 		//Subpasses
 		VkSubpassDependency m_subpassDependency={};

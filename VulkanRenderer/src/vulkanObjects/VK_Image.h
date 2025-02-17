@@ -8,7 +8,7 @@ namespace Fierce {
 
 	class VK_Image {
 	public:
-		VK_Image(VK_Device* device,uint32_t width,uint32_t height, VkDeviceSize size, VkMemoryPropertyFlags properties);
+		VK_Image(VK_Device* device,uint32_t width,uint32_t height, VkDeviceSize size, VkMemoryPropertyFlags properties, VkFormat format, VkImageUsageFlags usage);
 		~VK_Image();
 
 		void create();
