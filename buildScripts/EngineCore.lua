@@ -31,7 +31,8 @@ project "EngineCore"
 		"%{IncludeDir.MathLibrary}",
 		"%{IncludeDir.GeometryLibrary}",
 		"%{IncludeDir.InputSystem}",
-		"%{IncludeDir.Timer}"
+		"%{IncludeDir.Timer}",
+		"%{IncludeDir.GUI}"
 	}
 
 	libdirs 

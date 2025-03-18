@@ -6,7 +6,7 @@
 
 namespace Fierce {
 
-	VK_Buffer::VK_Buffer(VK_Device* device, int size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties){
+	VK_Buffer::VK_Buffer(VK_Device* device, int size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties) {
 		m_device = device;
 		m_memoryFlags = properties;
 		m_size = size;
@@ -23,16 +23,16 @@ namespace Fierce {
 		m_allocateInfo.pNext = nullptr;
 	}
 
-	VK_Buffer::~VK_Buffer(){
+	VK_Buffer::~VK_Buffer() {
 		vkFreeMemory(m_device->getDevice(), m_memory, nullptr);
 		vkDestroyBuffer(m_device->getDevice(), m_buffer, nullptr);
 	}
 
-	void VK_Buffer::create(){
+	void VK_Buffer::create() {
 		if (m_shareRessourcesWithTransferQueue) {
 			m_createInfo.sharingMode = VK_SHARING_MODE_CONCURRENT;
 			m_createInfo.queueFamilyIndexCount = 2;
-			uint32_t indices[]= { m_device->getDeviceData()->graphicsQueueIndex,m_device->getDeviceData()->transferQueueIndex };
+			uint32_t indices[] = { m_device->getDeviceData()->graphicsQueueIndex,m_device->getDeviceData()->transferQueueIndex };
 			m_createInfo.pQueueFamilyIndices = indices;
 		}
 		else {
@@ -66,7 +66,7 @@ namespace Fierce {
 		}
 	}
 
-	void VK_Buffer::loadData(int size, float* vertices){
+	void VK_Buffer::loadData(int size, float* vertices) {
 		if (!m_keepMapped) {
 			if (vkMapMemory(m_device->getDevice(), m_memory, 0, size, 0, &m_mappedRegion) != VK_SUCCESS) {
 				RenderSystem::LOGGER->error("Failed to map buffer memory.");
@@ -78,7 +78,7 @@ namespace Fierce {
 		}
 	}
 
-	void VK_Buffer::loadData(int size, uint16_t* indices){
+	void VK_Buffer::loadData(int size, uint16_t* indices) {
 		if (!m_keepMapped) {
 			if (vkMapMemory(m_device->getDevice(), m_memory, 0, size, 0, &m_mappedRegion) != VK_SUCCESS) {
 				RenderSystem::LOGGER->error("Failed to map buffer memory.");
@@ -90,13 +90,13 @@ namespace Fierce {
 		}
 	}
 
-	void VK_Buffer::loadData(int size, int index, float* matrix){
+	void VK_Buffer::loadData(int size, int index, float* matrix) {
 		if (!m_keepMapped) {
 			if (vkMapMemory(m_device->getDevice(), m_memory, 0, size, 0, &m_mappedRegion) != VK_SUCCESS) {
 				RenderSystem::LOGGER->error("Failed to map buffer memory.");
 			}
 		}
-		memcpy((uint8_t*)m_mappedRegion + index*16 * sizeof(float), matrix, (size_t)(16 * sizeof(float)));
+		memcpy((uint8_t*)m_mappedRegion + index * 16 * sizeof(float), matrix, (size_t)(16 * sizeof(float)));
 		if (!m_keepMapped) {
 			vkUnmapMemory(m_device->getDevice(), m_memory);
 		}
@@ -109,7 +109,7 @@ namespace Fierce {
 			}
 		}
 		memcpy((uint8_t*)m_mappedRegion, view, (size_t)(16 * sizeof(float)));
-		memcpy((uint8_t*)m_mappedRegion+16*sizeof(float), proj, (size_t)(16 * sizeof(float)));
+		memcpy((uint8_t*)m_mappedRegion + 16 * sizeof(float), proj, (size_t)(16 * sizeof(float)));
 		if (!m_keepMapped) {
 			vkUnmapMemory(m_device->getDevice(), m_memory);
 		}
@@ -129,7 +129,7 @@ namespace Fierce {
 		}
 	}
 
-	void VK_Buffer::loadData(int size, unsigned char* data){
+	void VK_Buffer::loadData(int size, unsigned char* data) {
 		if (!m_keepMapped) {
 			if (vkMapMemory(m_device->getDevice(), m_memory, 0, size, 0, &m_mappedRegion) != VK_SUCCESS) {
 				RenderSystem::LOGGER->error("Failed to map buffer memory.");

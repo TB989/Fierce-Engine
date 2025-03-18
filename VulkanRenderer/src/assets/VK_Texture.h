@@ -3,11 +3,11 @@
 #include "vulkan/vulkan.h"
 
 #include "src/vulkanObjects/VK_DescriptorSet.h"
+#include "src/vulkanObjects/VK_Buffer.h"
 
 namespace Fierce {
 
 	class VK_Device;
-	class VK_Buffer;
 	class VK_Image;
 	class VK_ImageView;
 	class VK_Sampler;

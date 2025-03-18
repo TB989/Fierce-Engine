@@ -2,7 +2,6 @@
 
 #include "src/vulkanObjects/VK_Device.h"
 #include "src/vulkanObjects/VK_CommandBuffer.h"
-#include "src/vulkanObjects/VK_Buffer.h"
 #include "src/vulkanObjects/VK_Image.h"
 
 #include "src/assets/VK_Mesh.h"
@@ -110,7 +109,7 @@ namespace Fierce {
 			}
 		}
 
-		for (VK_Buffer* buffer:m_buffersToDelete) {
+		for (VK_Buffer* buffer : m_buffersToDelete) {
 			delete buffer;
 		}
 	}

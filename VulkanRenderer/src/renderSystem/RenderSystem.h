@@ -11,6 +11,10 @@
 
 #include "src/FierceStrings.h"
 
+#include "src/vulkanObjects/VK_UBO.h"
+
+#include "src/GraphicsContext.h"
+
 namespace Fierce {
 
 	class LoggingSystem;
@@ -24,8 +28,8 @@ namespace Fierce {
 	class VK_DescriptorSetLayout;
 	class VK_Shader;
 	class VK_Pipeline;
+	class VulkanGraphicsContext;
 
-	class VK_UBO;
 	class Mat4;
 
 	class VK_Mesh;
@@ -56,10 +60,14 @@ namespace Fierce {
 		void setViewMatrix(float* viewMatrix);
 		void loadModelMatrix(float* modelMatrix);
 		void loadColor(float* color);
+		void activateSampler(std::string pipeline, int texture);
 
 		void startFrame();
 		void drawMesh(int m_meshId);
 		void endFrame();
+
+		GraphicsContext* getGraphicsContext() { return (GraphicsContext*)m_graphicsContext; };
+		void drawGraphicsContext();
 
 		void postInit();
 		//########################### INTERFACE ##############################################################################
@@ -85,10 +93,9 @@ namespace Fierce {
 		//Contexts
 		CoreContext* m_coreContext = nullptr;
 		UploadContext* m_uploadContext=nullptr;
+		VulkanGraphicsContext* m_graphicsContext = nullptr;
 
 		//Managers
-		//VK_Manager<VK_Renderpass*>* m_renderpasses=nullptr;
-		//VK_Manager<VK_Framebuffers*>* m_framebuffers = nullptr;
 		VK_Manager<VK_DescriptorPool*>* m_descriptorPools = nullptr;
 		VK_Manager<VK_DescriptorSetLayout*>* m_descriptorSetLayouts = nullptr;
 		VK_Manager<VK_Shader*>* m_shaders=nullptr;

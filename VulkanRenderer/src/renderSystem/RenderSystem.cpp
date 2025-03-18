@@ -2,6 +2,7 @@
 
 #include "src/core/CoreContext.h"
 #include "src/uploading/UploadContext.h"
+#include "src/graphicsContext/VulkanGraphicsContetxt.h"
 
 #include "src/Matrix.h"
 
@@ -11,7 +12,6 @@
 #include "src/vulkanObjects/VK_Framebuffer.h"
 #include "src/vulkanObjects/VK_CommandBuffer.h"
 #include "src/vulkanObjects/VK_DescriptorPool.h"
-#include "src/vulkanObjects/VK_UBO.h"
 #include "src/vulkanObjects/VK_Image.h"
 #include "src/vulkanObjects/VK_ImageView.h"
 #include "src/vulkanObjects/VK_Sampler.h"
@@ -39,8 +39,6 @@ namespace Fierce {
 		LOGGER = m_loggingSystem->createLogger("VK",true,"VULKAN");
 
 		//Create managers
-		//m_renderpasses = new VK_Manager<VK_Renderpass*>();
-		//m_framebuffers = new VK_Manager<VK_Framebuffers*>();
 		m_descriptorPools = new VK_Manager<VK_DescriptorPool*>();
 		m_descriptorSetLayouts = new VK_Manager<VK_DescriptorSetLayout*>();
 		m_shaders = new VK_Manager<VK_Shader*>();
@@ -51,14 +49,15 @@ namespace Fierce {
 		//Create contexts
 		m_coreContext = new CoreContext(m_windowHandle);
 		m_uploadContext = new UploadContext(m_coreContext->getDevice());
+		m_graphicsContext = new VulkanGraphicsContext(m_coreContext->getDevice());
 
 		for (int i = 0;i<m_coreContext->getNumFramebuffers();i++) {
 			m_uploadContext->transitionImageLayout(m_coreContext->getFramebuffer(i)->getDepthBuffer()->getId(), VK_IMAGE_LAYOUT_UNDEFINED,VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 		}
 
 		//Create engine ressources
-		//createRenderpasses();
-		//createFramebuffers();
+		createRenderpasses();
+		createFramebuffers();
 		createDescriptorPools();
 		createDescriptorSetLayouts();
 		createShaders();
@@ -86,10 +85,9 @@ namespace Fierce {
 		delete m_shaders;
 		delete m_descriptorSetLayouts;
 		delete m_descriptorPools;
-		//delete m_framebuffers;
-		//delete m_renderpasses;
 
 		//Delete contexts
+		delete m_graphicsContext;
 		delete m_uploadContext;
 		delete m_coreContext;
 
@@ -150,6 +148,11 @@ namespace Fierce {
 		commandBuffer->pushConstants(m_pipelines->get("Main"), VK_SHADER_STAGE_VERTEX_BIT, 4*sizeof(float),0, color);
 	}
 
+	void RenderSystem::activateSampler(std::string pipeline,int texture){
+		VK_CommandBuffer* commandBuffer = m_coreContext->getActiveCommandBuffer();
+		commandBuffer->bindDescriptorSet(m_pipelines->get("Font"), m_textures[texture]->getDescriptorSet(), 2);
+	}
+
 	void RenderSystem::startFrame(){
 		m_matrixIndex = 0;
 
@@ -167,7 +170,6 @@ namespace Fierce {
 		commandBuffer->setScissor(m_coreContext->getSwapchainWidth(), m_coreContext->getSwapchainHeight());
 		commandBuffer->bindDescriptorSet(m_pipelines->get("Main"), m_ubosViewProjection->get(m_coreContext->getCurrentFrame())->getDescriptorSet(), 0);
 		commandBuffer->bindDescriptorSet(m_pipelines->get("Main"), m_ubosModel->get(m_coreContext->getCurrentFrame())->getDescriptorSet(), 1);
-		//commandBuffer->bindDescriptorSet(m_pipelines->get("Main"), m_textures[0]->getDescriptorSet(), 2);
 	}
 
 	void RenderSystem::meshLoadVertices(int meshId, int numVertices, float* vertices){
@@ -193,6 +195,16 @@ namespace Fierce {
 		commandBuffer->endRecording();
 
 		m_coreContext->endFrame();
+
+		m_graphicsContext->reset();
+	}
+
+	void RenderSystem::drawGraphicsContext(){
+		VK_CommandBuffer* commandBuffer = m_coreContext->getActiveCommandBuffer();
+		commandBuffer->bindDescriptorSet(m_pipelines->get("GUI"), m_ubosViewProjection->get(m_coreContext->getCurrentFrame())->getDescriptorSet(), 0);
+		commandBuffer->bindVertexBuffer(m_graphicsContext->getVertexBuffer()->getId());
+		commandBuffer->bindIndexBuffer(m_graphicsContext->getIndexBuffer()->getId());
+		commandBuffer->renderIndexed(m_graphicsContext->getNumIndices());
 	}
 
 	void RenderSystem::postInit(){
@@ -205,35 +217,29 @@ namespace Fierce {
 		}
 		m_uploadContext->startAndWaitForUpload();
 
-		//Finish texture
-		//m_textures[0]->createImageViewAndSampler();
-		//m_textures[0]->createDescriptorSet(m_descriptorPools->get("Sampler"), m_descriptorSetLayouts->get("Sampler")->getId());
+		//Finish textures
+		for (VK_Texture* texture:m_textures) {
+			texture->createImageViewAndSampler();
+			texture->createDescriptorSet(m_descriptorPools->get("Sampler"), m_descriptorSetLayouts->get("Sampler")->getId());
+			texture->update(texture->getImageView()->getId(), texture->getSampler()->getId());
+		}
 
 		//Finish UBOs and textures
 		for (int i = 0;i<m_coreContext->getNumFramesInFlight();i++) {
 			m_ubosViewProjection->get(i)->update(m_ubosViewProjection->get(i));
 			m_ubosModel->get(i)->update(m_ubosModel->get(i));
-			//m_textures[0]->update(m_textures[0]->getImageView()->getId(), m_textures[0]->getSampler()->getId());
 		}
 	}
 
 	void RenderSystem::createRenderpasses(){
 		RenderSystem::LOGGER->info("##### Creating renderpasses #####");
-		/**VK_Renderpass* renderpass = nullptr;
-
-		renderpass= new VK_Renderpass(m_coreContext->getDevice());
-		renderpass->create();
-		m_renderpasses->add("Main",renderpass);*/
+		
 		RenderSystem::LOGGER->info("##### Done creating renderpasses #####");
 	}
 
 	void RenderSystem::createFramebuffers(){
 		RenderSystem::LOGGER->info("##### Creating framebuffers #####");
-		//VK_Framebuffers* framebuffers=nullptr;
-
-		/**framebuffers = new VK_Framebuffers(m_coreContext->getDevice(), m_renderpasses->get("Main")->getId(), m_coreContext->getSwapchain());
-		framebuffers->create();
-		m_framebuffers->add("Main",framebuffers);*/
+		
 		RenderSystem::LOGGER->info("##### Done creating framebuffers #####");
 	}
 
@@ -253,11 +259,11 @@ namespace Fierce {
 		m_coreContext->getDevice()->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_POOL, (uint64_t)descriptorPool->getId(), "DescriptorPool Model");
 		m_descriptorPools->add("Model",descriptorPool);
 
-		/**descriptorPool = new VK_DescriptorPool(m_coreContext->getDevice()->getDevice());
+		descriptorPool = new VK_DescriptorPool(m_coreContext->getDevice()->getDevice());
 		descriptorPool->addDescriptorType(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 200);
 		descriptorPool->create();
 		m_coreContext->getDevice()->debug_setName(VK_OBJECT_TYPE_DESCRIPTOR_POOL, (uint64_t)descriptorPool->getId(), "DescriptorPool Sampler");
-		m_descriptorPools->add("Sampler",descriptorPool);*/
+		m_descriptorPools->add("Sampler",descriptorPool);
 		RenderSystem::LOGGER->info("##### Done creating descriptor pools #####");
 	}
 
@@ -275,10 +281,10 @@ namespace Fierce {
 		descriptorSetLayout->create();
 		m_descriptorSetLayouts->add("Model", descriptorSetLayout);
 
-		/**descriptorSetLayout = new VK_DescriptorSetLayout(m_coreContext->getDevice()->getDevice());
+		descriptorSetLayout = new VK_DescriptorSetLayout(m_coreContext->getDevice()->getDevice());
 		descriptorSetLayout->addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
 		descriptorSetLayout->create();
-		m_descriptorSetLayouts->add("Sampler", descriptorSetLayout);*/
+		m_descriptorSetLayouts->add("Sampler", descriptorSetLayout);
 		RenderSystem::LOGGER->info("##### Done creating descriptor set layouts #####");
 	}
 
@@ -305,6 +311,26 @@ namespace Fierce {
 		shader->setSourceCode("Shader_Flat_Color_3D_frag.spv");
 		shader->create();
 		m_shaders->add("Shader_Flat_Color_3D_frag.spv", shader);
+
+		shader = new VK_Shader(m_coreContext->getDevice());
+		shader->setSourceCode("Shader_Font_vert.spv");
+		shader->create();
+		m_shaders->add("Shader_Font_vert.spv", shader);
+
+		shader = new VK_Shader(m_coreContext->getDevice());
+		shader->setSourceCode("Shader_Font_frag.spv");
+		shader->create();
+		m_shaders->add("Shader_Font_frag.spv", shader);
+
+		shader = new VK_Shader(m_coreContext->getDevice());
+		shader->setSourceCode("Shader_Flat_Color_GUI_vert.spv");
+		shader->create();
+		m_shaders->add("Shader_Flat_Color_GUI_vert.spv", shader);
+
+		shader = new VK_Shader(m_coreContext->getDevice());
+		shader->setSourceCode("Shader_Flat_Color_GUI_frag.spv");
+		shader->create();
+		m_shaders->add("Shader_Flat_Color_GUI_frag.spv", shader);
 
 		RenderSystem::LOGGER->info("##### Done creating shaders #####");
 	}
@@ -337,6 +363,28 @@ namespace Fierce {
 		pipeline->addDepthTest();
 		pipeline->create();
 		m_pipelines->add("Main3D", pipeline);
+
+		pipeline = new VK_Pipeline(m_coreContext->getDevice(), m_coreContext->getRenderpass()->getId());
+		pipeline->addVertexShader(m_shaders->get("Shader_Font_vert.spv")->getId());
+		pipeline->addFragmentShader(m_shaders->get("Shader_Font_frag.spv")->getId());
+		pipeline->addVertexInput(0, VK_FORMAT_R32G32_SFLOAT);
+		pipeline->addVertexInput(1, VK_FORMAT_R32G32_SFLOAT);
+		pipeline->addDescriptorSetLayout(m_descriptorSetLayouts->get("Projection")->getId());
+		pipeline->addDescriptorSetLayout(m_descriptorSetLayouts->get("Model")->getId());
+		pipeline->addDescriptorSetLayout(m_descriptorSetLayouts->get("Sampler")->getId());
+		pipeline->addPushConstantRange(VK_SHADER_STAGE_VERTEX_BIT, 4 * sizeof(float) + sizeof(uint32_t), 0);
+		pipeline->enableBlending();
+		pipeline->create();
+		m_pipelines->add("Font", pipeline);
+
+		pipeline = new VK_Pipeline(m_coreContext->getDevice(), m_coreContext->getRenderpass()->getId());
+		pipeline->addVertexShader(m_shaders->get("Shader_Flat_Color_GUI_vert.spv")->getId());
+		pipeline->addFragmentShader(m_shaders->get("Shader_Flat_Color_GUI_frag.spv")->getId());
+		pipeline->addVertexInput(0, VK_FORMAT_R32G32_SFLOAT);
+		pipeline->addVertexInput(1, VK_FORMAT_R32G32B32_SFLOAT);
+		pipeline->addDescriptorSetLayout(m_descriptorSetLayouts->get("Projection")->getId());
+		pipeline->create();
+		m_pipelines->add("GUI", pipeline);
 
 		RenderSystem::LOGGER->info("##### Done creating pipelines #####");
 	}

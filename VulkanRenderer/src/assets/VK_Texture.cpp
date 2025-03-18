@@ -1,7 +1,6 @@
 #include "VK_Texture.h"
 
 #include "src/vulkanObjects/VK_Device.h"
-#include "src/vulkanObjects/VK_Buffer.h"
 #include "src/vulkanObjects/VK_Image.h"
 #include "src/vulkanObjects/VK_ImageView.h"
 #include "src/vulkanObjects/VK_Sampler.h"

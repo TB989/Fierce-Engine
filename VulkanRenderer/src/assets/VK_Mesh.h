@@ -2,10 +2,11 @@
 
 #include "vulkan/vulkan.h"
 
+#include "src/vulkanObjects/VK_Buffer.h"
+
 namespace Fierce {
 
 	class VK_Device;
-	class VK_Buffer;
 
 	class VK_Mesh{
 	public:

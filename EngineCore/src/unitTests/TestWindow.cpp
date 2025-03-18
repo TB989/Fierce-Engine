@@ -9,6 +9,8 @@
 
 #include "src/GeometryLoader.h"
 
+#include "src/io/Parser.h"
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "src/io/stb_image.h"
 
@@ -16,6 +18,8 @@ namespace Fierce {
 
 	TestWindow::TestWindow() {
 		//m_settings.windowMode = Window::WINDOW_MODE::FULLSCREEN;
+
+		m_font = Parser::parseFontFile("C:/Users/tmbal/Desktop/Fierce-Engine/VulkanRenderer/res/Candara.fnt");
 
 		m_loader = new GeometryLoader();
 		m_loader->registerGeometry(GeometryType::RECTANGLE,new Rectangle2D());
@@ -117,17 +121,40 @@ namespace Fierce {
 		m_renderSystem->meshLoadVertices(m_meshId_Sphere, vertices10.size(), vertices10.data());
 		m_renderSystem->meshLoadIndices(m_meshId_Sphere, indices10.size(), indices10.data());
 
+
+		//Generate mesh for letter
+		std::vector<float> vertices11;
+		char letter = '?';
+		int padding = 0;
+		Font::Char character = m_font->chars.chars[letter];
+		float x1= (float)(character.x-padding)/(float)m_font->common.scaleW;
+		float x2 = (float)(character.x+character.width+padding) / (float)m_font->common.scaleW;
+		float y1 = (float)(character.y-padding) / (float)m_font->common.scaleH;
+		float y2 = (float)(character.y + character.height+padding) / (float)m_font->common.scaleH;
+		vertices11.push_back(0); vertices11.push_back(0); vertices11.push_back(x1); vertices11.push_back(y1);
+		vertices11.push_back(0); vertices11.push_back(1); vertices11.push_back(x1); vertices11.push_back(y2);
+		vertices11.push_back(1); vertices11.push_back(1); vertices11.push_back(x2); vertices11.push_back(y2);
+		vertices11.push_back(1); vertices11.push_back(0); vertices11.push_back(x2); vertices11.push_back(y1);
+
+		std::vector<uint16_t> indices11;
+		indices11.push_back(0); indices11.push_back(1); indices11.push_back(2);
+		indices11.push_back(0); indices11.push_back(2); indices11.push_back(3);
+
+		m_meshId_Font = m_renderSystem->newMesh(vertices11.size(), indices11.size());
+		m_renderSystem->meshLoadVertices(m_meshId_Font, vertices11.size(), vertices11.data());
+		m_renderSystem->meshLoadIndices(m_meshId_Font, indices11.size(), indices11.data());
+
 		m_logger->info("Loaded meshes");
 
 		//################################################ TEXTURES #####################################################################
-		/**int texWidth, texHeight, texChannels;
-		stbi_uc* pixels = stbi_load("C:/Users/tmbal/Desktop/Fierce-Engine/VulkanRenderer/res/texture.jpg", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+		int texWidth, texHeight, texChannels;
+		stbi_uc* pixels = stbi_load("C:/Users/tmbal/Desktop/Fierce-Engine/VulkanRenderer/res/Candara.png", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
 		if (!pixels) {
 			m_logger->error("Unable to load image.");
 		}
 		m_textureId = m_renderSystem->newTexture(texWidth,texHeight,4);
 		m_renderSystem->textureLoadData(m_textureId, pixels);
-		stbi_image_free(pixels);*/
+		stbi_image_free(pixels);
 
 		m_color = new Color4f(1.0f, 0.0f, 0.0f, 1.0f);
 		m_color2 = new Color4f(0.0f,1.0f,0.0f,1.0f);
@@ -135,6 +162,7 @@ namespace Fierce {
 		m_color4 = new Color4f(1.0f, 1.0f, 0.0f, 1.0f);
 		m_color5 = new Color4f(0.0f, 1.0f, 1.0f, 1.0f);
 		m_color6 = new Color4f(1.0f, 0.0f, 1.0f, 1.0f);
+		m_colorFont = new Color4f(1.0f, 1.0f, 1.0f, 1.0f);
 
 		m_colorPlane = new Color4f(1.0f,1.0f,1.0f,1.0f);
 
@@ -145,6 +173,7 @@ namespace Fierce {
 		m_transform2 = new Transform2D(120.0f, 10.0f, 100.0f, 100.0f, 0.0f);
 		m_transform3 = new Transform2D(230.0f, 10.0f, 100.0f, 100.0f, 0.0f);
 		m_transform4 = new Transform2D(340.0f, 10.0f, 50.0f, 50.0f, 0.0f);
+		m_transform5 = new Transform2D(450.0f, 10.0f, 200.0f, 200.0f, 0.0f);
 
 		m_transformPlane = new Transform3D(0.0f,0.0f,0.0f,100.0f,1.0f,100.0f,0.0f,0.0f,0.0f);
 		m_transformCube = new Transform3D(0.0f, 0.5f, 5.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f);
@@ -157,6 +186,7 @@ namespace Fierce {
 		m_modelMatrix2 = new Mat4();
 		m_modelMatrix3 = new Mat4();
 		m_modelMatrix4 = new Mat4();
+		m_modelMatrix5 = new Mat4();
 
 		m_modelMatrixPlane = new Mat4();
 		m_modelMatrixCube = new Mat4();
@@ -213,7 +243,7 @@ namespace Fierce {
 
 	void TestWindow::render() {
 		//m_logger->info("Start rendering");
-		m_renderSystem->startFrame();
+		//m_renderSystem->startFrame();
 		//m_logger->info("After start frame");
 
 		//########### 3D ##########
@@ -284,8 +314,27 @@ namespace Fierce {
 		m_renderSystem->drawMesh(m_meshId_triangle);
 		//
 
-		m_renderSystem->endFrame();
+		//########### Font ########
+		m_renderSystem->bindPipeline("Font");
+		//#########################
+
+		m_renderSystem->loadColor(m_colorFont->get());
+		m_modelMatrix5->setToTransform(m_transform5);
+		m_renderSystem->loadModelMatrix(m_modelMatrix5->get());
+		m_renderSystem->activateSampler("Font", m_textureId);
+		m_renderSystem->drawMesh(m_meshId_Font);
+
+		//m_renderSystem->endFrame();
 		//m_logger->info("After end frame");
+	}
+
+	void TestWindow::renderGUI(GraphicsContext* context){
+		m_renderSystem->bindPipeline("GUI");
+		context->setColor(255,0,0);
+		context->drawRect(500,200,100,100);
+		context->drawRect(200, 200, 100, 100);
+
+		m_renderSystem->drawGraphicsContext();
 	}
 
 	void TestWindow::cleanUp() {
@@ -293,6 +342,7 @@ namespace Fierce {
 		delete m_transform2;
 		delete m_transform3;
 		delete m_transform4;
+		delete m_transform5;
 		delete m_transformPlane;
 		delete m_transformCube;
 		delete m_transformCylinder;
@@ -304,6 +354,7 @@ namespace Fierce {
 		delete m_modelMatrix2;
 		delete m_modelMatrix3;
 		delete m_modelMatrix4;
+		delete m_modelMatrix5;
 		delete m_modelMatrixPlane;
 		delete m_modelMatrixCube;
 		delete m_modelMatrixCylinder;

@@ -84,8 +84,8 @@ namespace Fierce {
 
         m_colorBlendAttachment = {};
         m_colorBlendAttachment.blendEnable = VK_FALSE;
-        m_colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
-        m_colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;
+        m_colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+        m_colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
         m_colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
         m_colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
         m_colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
@@ -237,6 +237,10 @@ namespace Fierce {
     void VK_Pipeline::addDepthTest(){
         m_depthStencil.depthTestEnable = VK_TRUE;
         m_depthStencil.depthWriteEnable = VK_TRUE;
+    }
+
+    void VK_Pipeline::enableBlending(){
+        m_colorBlendAttachment.blendEnable = VK_TRUE;
     }
 
 }//end namespace

@@ -8,6 +8,8 @@
 #include "src/InputSystem.h"
 #include "src/WindowSystem.h"
 
+#include "src/GraphicsContext.h"
+
 namespace Fierce {
 
 	bool EngineCore::m_running = false;
@@ -37,8 +39,11 @@ namespace Fierce {
 
 			coreUpdate();
 			update(m_timer->getElapsedTime());
+			m_renderSystem->startFrame();
 			coreRender();
 			render();
+			renderGUI(m_graphicsContext);
+			m_renderSystem->endFrame();
 		}
 		m_timer->stop();
 
@@ -67,6 +72,7 @@ namespace Fierce {
 		m_renderSystem = new RenderSystem(m_loggingSystem);
 		m_renderSystem->setWindowHandle(m_window->getHandle());
 		m_renderSystem->initSystem();
+		m_graphicsContext = m_renderSystem->getGraphicsContext();
 	}
 
 	void EngineCore::coreUpdate(){}

@@ -28,6 +28,7 @@ project "VulkanRenderer"
 		"%{IncludeDir.Utils}",
 		"%{IncludeDir.Vulkan}",
 		"%{IncludeDir.MathLibrary}",
+		"%{IncludeDir.GUI}",
 
 		"C:/Users/tmbal/Downloads/glfw-3.4.bin.WIN64/glfw-3.4.bin.WIN64/include",
 		"C:/Users/tmbal/Desktop/Fierce-Engine/extern/glm"

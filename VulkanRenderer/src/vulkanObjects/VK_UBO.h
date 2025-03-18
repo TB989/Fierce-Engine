@@ -10,7 +10,7 @@ namespace Fierce {
 	class VK_Device;
 	class VK_DescriptorPool;
 
-	class VK_UBO :public VK_Buffer{
+	class VK_UBO :public VK_Buffer {
 	public:
 		VK_UBO(VK_Device* device, int size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
 		~VK_UBO();
@@ -26,6 +26,6 @@ namespace Fierce {
 		void update(VK_Buffer* buffer, VkImageView imageView, VkSampler imageSampler);
 
 	private:
-		VK_DescriptorSet* m_descriptorSet=nullptr;
+		VK_DescriptorSet* m_descriptorSet = nullptr;
 	};
 }//end namespace

@@ -26,6 +26,7 @@ namespace Fierce {
 		void addPushConstantRange(VkShaderStageFlags shaderStages, uint32_t size, uint32_t offset);
 
 		void addDepthTest();
+		void enableBlending();
 
 	private:
 		//Create info

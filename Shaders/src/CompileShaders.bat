@@ -22,4 +22,10 @@ C:/VulkanSDK/1.3.290.0/Bin/glslc.exe Shader_Flat_Color_2D.frag -o Shader_Flat_Co
 C:/VulkanSDK/1.3.290.0/Bin/glslc.exe Shader_Flat_Color_3D.vert -o Shader_Flat_Color_3D_vert.spv
 C:/VulkanSDK/1.3.290.0/Bin/glslc.exe Shader_Flat_Color_3D.frag -o Shader_Flat_Color_3D_frag.spv
 
+C:/VulkanSDK/1.3.290.0/Bin/glslc.exe Shader_Font.vert -o Shader_Font_vert.spv
+C:/VulkanSDK/1.3.290.0/Bin/glslc.exe Shader_Font.frag -o Shader_Font_frag.spv
+
+C:/VulkanSDK/1.3.290.0/Bin/glslc.exe Shader_Flat_Color_GUI.vert -o Shader_Flat_Color_GUI_vert.spv
+C:/VulkanSDK/1.3.290.0/Bin/glslc.exe Shader_Flat_Color_GUI.frag -o Shader_Flat_Color_GUI_frag.spv
+
 pause

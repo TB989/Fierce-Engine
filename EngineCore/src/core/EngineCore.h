@@ -12,6 +12,8 @@ namespace Fierce {
 	class WindowSystem;
 	class Timer;
 
+	class GraphicsContext;
+
 	class EngineCore {
 	public:
 		EngineCore();
@@ -24,6 +26,7 @@ namespace Fierce {
 		virtual void init()=0;
 		virtual void update(double delta) = 0;
 		virtual void render()=0;
+		virtual void renderGUI(GraphicsContext* context) = 0;
 		virtual void cleanUp()=0;
 
 	private:
@@ -50,6 +53,7 @@ namespace Fierce {
 		Window* m_window=nullptr;
 
 		RenderSystem* m_renderSystem=nullptr;
+		GraphicsContext* m_graphicsContext = nullptr;
 	};
 
 }//end namespace

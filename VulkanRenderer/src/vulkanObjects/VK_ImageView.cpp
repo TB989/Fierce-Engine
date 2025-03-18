@@ -14,7 +14,6 @@ namespace Fierce {
 		m_createInfo.image = m_image;
 		m_createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
 		m_createInfo.format = format;
-		//m_createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		m_createInfo.subresourceRange.aspectMask = aspectFlags;
 		m_createInfo.subresourceRange.baseMipLevel = 0;
 		m_createInfo.subresourceRange.levelCount = 1;

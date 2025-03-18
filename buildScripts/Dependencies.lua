@@ -8,6 +8,7 @@ IncludeDir["MathLibrary"] = "%{wks.location}/MathLibrary"
 IncludeDir["GeometryLibrary"] = "%{wks.location}/GeometryLibrary"
 IncludeDir["InputSystem"] = "%{wks.location}/InputSystem"
 IncludeDir["Timer"] = "%{wks.location}/Timer"
+IncludeDir["GUI"] = "%{wks.location}/GUI"
 
 LibraryDir = {}
 LibraryDir["Common"] = "%{wks.location}/bin"
@@ -22,3 +23,4 @@ Library["MathLibrary"] = "MathLibrary.lib"
 Library["GeometryLibrary"] = "GeometryLibrary.lib"
 Library["InputSystem"] = "InputSystem.lib"
 Library["Timer"] = "Timer.lib"
+Library["GUI"] = "GUI.lib"

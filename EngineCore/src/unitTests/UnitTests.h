@@ -15,6 +15,8 @@
 
 namespace Fierce {
 
+	class Font;
+
 	class Mat4;
 	class Transform2D;
 	class Transform3D;
@@ -30,9 +32,12 @@ namespace Fierce {
 		void init() override;
 		void update(double delta) override;
 		void render() override;
+		void renderGUI(GraphicsContext* context) override;
 		void cleanUp() override;
 
 	private:
+		Font* m_font = nullptr;
+
 		Player* m_player = nullptr;
 
 		Action* m_action = nullptr;
@@ -49,6 +54,9 @@ namespace Fierce {
 		Mat4* m_modelMatrix2 = nullptr;
 		Mat4* m_modelMatrix3 = nullptr;
 		Mat4* m_modelMatrix4 = nullptr;
+
+		Mat4* m_modelMatrix5 = nullptr;
+
 		Mat4* m_modelMatrixPlane = nullptr;
 		Mat4* m_modelMatrixCube = nullptr;
 		Mat4* m_modelMatrixCylinder = nullptr;
@@ -71,6 +79,8 @@ namespace Fierce {
 		int m_meshId_Cone = 0;
 		int m_meshId_Sphere = 0;
 
+		int m_meshId_Font = 0;
+
 		int m_textureId = 0;
 
 		Color4f* m_color = nullptr;
@@ -80,6 +90,8 @@ namespace Fierce {
 		Color4f* m_color5 = nullptr;
 		Color4f* m_color6 = nullptr;
 
+		Color4f* m_colorFont = nullptr;
+
 		Color4f* m_colorPlane = nullptr;
 
 		Transform3D* m_viewTransform=nullptr;
@@ -87,6 +99,8 @@ namespace Fierce {
 		Transform2D* m_transform2 = nullptr;
 		Transform2D* m_transform3 = nullptr;
 		Transform2D* m_transform4 = nullptr;
+
+		Transform2D* m_transform5 = nullptr;
 
 		Transform3D* m_transformPlane = nullptr;
 		Transform3D* m_transformCube = nullptr;

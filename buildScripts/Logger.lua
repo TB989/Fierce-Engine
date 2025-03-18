@@ -27,12 +27,11 @@ project "Logger"
 
 	libdirs
 	{
-
 	}
 
 	links
 	{
-		
+
 	}
 
 	filter "system:windows"
