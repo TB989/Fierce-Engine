@@ -1,6 +1,6 @@
 #pragma once
 
-#include "src/FierceStrings.h"
+#include "src/utils/FierceStrings.h"
 #include <map>
 #include "src/font/Font.h"
 

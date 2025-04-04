@@ -1,11 +1,12 @@
 #pragma once
 
-#include "src/Bindable.h"
+#include "src/utils/Bindable.h"
+
+#include "src/Win32/Win32_Window.h"
 
 namespace Fierce {
 
 	class InputSystem;
-	class Window;
 
 	class Action_SwitchMouseMode :public Action {
 	public:
@@ -15,7 +16,7 @@ namespace Fierce {
 
 	private:
 		InputSystem* m_inputSystem=nullptr;
-		Window* m_window=nullptr;
+		Win32_Window* m_window=nullptr;
 		bool m_switchToRawInput=false;
 	};
 }

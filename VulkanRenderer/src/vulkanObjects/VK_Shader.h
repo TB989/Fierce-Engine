@@ -2,7 +2,8 @@
 
 #include "vulkan/vulkan.h"
 
-#include "src/FierceStrings.h"
+#include "src/utils/FierceStrings.h"
+#include "src/Win32/FileReader.h"
 
 #include <vector>
 
@@ -21,6 +22,9 @@ namespace Fierce {
 		void setSourceCode(std::string name);
 
 	private:
+		static FileReader& m_reader;
+
+	private:
 		//Create info
 		VkShaderModuleCreateInfo m_createInfo = {};
 
@@ -30,8 +34,7 @@ namespace Fierce {
 
 		//Source code and shader library
 		std::string shaderName;
-		std::vector<char> m_sourceCode;
-		const std::string SHADER_LIBRARY = "C:/Users/tmbal/Desktop/Fierce-Engine/Shaders/src/";
+		char* m_sourceCode=nullptr;
 	};
 
 }//end namespace

@@ -2,7 +2,7 @@
 
 #include "vulkan/vulkan.h"
 
-#include "src/FierceStrings.h"
+#include "src/utils/FierceStrings.h"
 
 namespace Fierce {
 	class I_DebugTools {

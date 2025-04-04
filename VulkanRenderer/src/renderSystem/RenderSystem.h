@@ -1,17 +1,16 @@
+
 #pragma once
 
+#include <windows.h>
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_win32.h>
-#include <windows.h>
 
-#include "src/System.h"
-#include "src/LoggingSystem.h"
+#include "src/utils/System.h"
+#include "src/include/LoggingSystem.h"
 
 #include "src/manager/VK_Manager.h"
 
-#include "src/FierceStrings.h"
-
-#include "src/vulkanObjects/VK_UBO.h"
+#include "src/utils/FierceStrings.h"
 
 #include "src/GraphicsContext.h"
 
@@ -28,6 +27,7 @@ namespace Fierce {
 	class VK_DescriptorSetLayout;
 	class VK_Shader;
 	class VK_Pipeline;
+	class VK_UBO;
 	class VulkanGraphicsContext;
 
 	class Mat4;
@@ -88,7 +88,7 @@ namespace Fierce {
 		const static int MAX_NUM_MODEL_MATRICES = 100;
 
 		LoggingSystem* m_loggingSystem=nullptr;
-		HWND m_windowHandle=NULL;
+		HWND m_windowHandle = NULL;
 
 		//Contexts
 		CoreContext* m_coreContext = nullptr;

@@ -1,7 +1,5 @@
 #include "State_MoveForward.h"
 
-#include "src/Logger.h"
-
 namespace Fierce {
 	State_MoveForward::State_MoveForward(Player* player) {
 		m_player = player;

@@ -3,7 +3,7 @@
 #include "Vector.h"
 #include "Transform.h"
 
-#include "src/FierceStrings.h"
+#include "src/utils/FierceStrings.h"
 
 namespace Fierce {
 

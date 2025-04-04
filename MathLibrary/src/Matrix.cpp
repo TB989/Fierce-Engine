@@ -3,7 +3,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-#include "src/Logger.h"
+#include "src/include/LoggingSystem.h"
 
 namespace Fierce {
 

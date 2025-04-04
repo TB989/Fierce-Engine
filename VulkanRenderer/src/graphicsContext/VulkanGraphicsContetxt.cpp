@@ -27,10 +27,9 @@ namespace Fierce {
 	}
 
 	void VulkanGraphicsContext::reset(){
-		m_numIndices = 0;
-		m_numVertices = 0;
 		m_vertexPointer = 0;
 		m_indexPointer = 0;
+		m_numRectangles = 0;
 	}
 
 	void VulkanGraphicsContext::setColor(int r, int g, int b){
@@ -39,9 +38,13 @@ namespace Fierce {
 		m_color->setB((float)b / 255.0f);
 	}
 
+	void VulkanGraphicsContext::setFont(std::string font){
+
+	}
+
 	void VulkanGraphicsContext::drawRect(int x, int y, int width, int height){
-		putIndex(0); putIndex(1); putIndex(2);
-		putIndex(0); putIndex(2); putIndex(3);
+		putIndex(4*m_numRectangles); putIndex(4 * m_numRectangles + 1); putIndex(4 * m_numRectangles + 2);
+		putIndex(4 * m_numRectangles); putIndex(4 * m_numRectangles + 2); putIndex(4 * m_numRectangles + 3);
 
 		putVertex(x); putVertex(y);
 		putVertex(m_color->getR()); putVertex(m_color->getG()); putVertex(m_color->getB());
@@ -51,20 +54,20 @@ namespace Fierce {
 		putVertex(m_color->getR()); putVertex(m_color->getG()); putVertex(m_color->getB());
 		putVertex(x+width); putVertex(y);
 		putVertex(m_color->getR()); putVertex(m_color->getG()); putVertex(m_color->getB());
+
+		m_numRectangles++;
 	}
 
 	void VulkanGraphicsContext::drawText(int x, int y, std::string text){
-
+		
 	}
 
 	void VulkanGraphicsContext::putIndex(uint16_t index){
 		m_indices[m_indexPointer] = index;
 		m_indexPointer++;
-		m_numIndices++;
 	}
 	void VulkanGraphicsContext::putVertex(float vertex){
 		m_vertices[m_vertexPointer] = vertex;
 		m_vertexPointer++;
-		m_numVertices++;
 	}
 }

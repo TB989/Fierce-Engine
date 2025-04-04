@@ -1,7 +1,5 @@
 #include "State_MoveBackward.h"
 
-#include "src/Logger.h"
-
 namespace Fierce {
 	State_MoveBackward::State_MoveBackward(Player* player) {
 		m_player = player;

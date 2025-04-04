@@ -24,10 +24,10 @@ namespace Fierce {
 
 	class GeometryLoader;
 
-	class TestWindow : public EngineCore {
+	class TestGame : public EngineCore {
 	public:
-		TestWindow();
-		~TestWindow();
+		TestGame();
+		~TestGame();
 
 		void init() override;
 		void update(double delta) override;
@@ -110,6 +110,27 @@ namespace Fierce {
 		Transform3D* m_transformSphere = nullptr;
 
 		GeometryLoader* m_loader = nullptr;
+	};
+
+	class TestGUI : public EngineCore {
+	public:
+		TestGUI();
+		~TestGUI();
+
+		void init() override;
+		void update(double delta) override;
+		void render() override;
+		void renderGUI(GraphicsContext* context) override;
+		void cleanUp() override;
+
+	private:
+		Font* m_font = nullptr;
+		int m_textureId = 0;
+		Action* m_action = nullptr;
+		Mat4* m_orthographicProjectionMatrix = nullptr;
+		Mat4* m_perspectiveProjectionMatrix = nullptr;
+		Mat4* m_viewMatrix = nullptr;
+		Transform3D* m_viewTransform = nullptr;
 	};
 
 }//end namespace

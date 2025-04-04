@@ -15,6 +15,7 @@
 #include "src/vulkanObjects/VK_Image.h"
 #include "src/vulkanObjects/VK_ImageView.h"
 #include "src/vulkanObjects/VK_Sampler.h"
+#include "src/vulkanObjects/VK_UBO.h"
 
 #include "src/assets/VK_Mesh.h"
 #include "src/assets/VK_Texture.h"

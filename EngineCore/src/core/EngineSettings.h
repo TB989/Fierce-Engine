@@ -1,7 +1,7 @@
 #pragma once
 
-#include "src/WindowSystem.h"
-#include "src/FierceStrings.h"
+#include "src/include/WindowSystem.h"
+#include "src/utils/FierceStrings.h"
 #include <map>
 
 namespace Fierce {

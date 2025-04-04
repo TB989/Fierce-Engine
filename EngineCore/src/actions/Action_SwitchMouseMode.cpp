@@ -1,13 +1,13 @@
 #include "Action_SwitchMouseMode.h"
 
-#include "src/InputSystem.h"
-#include "src/Window.h"
+#include "src/include/InputSystem.h"
+#include "src/include/WindowSystem.h"
 
 namespace Fierce {
 
 	Action_SwitchMouseMode::Action_SwitchMouseMode(InputSystem* inputSystem, Window* window, bool switchToRawInput){
 		m_inputSystem = inputSystem;
-		m_window = window;
+		m_window = (Win32_Window*)window;
 		m_switchToRawInput = switchToRawInput;
 	}
 

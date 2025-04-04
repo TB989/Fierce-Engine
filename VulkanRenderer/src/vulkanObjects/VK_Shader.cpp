@@ -4,9 +4,9 @@
 
 #include "src/vulkanObjects/VK_Device.h"
 
-#include <fstream>
-
 namespace Fierce {
+
+	FileReader& VK_Shader::m_reader=FileReader();
 
 	VK_Shader::VK_Shader(VK_Device* device){
 		m_device = device;
@@ -14,6 +14,8 @@ namespace Fierce {
 		m_createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 		m_createInfo.pNext = nullptr;
 		m_createInfo.flags = 0;
+
+		m_reader.setDirectory("C:/Users/tmbal/Desktop/Fierce-Engine/002_Assets/shaders/");
 	}
 
 	VK_Shader::~VK_Shader(){
@@ -24,29 +26,27 @@ namespace Fierce {
 		if (vkCreateShaderModule(m_device->getDevice(), &m_createInfo, nullptr, &m_shaderModule) != VK_SUCCESS) {
 			RenderSystem::LOGGER->error("Failed to create shader module.");
 		}
+		delete m_sourceCode;
 
 		m_device->debug_setName(VK_OBJECT_TYPE_SHADER_MODULE, (uint64_t)m_shaderModule, shaderName.c_str());
 	}
 
 	void VK_Shader::setSourceCode(std::string name) {
-		shaderName = name;
-		std::string path = SHADER_LIBRARY;
-		path.append(name);
-		std::ifstream stream(path, std::ios::ate | std::ios::binary);
-
-		if (stream.is_open()) {
-			size_t fileSize = (size_t)stream.tellg();
-			m_sourceCode.resize(fileSize);
-			stream.seekg(0);
-			stream.read(m_sourceCode.data(), fileSize);
-			stream.close();
+		if (!m_reader.openFile(name.c_str())) {
+			RenderSystem::LOGGER->error("Failed to open shader file %s.", name.c_str());
 		}
-		else {
-			RenderSystem::LOGGER->error("Unable to read shader %s.", name.c_str());
+		long size = 0;
+		if (!m_reader.readBinary(&size, nullptr)) {
+			RenderSystem::LOGGER->error("Failed to read shader file %s.",name.c_str());
 		}
+		m_sourceCode = new char[size];
+		if (!m_reader.readBinary(&size, &m_sourceCode)) {
+			RenderSystem::LOGGER->error("Failed to read shader file %s.", name.c_str());
+		}
+		m_reader.closeFile();
 
-		m_createInfo.codeSize = m_sourceCode.size();
-		m_createInfo.pCode = reinterpret_cast<const uint32_t*>(m_sourceCode.data());
+		m_createInfo.codeSize = size;
+		m_createInfo.pCode = reinterpret_cast<const uint32_t*>(m_sourceCode);
 	}
 
 }//end namespace

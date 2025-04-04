@@ -1,6 +1,6 @@
 #pragma once
 
-#include "src/FierceStrings.h"
+#include "src/utils/FierceStrings.h"
 
 namespace Fierce {
 

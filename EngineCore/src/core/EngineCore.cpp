@@ -2,11 +2,11 @@
 
 #include "src/io/Parser.h"
 
-#include "src/Timer.h"
-
-#include "src/LoggingSystem.h"
-#include "src/InputSystem.h"
-#include "src/WindowSystem.h"
+#include "src/Win32/Win32_TimeDateSystem.h"
+#include "src/Win32/Win32_LoggingSystem.h"
+#include "src/include/InputSystem.h"
+#include "src/Win32/Win32_WindowSystem.h"
+#include "src/Win32/Win32_Window.h"
 
 #include "src/GraphicsContext.h"
 
@@ -34,9 +34,6 @@ namespace Fierce {
 		m_window->show();
 		m_timer->start();
 		while (m_running) {
-			m_windowSystem->updateSystem();
-			m_renderSystem->updateSystem();
-
 			coreUpdate();
 			update(m_timer->getElapsedTime());
 			m_renderSystem->startFrame();
@@ -56,26 +53,35 @@ namespace Fierce {
 	}
 
 	void EngineCore::coreInit(){
-		m_timer = new Timer();
+		m_timeDateSystem = new Win32_TimeDateSystem();
+		m_timeDateSystem->initSystem();
+		m_timer = m_timeDateSystem->createTimer();
 
-		m_loggingSystem = new LoggingSystem("C:/Users/tmbal/Desktop/Fierce-Engine/logs/");
+		m_loggingSystem = new Win32_LoggingSystem(m_timeDateSystem);
+		m_loggingSystem->setLogDirectory(m_assetDirectory+"logs");
 		m_loggingSystem->initSystem();
 		m_logger = m_loggingSystem->createLogger("CORE", true, "ALL_LOGS");
 
 		m_inputSystem = new InputSystem(m_loggingSystem);
 		m_inputSystem->initSystem();
 
-		m_windowSystem = new WindowSystem(m_loggingSystem,m_inputSystem);
+		m_windowSystem = new Win32_WindowSystem(m_loggingSystem,m_inputSystem);
 		m_windowSystem->initSystem();
 		m_window = m_windowSystem->createWindow("Fierce Engine", m_settings.windowMode, m_settings.width, m_settings.height);
 
 		m_renderSystem = new RenderSystem(m_loggingSystem);
-		m_renderSystem->setWindowHandle(m_window->getHandle());
+		m_renderSystem->setWindowHandle(((Win32_Window*)(m_window))->getHandle());
 		m_renderSystem->initSystem();
 		m_graphicsContext = m_renderSystem->getGraphicsContext();
 	}
 
-	void EngineCore::coreUpdate(){}
+	void EngineCore::coreUpdate(){
+		m_timeDateSystem->updateSystem();
+		m_loggingSystem->updateSystem();
+		m_inputSystem->updateSystem();
+		m_windowSystem->updateSystem();
+		m_renderSystem->updateSystem();
+	}
 
 	void EngineCore::coreRender(){}
 
@@ -94,7 +100,9 @@ namespace Fierce {
 		m_loggingSystem->cleanUpSystem();
 		delete m_loggingSystem;
 
-		delete m_timer;
+		m_timeDateSystem->deleteTimer(m_timer);
+		m_timeDateSystem->cleanUpSystem();
+		delete m_timeDateSystem;
 	}
 
 }

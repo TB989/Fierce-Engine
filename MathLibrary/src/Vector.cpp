@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#include "src/Logger.h"
+#include "src/include/LoggingSystem.h"
 
 namespace Fierce {
 
