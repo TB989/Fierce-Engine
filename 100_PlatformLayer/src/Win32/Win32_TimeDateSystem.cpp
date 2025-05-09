@@ -4,7 +4,7 @@
 
 namespace Fierce {
 
-	void Win32_TimeDateSystem::initSystem(){
+	void Win32_TimeDateSystem::initSystem(std::string m_assetDirectory){
 		updateSystem();
 	}
 

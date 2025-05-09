@@ -3,18 +3,22 @@
 #include "Win32_Logger.h"
 
 #include "src/Win32/Win32_TimeDateSystem.h"
+#include "src/Win32/Win32_FileSystem.h"
 
 #include "time.h"
 #include <filesystem>
 
 namespace Fierce {
 
-	Win32_LoggingSystem::Win32_LoggingSystem(TimeDateSystem* timeDateSystem){
+	Win32_LoggingSystem::Win32_LoggingSystem(TimeDateSystem* timeDateSystem,FileSystem* fileSystem){
 		m_timeDateSystem = timeDateSystem;
+		m_fileSystem = fileSystem;
 	}
 
-	void Win32_LoggingSystem::initSystem(){
+	void Win32_LoggingSystem::initSystem(std::string m_assetDirectory){
 		m_handle = GetStdHandle(STD_OUTPUT_HANDLE);
+		m_logDirectory = m_assetDirectory;
+		m_logDirectory.append("logs/");
 	}
 
 	void Win32_LoggingSystem::updateSystem(){
@@ -31,12 +35,12 @@ namespace Fierce {
 
 	void Win32_LoggingSystem::cleanUpSystem(){
 		for (auto pair : m_openFiles) {
-			fclose(pair.second);
+			pair.second->closeFile();
 		}
 	}
 
 	Logger* Win32_LoggingSystem::createLogger(std::string name){
-		Logger* logger = new Win32_Logger(name, m_handle, true, false, NULL);
+		Logger* logger = new Win32_Logger(name, nullptr,m_fileSystem->createConsoleWriter());
 		logger->update(
 			m_timeDateSystem->getYear(),
 			m_timeDateSystem->getMonth(),
@@ -49,28 +53,26 @@ namespace Fierce {
 	}
 
 	Logger* Win32_LoggingSystem::createLogger(std::string name, bool logToConsole, std::string file){
-		//Create full file path
-		std::string fullPath = m_logDirectory;
-		fullPath.append(std::to_string(m_timeDateSystem->getYear()))
-			.append("_")
-			.append(std::to_string(m_timeDateSystem->getYear()))
-			.append("_")
-			.append(std::to_string(m_timeDateSystem->getYear()))
-			.append("_")
-			.append(file);
-
-		std::string temporaryFileName;
 		int counter = 1;
 
 		while (true) {
+			//Create full file path
+			std::string temporaryFileName = "";
+			temporaryFileName.append(std::to_string(m_timeDateSystem->getDay()))
+				.append("_")
+				.append(std::to_string(m_timeDateSystem->getMonth()))
+				.append("_")
+				.append(std::to_string(m_timeDateSystem->getYear()))
+				.append("_")
+				.append(file);
+
 			//Create temporary filename
-			temporaryFileName = fullPath;
 			temporaryFileName.append("_").append(std::to_string(counter)).append(".log");
 			
 			//Another logger already writes in this file
 			if (m_openFiles.find(temporaryFileName) != m_openFiles.end()) {
-				FILE* stream = m_openFiles[temporaryFileName];
-				Logger* logger= new Win32_Logger(name,m_handle,logToConsole,true,stream);
+				TextFileWriter* writer= m_openFiles[temporaryFileName];
+				Logger* logger= new Win32_Logger(name,writer,logToConsole? m_fileSystem->createConsoleWriter() :nullptr);
 				logger->update(
 					m_timeDateSystem->getYear(),
 					m_timeDateSystem->getMonth(),
@@ -83,15 +85,18 @@ namespace Fierce {
 			}
 
 			//No logger writes into this file, but it exists
-			if (std::filesystem::exists(temporaryFileName)) {
+			std::string fullPath = m_logDirectory;
+			fullPath.append(temporaryFileName);
+			if (std::filesystem::exists(fullPath)) {
 				counter++;
 			}
 
 			//File does not exist and no other logger writes into the file
 			else {
-				FILE* stream = fopen(temporaryFileName.c_str(), "w");
-				m_openFiles[temporaryFileName] = stream;
-				Logger* logger = new Win32_Logger(name, m_handle, logToConsole, true, stream);
+				TextFileWriter* writer = m_fileSystem->createTextFileWriter(m_logDirectory);
+				writer->openFile(temporaryFileName);
+				m_openFiles[temporaryFileName] = writer;
+				Logger* logger = new Win32_Logger(name, writer, logToConsole ? m_fileSystem->createConsoleWriter() : nullptr);
 				logger->update(
 					m_timeDateSystem->getYear(),
 					m_timeDateSystem->getMonth(),

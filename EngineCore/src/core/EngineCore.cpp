@@ -2,10 +2,8 @@
 
 #include "src/io/Parser.h"
 
-#include "src/Win32/Win32_TimeDateSystem.h"
-#include "src/Win32/Win32_LoggingSystem.h"
-#include "src/include/InputSystem.h"
-#include "src/Win32/Win32_WindowSystem.h"
+#include "src/include/Plattform.h"
+
 #include "src/Win32/Win32_Window.h"
 
 #include "src/GraphicsContext.h"
@@ -15,10 +13,7 @@ namespace Fierce {
 	bool EngineCore::m_running = false;
 
 	EngineCore::EngineCore(){
-		std::map<std::string, std::string> settings = Parser::parsePropertiesFile("Engine.ini");
-		if (!settings.empty()) {
-			m_settings.parse(settings);
-		}
+		corePreInit();
 	}
 
 	EngineCore::~EngineCore(){
@@ -52,26 +47,37 @@ namespace Fierce {
 		m_running = false;
 	}
 
+	void EngineCore::corePreInit(){
+		m_plattform = new Plattform();
+
+		m_fileSystem = m_plattform->createFileSystem();
+		m_fileSystem->initSystem("");
+
+		std::map<std::string, std::string> settings = Parser::parsePropertiesFile("Engine.ini");
+		if (!settings.empty()) {
+			m_settings.parse(settings);
+		}
+	}
+
 	void EngineCore::coreInit(){
-		m_timeDateSystem = new Win32_TimeDateSystem();
-		m_timeDateSystem->initSystem();
+		m_timeDateSystem = m_plattform->createTimeDateSystem();
+		m_timeDateSystem->initSystem("");
 		m_timer = m_timeDateSystem->createTimer();
 
-		m_loggingSystem = new Win32_LoggingSystem(m_timeDateSystem);
-		m_loggingSystem->setLogDirectory(m_assetDirectory+"logs");
-		m_loggingSystem->initSystem();
+		m_loggingSystem = m_plattform->createLoggingSystem(m_timeDateSystem, m_fileSystem);
+		m_loggingSystem->initSystem(m_settings.assetPath);
 		m_logger = m_loggingSystem->createLogger("CORE", true, "ALL_LOGS");
 
-		m_inputSystem = new InputSystem(m_loggingSystem);
-		m_inputSystem->initSystem();
+		m_inputSystem = m_plattform->createInputSystem(m_loggingSystem);
+		m_inputSystem->initSystem(m_settings.assetPath);
 
-		m_windowSystem = new Win32_WindowSystem(m_loggingSystem,m_inputSystem);
-		m_windowSystem->initSystem();
+		m_windowSystem = m_plattform->createWindowSystem(m_loggingSystem,m_inputSystem);
+		m_windowSystem->initSystem(m_settings.assetPath);
 		m_window = m_windowSystem->createWindow("Fierce Engine", m_settings.windowMode, m_settings.width, m_settings.height);
 
-		m_renderSystem = new RenderSystem(m_loggingSystem);
+		m_renderSystem = new RenderSystem(m_loggingSystem,m_fileSystem);
 		m_renderSystem->setWindowHandle(((Win32_Window*)(m_window))->getHandle());
-		m_renderSystem->initSystem();
+		m_renderSystem->initSystem(m_settings.assetPath);
 		m_graphicsContext = m_renderSystem->getGraphicsContext();
 	}
 
@@ -79,6 +85,7 @@ namespace Fierce {
 		m_timeDateSystem->updateSystem();
 		m_loggingSystem->updateSystem();
 		m_inputSystem->updateSystem();
+		m_fileSystem->updateSystem();
 		m_windowSystem->updateSystem();
 		m_renderSystem->updateSystem();
 	}
@@ -92,6 +99,9 @@ namespace Fierce {
 		m_windowSystem->deleteWindow(m_window);
 		m_windowSystem->cleanUpSystem();
 		delete m_windowSystem;
+
+		m_fileSystem->cleanUpSystem();
+		delete m_fileSystem;
 
 		m_inputSystem->cleanUpSystem();
 		delete m_inputSystem;

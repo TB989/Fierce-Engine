@@ -4,7 +4,7 @@
 
 namespace Fierce {
 
-    void InputSystem::initSystem(){
+    void InputSystem::initSystem(std::string m_assetDirectory){
         m_logger = m_loggingSystem->createLogger("INP", true, "ALL_LOGS");
 
         m_inputContext_raw = new InputContext(true);

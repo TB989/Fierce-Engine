@@ -20,6 +20,8 @@ namespace Fierce {
 			m_height = height;
 		}
 
+		virtual ~Window() {};
+
 		virtual void pollEvents()=0;
 		virtual void show()=0;
 		virtual void onResize(int width, int height) = 0;

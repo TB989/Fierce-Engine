@@ -149,7 +149,7 @@ namespace Fierce {
 
 	class InputSystem :public System {
 	public:
-		void initSystem() override;
+		void initSystem(std::string m_assetDirectory) override;
 		void updateSystem() override;
 		void cleanUpSystem() override;
 

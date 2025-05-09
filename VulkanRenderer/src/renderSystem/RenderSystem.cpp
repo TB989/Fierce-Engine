@@ -26,8 +26,9 @@ namespace Fierce {
 
 	Logger* RenderSystem::LOGGER = nullptr;
 
-	RenderSystem::RenderSystem(LoggingSystem* loggingSystem){
+	RenderSystem::RenderSystem(LoggingSystem* loggingSystem,FileSystem* fileSystem){
 		m_loggingSystem = loggingSystem;
+		m_fileSystem = fileSystem;
 	}
 
 	RenderSystem::~RenderSystem(){}
@@ -36,8 +37,11 @@ namespace Fierce {
 		m_windowHandle = windowHandle;
 	}
 
-	void RenderSystem::initSystem(){
+	void RenderSystem::initSystem(std::string m_assetDirectory){
 		LOGGER = m_loggingSystem->createLogger("VK",true,"VULKAN");
+		m_shaderDirectory = m_assetDirectory;
+		m_shaderDirectory.append("shaders/");
+		m_shaderFileReader = m_fileSystem->createBinaryFileReader(m_shaderDirectory);
 
 		//Create managers
 		m_descriptorPools = new VK_Manager<VK_DescriptorPool*>();
@@ -92,6 +96,7 @@ namespace Fierce {
 		delete m_uploadContext;
 		delete m_coreContext;
 
+		m_fileSystem->deleteBinaryFileReader(m_shaderFileReader);
 		m_loggingSystem->deleteLogger(LOGGER);
 	}
 
@@ -293,42 +298,42 @@ namespace Fierce {
 		RenderSystem::LOGGER->info("##### Creating shaders #####");
 		VK_Shader* shader = nullptr;
 
-		shader = new VK_Shader(m_coreContext->getDevice());
+		shader = new VK_Shader(m_coreContext->getDevice(),m_shaderFileReader);
 		shader->setSourceCode("Shader_Flat_Color_2D_vert.spv");
 		shader->create();
 		m_shaders->add("Shader_Flat_Color_2D_vert.spv",shader);
 
-		shader = new VK_Shader(m_coreContext->getDevice());
+		shader = new VK_Shader(m_coreContext->getDevice(), m_shaderFileReader);
 		shader->setSourceCode("Shader_Flat_Color_2D_frag.spv");
 		shader->create();
 		m_shaders->add("Shader_Flat_Color_2D_frag.spv",shader);
 
-		shader = new VK_Shader(m_coreContext->getDevice());
+		shader = new VK_Shader(m_coreContext->getDevice(), m_shaderFileReader);
 		shader->setSourceCode("Shader_Flat_Color_3D_vert.spv");
 		shader->create();
 		m_shaders->add("Shader_Flat_Color_3D_vert.spv", shader);
 
-		shader = new VK_Shader(m_coreContext->getDevice());
+		shader = new VK_Shader(m_coreContext->getDevice(), m_shaderFileReader);
 		shader->setSourceCode("Shader_Flat_Color_3D_frag.spv");
 		shader->create();
 		m_shaders->add("Shader_Flat_Color_3D_frag.spv", shader);
 
-		shader = new VK_Shader(m_coreContext->getDevice());
+		shader = new VK_Shader(m_coreContext->getDevice(), m_shaderFileReader);
 		shader->setSourceCode("Shader_Font_vert.spv");
 		shader->create();
 		m_shaders->add("Shader_Font_vert.spv", shader);
 
-		shader = new VK_Shader(m_coreContext->getDevice());
+		shader = new VK_Shader(m_coreContext->getDevice(), m_shaderFileReader);
 		shader->setSourceCode("Shader_Font_frag.spv");
 		shader->create();
 		m_shaders->add("Shader_Font_frag.spv", shader);
 
-		shader = new VK_Shader(m_coreContext->getDevice());
+		shader = new VK_Shader(m_coreContext->getDevice(), m_shaderFileReader);
 		shader->setSourceCode("Shader_Flat_Color_GUI_vert.spv");
 		shader->create();
 		m_shaders->add("Shader_Flat_Color_GUI_vert.spv", shader);
 
-		shader = new VK_Shader(m_coreContext->getDevice());
+		shader = new VK_Shader(m_coreContext->getDevice(), m_shaderFileReader);
 		shader->setSourceCode("Shader_Flat_Color_GUI_frag.spv");
 		shader->create();
 		m_shaders->add("Shader_Flat_Color_GUI_frag.spv", shader);

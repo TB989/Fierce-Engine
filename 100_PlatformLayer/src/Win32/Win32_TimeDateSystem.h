@@ -10,7 +10,7 @@ namespace Fierce {
 
 	class Win32_TimeDateSystem :public TimeDateSystem {
 	public:
-		void initSystem() override;
+		void initSystem(std::string assetDirectory) override;
 		void updateSystem() override;
 		void cleanUpSystem() override;
 

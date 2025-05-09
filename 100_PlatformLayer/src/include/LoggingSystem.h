@@ -8,10 +8,8 @@ namespace Fierce {
 
 	class Logger {
 	public:
-		Logger(std::string name, bool logToConsole, bool logToFile) {
+		Logger(std::string name) {
 			m_name = name;
-			m_logToConsole = logToConsole;
-			m_logToFile = logToFile;
 		}
 
 		virtual void log(const char* logLevel, const char* format, ...)=0;
@@ -36,9 +34,6 @@ namespace Fierce {
 	protected:
 		std::string m_name="";
 
-		bool m_logToFile=false;
-		bool m_logToConsole=true;
-
 		//Console
 		bool m_c_useColors=true;
 		bool m_c_printName=true;
@@ -58,8 +53,6 @@ namespace Fierce {
 		virtual Logger* createLogger(std::string name)=0;
 		virtual Logger* createLogger(std::string name, bool logToConsole, std::string file)=0;
 		virtual void deleteLogger(Logger* logger)=0;
-
-		void setLogDirectory(std::string directory) { m_logDirectory = directory; }
 
 	protected:
 		std::string m_logDirectory = "";

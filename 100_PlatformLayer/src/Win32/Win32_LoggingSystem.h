@@ -6,16 +6,18 @@
 #include "Windows.h"
 
 #include "src/include/LoggingSystem.h"
+#include "src/include/FileSystem.h"
 
 namespace Fierce {
 
 	class TimeDateSystem;
+	class FileSystem;
 
 	class Win32_LoggingSystem:public LoggingSystem {
 	public:
-		Win32_LoggingSystem(TimeDateSystem* timeDateSystem);
+		Win32_LoggingSystem(TimeDateSystem* timeDateSystem,FileSystem* fileSystem);
 
-		void initSystem() override;
+		void initSystem(std::string m_assetDirectory) override;
 		void updateSystem() override;
 		void cleanUpSystem() override;
 
@@ -25,9 +27,10 @@ namespace Fierce {
 
 	private:
 		TimeDateSystem* m_timeDateSystem = nullptr;
+		FileSystem* m_fileSystem = nullptr;
 
 		HANDLE m_handle=NULL;
-		std::unordered_map<std::string, FILE*> m_openFiles;
+		std::unordered_map<std::string, TextFileWriter*> m_openFiles;
 		std::vector<Logger*> m_loggers;
 	};
 

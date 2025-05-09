@@ -6,16 +6,13 @@
 
 namespace Fierce {
 
-	FileReader& VK_Shader::m_reader=FileReader();
-
-	VK_Shader::VK_Shader(VK_Device* device){
+	VK_Shader::VK_Shader(VK_Device* device, BinaryFileReader* reader){
 		m_device = device;
+		m_reader = reader;
 
 		m_createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 		m_createInfo.pNext = nullptr;
 		m_createInfo.flags = 0;
-
-		m_reader.setDirectory("C:/Users/tmbal/Desktop/Fierce-Engine/002_Assets/shaders/");
 	}
 
 	VK_Shader::~VK_Shader(){
@@ -32,18 +29,18 @@ namespace Fierce {
 	}
 
 	void VK_Shader::setSourceCode(std::string name) {
-		if (!m_reader.openFile(name.c_str())) {
+		if (!m_reader->openFile(name)) {
 			RenderSystem::LOGGER->error("Failed to open shader file %s.", name.c_str());
 		}
 		long size = 0;
-		if (!m_reader.readBinary(&size, nullptr)) {
+		if (!m_reader->readBinary(&size, nullptr)) {
 			RenderSystem::LOGGER->error("Failed to read shader file %s.",name.c_str());
 		}
 		m_sourceCode = new char[size];
-		if (!m_reader.readBinary(&size, &m_sourceCode)) {
+		if (!m_reader->readBinary(&size, &m_sourceCode)) {
 			RenderSystem::LOGGER->error("Failed to read shader file %s.", name.c_str());
 		}
-		m_reader.closeFile();
+		m_reader->closeFile();
 
 		m_createInfo.codeSize = size;
 		m_createInfo.pCode = reinterpret_cast<const uint32_t*>(m_sourceCode);

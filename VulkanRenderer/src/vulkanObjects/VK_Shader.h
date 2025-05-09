@@ -3,7 +3,7 @@
 #include "vulkan/vulkan.h"
 
 #include "src/utils/FierceStrings.h"
-#include "src/Win32/FileReader.h"
+#include "src/include/FileSystem.h"
 
 #include <vector>
 
@@ -13,7 +13,7 @@ namespace Fierce {
 
 	class VK_Shader {
 	public:
-		VK_Shader(VK_Device* device);
+		VK_Shader(VK_Device* device,BinaryFileReader* reader);
 		~VK_Shader();
 
 		void create();
@@ -22,9 +22,8 @@ namespace Fierce {
 		void setSourceCode(std::string name);
 
 	private:
-		static FileReader& m_reader;
+		BinaryFileReader* m_reader = nullptr;
 
-	private:
 		//Create info
 		VkShaderModuleCreateInfo m_createInfo = {};
 

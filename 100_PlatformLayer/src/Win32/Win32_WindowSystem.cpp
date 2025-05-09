@@ -120,7 +120,9 @@ namespace Fierce {
 		case WM_CLOSE:
 			return 0;
 		case WM_SIZE:
-			window->onResize(LOWORD(lParam), HIWORD(lParam));
+			if (window!=nullptr) {
+				window->onResize(LOWORD(lParam), HIWORD(lParam));
+			}
 			return 0;
 			//*** Keyboard ***//
 		case WM_KEYDOWN:
@@ -225,12 +227,10 @@ namespace Fierce {
 		m_loggingSystem->deleteLogger(m_logger);
 	}
 
-	void Win32_WindowSystem::initSystem(){
+	void Win32_WindowSystem::initSystem(std::string m_assetDirectory){
 		m_logger = m_loggingSystem->createLogger("WIN", true, "ALL_LOGS");
 		hInstance = GetModuleHandle(NULL);
 		registerWindowClass(m_fierceWindowClassName, wndProcFierceWindow);
-
-		m_bindings.insert({VK_ESCAPE, BINDING::KEY_ESC});
 	}
 
 	void Win32_WindowSystem::updateSystem(){

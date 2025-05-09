@@ -7,6 +7,7 @@
 
 #include "src/utils/System.h"
 #include "src/include/LoggingSystem.h"
+#include "src/include/FileSystem.h"
 
 #include "src/manager/VK_Manager.h"
 
@@ -17,6 +18,7 @@
 namespace Fierce {
 
 	class LoggingSystem;
+	class FileSystem;
 
 	class CoreContext;
 	class UploadContext;
@@ -37,12 +39,12 @@ namespace Fierce {
 
 	class RenderSystem:public System {
 	public:
-		RenderSystem(LoggingSystem* loggingSystem);
+		RenderSystem(LoggingSystem* loggingSystem,FileSystem* fileSystem);
 		~RenderSystem();
 
 		void setWindowHandle(HWND m_windowHandle);
 
-		void initSystem() override;
+		void initSystem(std::string m_assetDirectory) override;
 		void updateSystem() override {};
 		void cleanUpSystem() override;
 
@@ -89,6 +91,10 @@ namespace Fierce {
 
 		LoggingSystem* m_loggingSystem=nullptr;
 		HWND m_windowHandle = NULL;
+		FileSystem* m_fileSystem=nullptr;
+		BinaryFileReader* m_shaderFileReader=nullptr;
+
+		std::string m_shaderDirectory = "";
 
 		//Contexts
 		CoreContext* m_coreContext = nullptr;

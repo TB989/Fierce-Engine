@@ -11,6 +11,7 @@ namespace Fierce {
 		Window::WINDOW_MODE windowMode = Window::WINDOW_MODE::WINDOWED;
 		int width = 800;
 		int height = 600;
+		std::string assetPath = "";
 
 		void parse(std::map<std::string, std::string> settings) {
 			std::map<std::string, std::string>::iterator it = settings.begin();
@@ -30,6 +31,9 @@ namespace Fierce {
 				}
 				if (key == "height" || key == "HEIGHT") {
 					height = std::stoi(value);
+				}
+				if (key=="assetPath"||key=="ASSETPATH") {
+					assetPath = value;
 				}
 				it++;
 			}
