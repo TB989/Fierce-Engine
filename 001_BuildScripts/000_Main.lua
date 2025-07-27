@@ -15,6 +15,7 @@ workspace "Fierce-Engine"
 	include "001_BuildScripts.lua"
 	include "002_Assets.lua"
 	include "100_PlatformLayer.lua"
+	include "101_Parsers.lua"
 
 	include "EngineCore.lua"
 	include "VulkanRenderer.lua"

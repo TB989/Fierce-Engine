@@ -13,7 +13,7 @@ namespace Fierce {
 
 	class VK_Shader {
 	public:
-		VK_Shader(VK_Device* device,BinaryFileReader* reader);
+		VK_Shader(VK_Device* device, BinaryFileReader* reader);
 		~VK_Shader();
 
 		void create();
@@ -28,12 +28,12 @@ namespace Fierce {
 		VkShaderModuleCreateInfo m_createInfo = {};
 
 		//Vulkan objects
-		VK_Device* m_device=nullptr;
+		VK_Device* m_device = nullptr;
 		VkShaderModule m_shaderModule = VK_NULL_HANDLE;
 
 		//Source code and shader library
 		std::string shaderName;
-		char* m_sourceCode=nullptr;
+		char* m_sourceCode = nullptr;
 	};
 
 }//end namespace

@@ -12,6 +12,7 @@
 #include "src/manager/VK_Manager.h"
 
 #include "src/utils/FierceStrings.h"
+#include "src/utils/Font.h"
 
 #include "src/GraphicsContext.h"
 
@@ -49,6 +50,9 @@ namespace Fierce {
 		void cleanUpSystem() override;
 
 		//########################### INTERFACE ##############################################################################
+		void loadAllFonts(std::string subdirectory);
+		void loadAllShaders(std::string subdirectory);
+		
 		int newMesh(int numVertices, int numIndices);
 		void meshLoadVertices(int meshId,int numVertices,float* vertices);
 		void meshLoadIndices(int meshId, int numIndices, uint16_t* indices);
@@ -86,6 +90,8 @@ namespace Fierce {
 		void createPipelines();
 		void createUbos();
 
+		void loadAllFonts();
+
 	private:
 		const static int MAX_NUM_MODEL_MATRICES = 100;
 
@@ -94,7 +100,9 @@ namespace Fierce {
 		FileSystem* m_fileSystem=nullptr;
 		BinaryFileReader* m_shaderFileReader=nullptr;
 
+		std::string m_assetDirectory = "";
 		std::string m_shaderDirectory = "";
+		std::string m_fontDirectory = "";
 
 		//Contexts
 		CoreContext* m_coreContext = nullptr;
@@ -108,6 +116,8 @@ namespace Fierce {
 		VK_Manager<VK_Pipeline*>* m_pipelines=nullptr;
 		VK_Manager<VK_UBO*>* m_ubosViewProjection=nullptr;
 		VK_Manager<VK_UBO*>* m_ubosModel=nullptr;
+
+		VK_Manager<Font*>* m_fonts = nullptr;
 
 		uint32_t m_matrixIndex = 0;
 

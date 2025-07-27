@@ -30,6 +30,8 @@ namespace Fierce {
 		TextFileWriter* createTextFileWriter(std::string directory) override;
 		void deleteTextFileWriter(TextFileWriter* writer) override;
 
+		void getAllFileNames(std::string directory, std::vector<std::string>& filenames, std::string ending) override;
+
 	private:
 		ConsoleWriter* m_consoleWriter=nullptr;
 		std::vector<BinaryFileReader*> m_binaryReaders;

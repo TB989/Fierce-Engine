@@ -54,6 +54,7 @@ namespace Fierce {
         virtual ~Win32_TextFileReader();
 
         bool openFile(std::string filename) override;
+        bool readNextLine(std::string& line) override;
         void closeFile() override;
     };
 

@@ -62,6 +62,10 @@ namespace Fierce {
 		
 	}
 
+	void VulkanGraphicsContext::loadFonts(){
+
+	}
+
 	void VulkanGraphicsContext::putIndex(uint16_t index){
 		m_indices[m_indexPointer] = index;
 		m_indexPointer++;

@@ -21,8 +21,7 @@ project "100_PlatformLayer"
 
 	includedirs
 	{
-		"%{wks.location}/%{prj.name}",
-		"%{IncludeDir.Utils}"
+		"%{wks.location}/%{prj.name}"
 	}
 
 	libdirs

@@ -22,6 +22,8 @@
 
 #include "src/vulkanObjects/VK_DescriptorSetLayout.h"
 
+#include "src/Parser_Fnt.h"
+
 namespace Fierce {
 
 	Logger* RenderSystem::LOGGER = nullptr;
@@ -37,9 +39,13 @@ namespace Fierce {
 		m_windowHandle = windowHandle;
 	}
 
-	void RenderSystem::initSystem(std::string m_assetDirectory){
+	void RenderSystem::initSystem(std::string assetDirectory){
 		LOGGER = m_loggingSystem->createLogger("VK",true,"VULKAN");
-		m_shaderDirectory = m_assetDirectory;
+
+		//Directories
+		m_assetDirectory = assetDirectory;
+
+		m_shaderDirectory = assetDirectory;
 		m_shaderDirectory.append("shaders/");
 		m_shaderFileReader = m_fileSystem->createBinaryFileReader(m_shaderDirectory);
 
@@ -50,6 +56,8 @@ namespace Fierce {
 		m_pipelines = new VK_Manager<VK_Pipeline*>();
 		m_ubosViewProjection = new VK_Manager<VK_UBO*>();
 		m_ubosModel = new VK_Manager<VK_UBO*>();
+
+		m_fonts = new VK_Manager<Font*>();
 
 		//Create contexts
 		m_coreContext = new CoreContext(m_windowHandle);
@@ -68,6 +76,9 @@ namespace Fierce {
 		createShaders();
 		createPipelines();
 		createUbos();
+
+		//Create additional ressources
+		loadAllFonts();
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	}
 
@@ -84,6 +95,7 @@ namespace Fierce {
 		}
 
 		//Delete engine ressources
+		delete m_fonts;
 		delete m_ubosViewProjection;
 		delete m_ubosModel;
 		delete m_pipelines;
@@ -98,6 +110,26 @@ namespace Fierce {
 
 		m_fileSystem->deleteBinaryFileReader(m_shaderFileReader);
 		m_loggingSystem->deleteLogger(LOGGER);
+	}
+
+	void RenderSystem::loadAllFonts(std::string subdirectory){
+		std::string directory = m_assetDirectory;
+		directory.append(subdirectory);
+
+		TextFileReader* reader = m_fileSystem->createTextFileReader(directory);
+		Parser_Fnt* parser = new Parser_Fnt(reader);
+		Font* m_font;
+
+		std::vector<std::string> filenames;
+		m_fileSystem->getAllFileNames(directory,filenames,".fnt");
+		for (std::string name: filenames) {
+			m_font = new Font();
+			parser->parseFile(name, m_font);
+			m_fonts->add(name.substr(0,name.size()-4),m_font);
+		}
+
+		delete parser;
+		m_fileSystem->deleteTextFileReader(reader);
 	}
 
 	int RenderSystem::newMesh(int numVertices,int numIndices){
@@ -415,6 +447,10 @@ namespace Fierce {
 			m_ubosModel->add("Model",ubo);
 		}
 		RenderSystem::LOGGER->info("##### Done creating UBOs #####");
+	}
+
+	void RenderSystem::loadAllFonts(){
+
 	}
 
 }//end namespace

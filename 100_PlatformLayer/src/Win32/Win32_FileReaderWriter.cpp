@@ -6,11 +6,12 @@ namespace Fierce {
 	Win32_FileIO::Win32_FileIO(std::string directory) :FileIO(directory) {}
 
 	bool Win32_FileIO::openFile(std::string filename,std::string options){
+
 		//Close open file
 		closeFile();
 
 		//Check if directory and filename are set
-		if (m_directory == "" || filename == "") {
+		if (filename == "") {
 			m_file = nullptr;
 			return false;
 		}
@@ -19,7 +20,6 @@ namespace Fierce {
 		std::string path = m_directory;
 		path.append(filename);
 
-		//Open file
 		m_file = fopen(path.c_str(), options.c_str());
 		if (m_file == nullptr) {
 			return false;
@@ -96,6 +96,21 @@ namespace Fierce {
 
 	bool Win32_TextFileReader::openFile(std::string filename){
 		return Win32_FileIO::openFile(filename, "r");
+	}
+
+	bool Win32_TextFileReader::readNextLine(std::string& line){
+		char buffer[1024];
+		if (fgets(buffer, sizeof(buffer), m_file)) {
+			line = buffer;
+
+			if (!line.empty() && (line.back() == '\n' || line.back() == '\r')) {
+				line.erase(line.find_last_not_of("\r\n") + 1);
+			}
+
+			return true;
+		}
+
+		return false; 
 	}
 
 	void Win32_TextFileReader::closeFile(){

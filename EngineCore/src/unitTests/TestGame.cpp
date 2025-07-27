@@ -9,20 +9,28 @@
 
 #include "src/GeometryLoader.h"
 
-#include "src/io/Parser.h"
+#include "src/Parser_Fnt.h"
 
 #include "src/io/stb_image.h"
 
 #include "src/include/InputSystem.h"
+
+#include "src/utils/Font.h"
 
 namespace Fierce {
 
 	TestGame::TestGame() {
 		//m_settings.windowMode = Window::WINDOW_MODE::FULLSCREEN;
 
-		m_font = Parser::parseFontFile("C:/Users/tmbal/Desktop/Fierce-Engine/002_Assets/fonts/Candara.fnt");
-
-
+		//Parse font
+		m_font = new Font();
+		std::string fontDirectory = m_settings.assetPath;
+		fontDirectory.append("fonts/");
+		TextFileReader* reader = m_fileSystem->createTextFileReader(fontDirectory);
+		Parser_Fnt* parser = new Parser_Fnt(reader);
+		parser->parseFile("Candara.fnt", m_font);
+		delete parser;
+		m_fileSystem->deleteTextFileReader(reader);
 
 		m_loader = new GeometryLoader();
 		m_loader->registerGeometry(GeometryType::RECTANGLE,new Rectangle2D());

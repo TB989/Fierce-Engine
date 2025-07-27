@@ -24,6 +24,7 @@ project "EngineCore"
 	{
 		"%{wks.location}/%{prj.name}",
 		"%{IncludeDir.PlatformLayer}",
+		"%{IncludeDir.Parsers}",
 		"%{IncludeDir.Vulkan}",
 		"%{IncludeDir.VulkanRenderer}",
 		"%{IncludeDir.MathLibrary}",
@@ -39,6 +40,7 @@ project "EngineCore"
 	links
 	{
 		"%{Library.PlatformLayer}",
+		"%{Library.Parsers}",
 		"%{Library.VulkanRenderer}",
 		"%{Library.MathLibrary}",
 		"%{Library.GeometryLibrary}"

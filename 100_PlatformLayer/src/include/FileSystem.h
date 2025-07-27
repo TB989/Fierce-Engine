@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include "src/utils/System.h"
 
@@ -50,6 +51,7 @@ namespace Fierce {
 		~TextFileReader() {};
 
 		virtual bool openFile(std::string filename) = 0;
+		virtual bool readNextLine(std::string& line)=0;
 		virtual void closeFile() = 0;
 	};
 
@@ -78,6 +80,8 @@ namespace Fierce {
 
 		virtual TextFileWriter* createTextFileWriter(std::string directory) = 0;
 		virtual void deleteTextFileWriter(TextFileWriter* writer) = 0;
+
+		virtual void getAllFileNames(std::string directory, std::vector<std::string>& filenames, std::string ending) = 0;
 	};
 
 }

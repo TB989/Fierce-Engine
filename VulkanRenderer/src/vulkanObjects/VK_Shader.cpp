@@ -6,7 +6,7 @@
 
 namespace Fierce {
 
-	VK_Shader::VK_Shader(VK_Device* device, BinaryFileReader* reader){
+	VK_Shader::VK_Shader(VK_Device* device, BinaryFileReader* reader) {
 		m_device = device;
 		m_reader = reader;
 
@@ -15,11 +15,11 @@ namespace Fierce {
 		m_createInfo.flags = 0;
 	}
 
-	VK_Shader::~VK_Shader(){
+	VK_Shader::~VK_Shader() {
 		vkDestroyShaderModule(m_device->getDevice(), m_shaderModule, nullptr);
 	}
 
-	void VK_Shader::create(){
+	void VK_Shader::create() {
 		if (vkCreateShaderModule(m_device->getDevice(), &m_createInfo, nullptr, &m_shaderModule) != VK_SUCCESS) {
 			RenderSystem::LOGGER->error("Failed to create shader module.");
 		}
@@ -34,7 +34,7 @@ namespace Fierce {
 		}
 		long size = 0;
 		if (!m_reader->readBinary(&size, nullptr)) {
-			RenderSystem::LOGGER->error("Failed to read shader file %s.",name.c_str());
+			RenderSystem::LOGGER->error("Failed to read shader file %s.", name.c_str());
 		}
 		m_sourceCode = new char[size];
 		if (!m_reader->readBinary(&size, &m_sourceCode)) {

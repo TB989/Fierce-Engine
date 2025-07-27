@@ -1,5 +1,6 @@
 IncludeDir = {}
 IncludeDir["PlatformLayer"] = "%{wks.location}/100_PlatformLayer"
+IncludeDir["Parsers"] = "%{wks.location}/101_Parsers"
 
 IncludeDir["Vulkan"] = "C:/VulkanSDK/1.3.290.0/Include"
 IncludeDir["VulkanRenderer"] = "%{wks.location}/VulkanRenderer"
@@ -13,6 +14,8 @@ LibraryDir["Vulkan"] = "C:/VulkanSDK/1.3.290.0/Lib"
 
 Library = {}
 Library["PlatformLayer"] = "100_PlatformLayer.lib"
+Library["Parsers"] = "101_Parsers.lib"
+
 
 Library["Vulkan"] = "vulkan-1.lib"
 Library["VulkanRenderer"] = "VulkanRenderer.lib"

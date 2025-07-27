@@ -1,7 +1,5 @@
 #include "EngineCore.h"
 
-#include "src/io/Parser.h"
-
 #include "src/include/Plattform.h"
 
 #include "src/Win32/Win32_Window.h"
@@ -53,10 +51,12 @@ namespace Fierce {
 		m_fileSystem = m_plattform->createFileSystem();
 		m_fileSystem->initSystem("");
 
-		std::map<std::string, std::string> settings = Parser::parsePropertiesFile("Engine.ini");
-		if (!settings.empty()) {
-			m_settings.parse(settings);
-		}
+		//Load engine settings
+		m_settingsReader = m_fileSystem->createTextFileReader("");
+		m_settingsParser = new Parser_Ini(m_settingsReader);
+		m_settingsParser->parseFile("Engine.ini",m_settings);
+		delete m_settingsParser;
+		m_fileSystem->deleteTextFileReader(m_settingsReader);
 	}
 
 	void EngineCore::coreInit(){
@@ -79,6 +79,8 @@ namespace Fierce {
 		m_renderSystem->setWindowHandle(((Win32_Window*)(m_window))->getHandle());
 		m_renderSystem->initSystem(m_settings.assetPath);
 		m_graphicsContext = m_renderSystem->getGraphicsContext();
+
+		m_renderSystem->loadAllFonts("fonts/");
 	}
 
 	void EngineCore::coreUpdate(){

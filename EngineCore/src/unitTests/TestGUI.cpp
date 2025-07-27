@@ -3,18 +3,27 @@
 #include "src/Transform.h"
 #include "src/Matrix.h"
 
-#include "src/io/Parser.h"
+#include "src/Parser_Fnt.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "src/io/stb_image.h"
 
 #include "src/include/InputSystem.h"
 
+#include "src/utils/Font.h"
+
 namespace Fierce {
 
 	TestGUI::TestGUI() {
-		m_font = Parser::parseFontFile("C:/Users/tmbal/Desktop/Fierce-Engine/VulkanRenderer/res/Candara.fnt");
-
+		//Parse font
+		m_font = new Font();
+		std::string fontDirectory = m_settings.assetPath;
+		fontDirectory.append("fonts/");
+		TextFileReader* reader = m_fileSystem->createTextFileReader(fontDirectory);
+		Parser_Fnt* parser = new Parser_Fnt(reader);
+		parser->parseFile("Candara.fnt", m_font);
+		delete parser;
+		m_fileSystem->deleteTextFileReader(reader);
 	}
 
 	TestGUI::~TestGUI() {

@@ -4,6 +4,10 @@
 
 #include "Win32_FileReaderWriter.h"
 
+#include <filesystem>
+
+#include "src/utils/FierceStrings.h"
+
 namespace Fierce {
 	Win32_FileSystem::Win32_FileSystem(){
 		
@@ -94,6 +98,16 @@ namespace Fierce {
 		if (it != m_textWriters.end()) {
 			m_textWriters.erase(it);
 			//delete reader;
+		}
+	}
+
+	void Win32_FileSystem::getAllFileNames(std::string directory, std::vector<std::string>& filenames, std::string ending){
+		for (const auto& entry : std::filesystem::directory_iterator(directory)) {
+			if (entry.is_regular_file()) {
+				if (endsWith(entry.path().filename().string(),ending)) {
+					filenames.push_back(entry.path().filename().string());
+				}
+			}
 		}
 	}
 }
