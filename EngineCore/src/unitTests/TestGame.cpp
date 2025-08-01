@@ -158,14 +158,7 @@ namespace Fierce {
 		m_logger->info("Loaded meshes");
 
 		//################################################ TEXTURES #####################################################################
-		int texWidth, texHeight, texChannels;
-		stbi_uc* pixels = stbi_load("C:/Users/tmbal/Desktop/Fierce-Engine/002_Assets/fonts/Candara.png", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-		if (!pixels) {
-			m_logger->error("Unable to load image.");
-		}
-		m_textureId = m_renderSystem->newTexture(texWidth,texHeight,4);
-		m_renderSystem->textureLoadData(m_textureId, pixels);
-		stbi_image_free(pixels);
+		m_textureId = 0;
 
 		m_color = new Color4f(1.0f, 0.0f, 0.0f, 1.0f);
 		m_color2 = new Color4f(0.0f,1.0f,0.0f,1.0f);
@@ -341,10 +334,10 @@ namespace Fierce {
 
 	void TestGame::renderGUI(GraphicsContext* context){
 		m_renderSystem->bindPipeline("GUI");
-		context->setColor(255,0,0);
-		context->drawRect(500,200,100,100);
-		context->setColor(188, 47, 86);
-		context->drawRect(200, 200, 500, 100);
+		//context->setColor(255,0,0);
+		//context->drawRect(500,200,100,100);
+		//context->setColor(188, 47, 86);
+		//context->drawRect(200, 200, 500, 100);
 
 		m_renderSystem->drawGraphicsContext();
 	}

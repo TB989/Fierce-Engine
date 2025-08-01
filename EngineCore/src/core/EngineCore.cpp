@@ -79,8 +79,6 @@ namespace Fierce {
 		m_renderSystem->setWindowHandle(((Win32_Window*)(m_window))->getHandle());
 		m_renderSystem->initSystem(m_settings.assetPath);
 		m_graphicsContext = m_renderSystem->getGraphicsContext();
-
-		m_renderSystem->loadAllFonts("fonts/");
 	}
 
 	void EngineCore::coreUpdate(){

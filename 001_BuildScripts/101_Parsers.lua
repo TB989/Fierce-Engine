@@ -10,7 +10,7 @@ project "101_Parsers"
 
 	defines
 	{
-		
+		"STB_IMAGE_IMPLEMENTATION"
 	}
 
 	files

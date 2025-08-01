@@ -50,9 +50,6 @@ namespace Fierce {
 		void cleanUpSystem() override;
 
 		//########################### INTERFACE ##############################################################################
-		void loadAllFonts(std::string subdirectory);
-		void loadAllShaders(std::string subdirectory);
-		
 		int newMesh(int numVertices, int numIndices);
 		void meshLoadVertices(int meshId,int numVertices,float* vertices);
 		void meshLoadIndices(int meshId, int numIndices, uint16_t* indices);
@@ -91,6 +88,8 @@ namespace Fierce {
 		void createUbos();
 
 		void loadAllFonts();
+		void loadAllShaders();
+		void loadAllTextures();
 
 	private:
 		const static int MAX_NUM_MODEL_MATRICES = 100;
@@ -98,11 +97,11 @@ namespace Fierce {
 		LoggingSystem* m_loggingSystem=nullptr;
 		HWND m_windowHandle = NULL;
 		FileSystem* m_fileSystem=nullptr;
-		BinaryFileReader* m_shaderFileReader=nullptr;
 
 		std::string m_assetDirectory = "";
 		std::string m_shaderDirectory = "";
 		std::string m_fontDirectory = "";
+		std::string m_textureDirectory = "";
 
 		//Contexts
 		CoreContext* m_coreContext = nullptr;

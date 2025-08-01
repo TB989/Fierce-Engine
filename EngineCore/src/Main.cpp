@@ -3,8 +3,8 @@
 using namespace Fierce;
 
 int main() {
-	//TestGUI* app = new TestGUI();
-	TestGame* app = new TestGame();
+	TestGUI* app = new TestGUI();
+	//TestGame* app = new TestGame();
 	app->run();
 	delete app;
 

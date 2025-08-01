@@ -31,6 +31,7 @@ namespace Fierce {
 		struct {
 			int id = 0;
 			std::string file = "";
+			int textureId=-1;
 		} page;
 
 		struct Char {

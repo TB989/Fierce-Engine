@@ -124,13 +124,9 @@ namespace Fierce {
 		void cleanUp() override;
 
 	private:
-		Font* m_font = nullptr;
-		int m_textureId = 0;
 		Action* m_action = nullptr;
 		Mat4* m_orthographicProjectionMatrix = nullptr;
 		Mat4* m_perspectiveProjectionMatrix = nullptr;
-		Mat4* m_viewMatrix = nullptr;
-		Transform3D* m_viewTransform = nullptr;
 	};
 
 }//end namespace

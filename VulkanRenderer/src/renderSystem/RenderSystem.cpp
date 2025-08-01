@@ -23,6 +23,7 @@
 #include "src/vulkanObjects/VK_DescriptorSetLayout.h"
 
 #include "src/Parser_Fnt.h"
+#include "src/Parser_Tex.h"
 
 namespace Fierce {
 
@@ -42,12 +43,17 @@ namespace Fierce {
 	void RenderSystem::initSystem(std::string assetDirectory){
 		LOGGER = m_loggingSystem->createLogger("VK",true,"VULKAN");
 
-		//Directories
+		//Create Directories
 		m_assetDirectory = assetDirectory;
 
 		m_shaderDirectory = assetDirectory;
 		m_shaderDirectory.append("shaders/");
-		m_shaderFileReader = m_fileSystem->createBinaryFileReader(m_shaderDirectory);
+
+		m_fontDirectory = assetDirectory;
+		m_fontDirectory.append("fonts/");
+
+		m_textureDirectory = assetDirectory;
+		m_textureDirectory.append("textures/");
 
 		//Create managers
 		m_descriptorPools = new VK_Manager<VK_DescriptorPool*>();
@@ -79,6 +85,7 @@ namespace Fierce {
 
 		//Create additional ressources
 		loadAllFonts();
+		loadAllTextures();
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	}
 
@@ -108,28 +115,7 @@ namespace Fierce {
 		delete m_uploadContext;
 		delete m_coreContext;
 
-		m_fileSystem->deleteBinaryFileReader(m_shaderFileReader);
 		m_loggingSystem->deleteLogger(LOGGER);
-	}
-
-	void RenderSystem::loadAllFonts(std::string subdirectory){
-		std::string directory = m_assetDirectory;
-		directory.append(subdirectory);
-
-		TextFileReader* reader = m_fileSystem->createTextFileReader(directory);
-		Parser_Fnt* parser = new Parser_Fnt(reader);
-		Font* m_font;
-
-		std::vector<std::string> filenames;
-		m_fileSystem->getAllFileNames(directory,filenames,".fnt");
-		for (std::string name: filenames) {
-			m_font = new Font();
-			parser->parseFile(name, m_font);
-			m_fonts->add(name.substr(0,name.size()-4),m_font);
-		}
-
-		delete parser;
-		m_fileSystem->deleteTextFileReader(reader);
 	}
 
 	int RenderSystem::newMesh(int numVertices,int numIndices){
@@ -327,50 +313,7 @@ namespace Fierce {
 	}
 
 	void RenderSystem::createShaders(){
-		RenderSystem::LOGGER->info("##### Creating shaders #####");
-		VK_Shader* shader = nullptr;
-
-		shader = new VK_Shader(m_coreContext->getDevice(),m_shaderFileReader);
-		shader->setSourceCode("Shader_Flat_Color_2D_vert.spv");
-		shader->create();
-		m_shaders->add("Shader_Flat_Color_2D_vert.spv",shader);
-
-		shader = new VK_Shader(m_coreContext->getDevice(), m_shaderFileReader);
-		shader->setSourceCode("Shader_Flat_Color_2D_frag.spv");
-		shader->create();
-		m_shaders->add("Shader_Flat_Color_2D_frag.spv",shader);
-
-		shader = new VK_Shader(m_coreContext->getDevice(), m_shaderFileReader);
-		shader->setSourceCode("Shader_Flat_Color_3D_vert.spv");
-		shader->create();
-		m_shaders->add("Shader_Flat_Color_3D_vert.spv", shader);
-
-		shader = new VK_Shader(m_coreContext->getDevice(), m_shaderFileReader);
-		shader->setSourceCode("Shader_Flat_Color_3D_frag.spv");
-		shader->create();
-		m_shaders->add("Shader_Flat_Color_3D_frag.spv", shader);
-
-		shader = new VK_Shader(m_coreContext->getDevice(), m_shaderFileReader);
-		shader->setSourceCode("Shader_Font_vert.spv");
-		shader->create();
-		m_shaders->add("Shader_Font_vert.spv", shader);
-
-		shader = new VK_Shader(m_coreContext->getDevice(), m_shaderFileReader);
-		shader->setSourceCode("Shader_Font_frag.spv");
-		shader->create();
-		m_shaders->add("Shader_Font_frag.spv", shader);
-
-		shader = new VK_Shader(m_coreContext->getDevice(), m_shaderFileReader);
-		shader->setSourceCode("Shader_Flat_Color_GUI_vert.spv");
-		shader->create();
-		m_shaders->add("Shader_Flat_Color_GUI_vert.spv", shader);
-
-		shader = new VK_Shader(m_coreContext->getDevice(), m_shaderFileReader);
-		shader->setSourceCode("Shader_Flat_Color_GUI_frag.spv");
-		shader->create();
-		m_shaders->add("Shader_Flat_Color_GUI_frag.spv", shader);
-
-		RenderSystem::LOGGER->info("##### Done creating shaders #####");
+		loadAllShaders();
 	}
 
 	void RenderSystem::createPipelines(){
@@ -450,7 +393,122 @@ namespace Fierce {
 	}
 
 	void RenderSystem::loadAllFonts(){
+		RenderSystem::LOGGER->info("##### Loading fonts #####");
 
+		//Fnt
+		TextFileReader* reader = m_fileSystem->createTextFileReader(m_fontDirectory);
+		Parser_Fnt* parser = new Parser_Fnt(reader);
+		Font* m_font;
+
+		//Texture
+		Parser_Tex* parserTex = new Parser_Tex(m_fontDirectory);
+		int texWidth, texHeight, texChannels=0;
+		unsigned char* pixels = nullptr;
+
+		std::vector<std::string> filenames;
+		m_fileSystem->getAllFileNames(m_fontDirectory, filenames, ".fnt");
+
+		for (std::string name : filenames) {
+			RenderSystem::LOGGER->info("Loading: %s",name.c_str());
+
+			//Fnt
+			m_font = new Font();
+			parser->parseFile(name, m_font);
+
+			//Texture
+			pixels = parserTex->parseFile(m_font->page.file, &texWidth, &texHeight, &texChannels);
+
+			int m_textureId = newTexture(texWidth, texHeight, 4);
+			textureLoadData(m_textureId, pixels);
+
+			parserTex->freeData(pixels);
+
+			m_fonts->add(name.substr(0, name.size() - 4), m_font);
+		}
+
+		delete parser;
+		delete parserTex;
+		m_fileSystem->deleteTextFileReader(reader);
+
+		RenderSystem::LOGGER->info("##### Done loading fonts #####");
+	}
+
+	void RenderSystem::loadAllShaders(){
+		RenderSystem::LOGGER->info("##### Loading shaders #####");
+
+		BinaryFileReader* reader = m_fileSystem->createBinaryFileReader(m_shaderDirectory);
+		VK_Shader* shader = nullptr;
+		long size = 0;
+		char* sourceCode = nullptr;
+
+		std::vector<std::string> filenames;
+		m_fileSystem->getAllFileNames(m_shaderDirectory, filenames, ".spv");
+
+		for (std::string name : filenames) {
+			RenderSystem::LOGGER->info("Loading: %s", name.c_str());
+
+			//Open file
+			if (!reader->openFile(name)) {
+				RenderSystem::LOGGER->error("Failed to open shader file %s.", name.c_str());
+				continue;
+			}
+
+			//Read size
+			if (!reader->readBinary(&size, nullptr)) {
+				RenderSystem::LOGGER->error("Failed to read shader file %s.", name.c_str());
+				continue;
+			}
+
+			//Read source code
+			sourceCode = new char[size];
+			if (!reader->readBinary(&size, &sourceCode)) {
+				RenderSystem::LOGGER->error("Failed to read shader file %s.", name.c_str());
+				continue;
+			}
+
+			//Close file
+			reader->closeFile();
+
+			//Create and add shader
+			shader = new VK_Shader(m_coreContext->getDevice());
+			shader->setSourceCode(size,sourceCode);
+			shader->create();
+			m_shaders->add(name, shader);
+
+			//Clean up resources
+			size = 0;
+			delete[] sourceCode;
+			sourceCode = nullptr;
+		}
+
+		m_fileSystem->deleteBinaryFileReader(reader);
+
+		RenderSystem::LOGGER->info("##### Done loading shaders #####");
+	}
+
+	void RenderSystem::loadAllTextures(){
+		RenderSystem::LOGGER->info("##### Loading textures #####");
+
+		Parser_Tex* parser = new Parser_Tex(m_textureDirectory);
+		int texWidth, texHeight, texChannels;
+		unsigned char* pixels=nullptr;
+		
+		std::vector<std::string> filenames;
+		m_fileSystem->getAllFileNames(m_textureDirectory, filenames, ".jpg");
+
+		for (std::string name : filenames) {
+			RenderSystem::LOGGER->info("Loading: %s", name.c_str());
+			pixels=parser->parseFile(name,&texWidth,&texHeight,&texChannels);
+
+			int m_textureId = newTexture(texWidth, texHeight, 4);
+			textureLoadData(m_textureId, pixels);
+
+			parser->freeData(pixels);
+		}
+
+		delete parser;
+
+		RenderSystem::LOGGER->info("##### Done loading textures #####");
 	}
 
 }//end namespace
