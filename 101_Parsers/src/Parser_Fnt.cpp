@@ -282,10 +282,10 @@ namespace Fierce {
 				font->kernings.kernings[numKernings].first = asInt(VALUE);
 			}
 			if (KEY == "second") {
-				font->kernings.kernings[numKernings].first = asInt(VALUE);
+				font->kernings.kernings[numKernings].second = asInt(VALUE);
 			}
 			if (KEY == "amount") {
-				font->kernings.kernings[numKernings].first = asInt(VALUE);
+				font->kernings.kernings[numKernings].amount = asInt(VALUE);
 			}
 		}
 	}

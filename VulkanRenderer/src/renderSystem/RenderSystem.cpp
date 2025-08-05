@@ -63,8 +63,6 @@ namespace Fierce {
 		m_ubosViewProjection = new VK_Manager<VK_UBO*>();
 		m_ubosModel = new VK_Manager<VK_UBO*>();
 
-		m_fonts = new VK_Manager<Font*>();
-
 		//Create contexts
 		m_coreContext = new CoreContext(m_windowHandle);
 		m_uploadContext = new UploadContext(m_coreContext->getDevice());
@@ -102,7 +100,6 @@ namespace Fierce {
 		}
 
 		//Delete engine ressources
-		delete m_fonts;
 		delete m_ubosViewProjection;
 		delete m_ubosModel;
 		delete m_pipelines;
@@ -223,12 +220,25 @@ namespace Fierce {
 		m_graphicsContext->reset();
 	}
 
+	void RenderSystem::resetGraphicsContext(){
+		m_graphicsContext->reset();
+	}
+
 	void RenderSystem::drawGraphicsContext(){
 		VK_CommandBuffer* commandBuffer = m_coreContext->getActiveCommandBuffer();
+
+		commandBuffer->bindPipeline(m_pipelines->get("GUI")->getId());
 		commandBuffer->bindDescriptorSet(m_pipelines->get("GUI"), m_ubosViewProjection->get(m_coreContext->getCurrentFrame())->getDescriptorSet(), 0);
 		commandBuffer->bindVertexBuffer(m_graphicsContext->getVertexBuffer()->getId());
 		commandBuffer->bindIndexBuffer(m_graphicsContext->getIndexBuffer()->getId());
 		commandBuffer->renderIndexed(m_graphicsContext->getNumIndices());
+
+		commandBuffer->bindPipeline(m_pipelines->get("Font")->getId());
+		commandBuffer->bindDescriptorSet(m_pipelines->get("Font"), m_ubosViewProjection->get(m_coreContext->getCurrentFrame())->getDescriptorSet(), 0);
+		commandBuffer->bindDescriptorSet(m_pipelines->get("Font"), m_textures[0]->getDescriptorSet(), 1);
+		commandBuffer->bindVertexBuffer(m_graphicsContext->getVertexBufferFont()->getId());
+		commandBuffer->bindIndexBuffer(m_graphicsContext->getIndexBufferFont()->getId());
+		commandBuffer->renderIndexed(m_graphicsContext->getNumIndicesFont());
 	}
 
 	void RenderSystem::postInit(){
@@ -350,10 +360,9 @@ namespace Fierce {
 		pipeline->addFragmentShader(m_shaders->get("Shader_Font_frag.spv")->getId());
 		pipeline->addVertexInput(0, VK_FORMAT_R32G32_SFLOAT);
 		pipeline->addVertexInput(1, VK_FORMAT_R32G32_SFLOAT);
+		pipeline->addVertexInput(2, VK_FORMAT_R32G32B32_SFLOAT);
 		pipeline->addDescriptorSetLayout(m_descriptorSetLayouts->get("Projection")->getId());
-		pipeline->addDescriptorSetLayout(m_descriptorSetLayouts->get("Model")->getId());
 		pipeline->addDescriptorSetLayout(m_descriptorSetLayouts->get("Sampler")->getId());
-		pipeline->addPushConstantRange(VK_SHADER_STAGE_VERTEX_BIT, 4 * sizeof(float) + sizeof(uint32_t), 0);
 		pipeline->enableBlending();
 		pipeline->create();
 		m_pipelines->add("Font", pipeline);
@@ -423,7 +432,7 @@ namespace Fierce {
 
 			parserTex->freeData(pixels);
 
-			m_fonts->add(name.substr(0, name.size() - 4), m_font);
+			m_graphicsContext->addFont(name.substr(0, name.size() - 4), m_font);
 		}
 
 		delete parser;

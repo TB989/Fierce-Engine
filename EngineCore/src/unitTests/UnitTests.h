@@ -36,8 +36,6 @@ namespace Fierce {
 		void cleanUp() override;
 
 	private:
-		Font* m_font = nullptr;
-
 		Player* m_player = nullptr;
 
 		Action* m_action = nullptr;
@@ -54,8 +52,6 @@ namespace Fierce {
 		Mat4* m_modelMatrix2 = nullptr;
 		Mat4* m_modelMatrix3 = nullptr;
 		Mat4* m_modelMatrix4 = nullptr;
-
-		Mat4* m_modelMatrix5 = nullptr;
 
 		Mat4* m_modelMatrixPlane = nullptr;
 		Mat4* m_modelMatrixCube = nullptr;
@@ -88,7 +84,6 @@ namespace Fierce {
 		Color4f* m_color3 = nullptr;
 		Color4f* m_color4 = nullptr;
 		Color4f* m_color5 = nullptr;
-		Color4f* m_color6 = nullptr;
 
 		Color4f* m_colorFont = nullptr;
 
@@ -99,8 +94,6 @@ namespace Fierce {
 		Transform2D* m_transform2 = nullptr;
 		Transform2D* m_transform3 = nullptr;
 		Transform2D* m_transform4 = nullptr;
-
-		Transform2D* m_transform5 = nullptr;
 
 		Transform3D* m_transformPlane = nullptr;
 		Transform3D* m_transformCube = nullptr;

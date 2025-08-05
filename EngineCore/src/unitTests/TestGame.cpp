@@ -20,18 +20,6 @@
 namespace Fierce {
 
 	TestGame::TestGame() {
-		//m_settings.windowMode = Window::WINDOW_MODE::FULLSCREEN;
-
-		//Parse font
-		m_font = new Font();
-		std::string fontDirectory = m_settings.assetPath;
-		fontDirectory.append("fonts/");
-		TextFileReader* reader = m_fileSystem->createTextFileReader(fontDirectory);
-		Parser_Fnt* parser = new Parser_Fnt(reader);
-		parser->parseFile("Candara.fnt", m_font);
-		delete parser;
-		m_fileSystem->deleteTextFileReader(reader);
-
 		m_loader = new GeometryLoader();
 		m_loader->registerGeometry(GeometryType::RECTANGLE,new Rectangle2D());
 		m_loader->registerGeometry(GeometryType::CIRCLE, new Circle2D());
@@ -132,41 +120,15 @@ namespace Fierce {
 		m_renderSystem->meshLoadVertices(m_meshId_Sphere, vertices10.size(), vertices10.data());
 		m_renderSystem->meshLoadIndices(m_meshId_Sphere, indices10.size(), indices10.data());
 
-
-		//Generate mesh for letter
-		std::vector<float> vertices11;
-		char letter = '?';
-		int padding = 0;
-		Font::Char character = m_font->chars.chars[letter];
-		float x1= (float)(character.x-padding)/(float)m_font->common.scaleW;
-		float x2 = (float)(character.x+character.width+padding) / (float)m_font->common.scaleW;
-		float y1 = (float)(character.y-padding) / (float)m_font->common.scaleH;
-		float y2 = (float)(character.y + character.height+padding) / (float)m_font->common.scaleH;
-		vertices11.push_back(0); vertices11.push_back(0); vertices11.push_back(x1); vertices11.push_back(y1);
-		vertices11.push_back(0); vertices11.push_back(1); vertices11.push_back(x1); vertices11.push_back(y2);
-		vertices11.push_back(1); vertices11.push_back(1); vertices11.push_back(x2); vertices11.push_back(y2);
-		vertices11.push_back(1); vertices11.push_back(0); vertices11.push_back(x2); vertices11.push_back(y1);
-
-		std::vector<uint16_t> indices11;
-		indices11.push_back(0); indices11.push_back(1); indices11.push_back(2);
-		indices11.push_back(0); indices11.push_back(2); indices11.push_back(3);
-
-		m_meshId_Font = m_renderSystem->newMesh(vertices11.size(), indices11.size());
-		m_renderSystem->meshLoadVertices(m_meshId_Font, vertices11.size(), vertices11.data());
-		m_renderSystem->meshLoadIndices(m_meshId_Font, indices11.size(), indices11.data());
-
 		m_logger->info("Loaded meshes");
 
 		//################################################ TEXTURES #####################################################################
-		m_textureId = 0;
-
 		m_color = new Color4f(1.0f, 0.0f, 0.0f, 1.0f);
 		m_color2 = new Color4f(0.0f,1.0f,0.0f,1.0f);
 		m_color3 = new Color4f(0.0f, 0.0f, 1.0f, 1.0f);
 		m_color4 = new Color4f(1.0f, 1.0f, 0.0f, 1.0f);
 		m_color5 = new Color4f(0.0f, 1.0f, 1.0f, 1.0f);
-		m_color6 = new Color4f(1.0f, 0.0f, 1.0f, 1.0f);
-		m_colorFont = new Color4f(1.0f, 1.0f, 1.0f, 1.0f);
+		//m_color6 = new Color4f(1.0f, 0.0f, 1.0f, 1.0f);
 
 		m_colorPlane = new Color4f(1.0f,1.0f,1.0f,1.0f);
 
@@ -177,7 +139,7 @@ namespace Fierce {
 		m_transform2 = new Transform2D(120.0f, 10.0f, 100.0f, 100.0f, 0.0f);
 		m_transform3 = new Transform2D(230.0f, 10.0f, 100.0f, 100.0f, 0.0f);
 		m_transform4 = new Transform2D(340.0f, 10.0f, 50.0f, 50.0f, 0.0f);
-		m_transform5 = new Transform2D(450.0f, 10.0f, 200.0f, 200.0f, 0.0f);
+		//m_transform5 = new Transform2D(450.0f, 10.0f, 200.0f, 200.0f, 0.0f);
 
 		m_transformPlane = new Transform3D(0.0f,0.0f,0.0f,100.0f,1.0f,100.0f,0.0f,0.0f,0.0f);
 		m_transformCube = new Transform3D(0.0f, 0.5f, 5.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f);
@@ -190,7 +152,7 @@ namespace Fierce {
 		m_modelMatrix2 = new Mat4();
 		m_modelMatrix3 = new Mat4();
 		m_modelMatrix4 = new Mat4();
-		m_modelMatrix5 = new Mat4();
+		//m_modelMatrix5 = new Mat4();
 
 		m_modelMatrixPlane = new Mat4();
 		m_modelMatrixCube = new Mat4();
@@ -200,11 +162,11 @@ namespace Fierce {
 		m_modelMatrixSphere = new Mat4();
 
 		m_orthographicProjectionMatrix = new Mat4();
-		m_orthographicProjectionMatrix->setToOrthographicProjection(false, 800.0f,600.0f, 0.0f, 1.0f);
+		m_orthographicProjectionMatrix->setToOrthographicProjection(false, m_window->getWidth(), m_window->getHeight(), 0.0f, 1.0f);
 		m_renderSystem->setOrthographicProjection(m_orthographicProjectionMatrix->get());
 
 		m_perspectiveProjectionMatrix = new Mat4();
-		m_perspectiveProjectionMatrix->setToPerspectiveProjection(false, 800.0f/600.0f, 60.0f, 0.1f, 1000.0f);
+		m_perspectiveProjectionMatrix->setToPerspectiveProjection(false, (float)m_window->getWidth() / (float)m_window->getHeight(), 60.0f, 0.1f, 1000.0f);
 		m_renderSystem->setPerspectiveProjection(m_perspectiveProjectionMatrix->get());
 
 		m_viewTransform = new Transform3D(0.0f,2.0f,0.0f,1.0f,1.0f,1.0f,-5.0f,0.0f,0.0f);
@@ -240,16 +202,11 @@ namespace Fierce {
 	}
 
 	void TestGame::update(double delta){
-		//m_logger->info("Timer: %1.3f", delta);
 		m_rangeMoveForward->onRangeChanged(delta);
 		m_rangeMoveBackward->onRangeChanged(delta);
 	}
 
 	void TestGame::render() {
-		//m_logger->info("Start rendering");
-		//m_renderSystem->startFrame();
-		//m_logger->info("After start frame");
-
 		//########### 3D ##########
 		m_renderSystem->bindPipeline("Main3D");
 		m_viewMatrix->setToView(m_viewTransform);
@@ -317,29 +274,10 @@ namespace Fierce {
 		m_renderSystem->loadModelMatrix(m_modelMatrix4->get());
 		m_renderSystem->drawMesh(m_meshId_triangle);
 		//
-
-		//########### Font ########
-		m_renderSystem->bindPipeline("Font");
-		//#########################
-
-		m_renderSystem->loadColor(m_colorFont->get());
-		m_modelMatrix5->setToTransform(m_transform5);
-		m_renderSystem->loadModelMatrix(m_modelMatrix5->get());
-		m_renderSystem->activateSampler("Font", m_textureId);
-		m_renderSystem->drawMesh(m_meshId_Font);
-
-		//m_renderSystem->endFrame();
-		//m_logger->info("After end frame");
 	}
 
 	void TestGame::renderGUI(GraphicsContext* context){
-		m_renderSystem->bindPipeline("GUI");
-		//context->setColor(255,0,0);
-		//context->drawRect(500,200,100,100);
-		//context->setColor(188, 47, 86);
-		//context->drawRect(200, 200, 500, 100);
-
-		m_renderSystem->drawGraphicsContext();
+		
 	}
 
 	void TestGame::cleanUp() {
@@ -347,7 +285,6 @@ namespace Fierce {
 		delete m_transform2;
 		delete m_transform3;
 		delete m_transform4;
-		delete m_transform5;
 		delete m_transformPlane;
 		delete m_transformCube;
 		delete m_transformCylinder;
@@ -359,7 +296,6 @@ namespace Fierce {
 		delete m_modelMatrix2;
 		delete m_modelMatrix3;
 		delete m_modelMatrix4;
-		delete m_modelMatrix5;
 		delete m_modelMatrixPlane;
 		delete m_modelMatrixCube;
 		delete m_modelMatrixCylinder;
@@ -375,7 +311,6 @@ namespace Fierce {
 		delete m_color3;
 		delete m_color4;
 		delete m_color5;
-		delete m_color6;
 		delete m_colorPlane;
 
 		m_loader->unregisterGeometry(GeometryType::RECTANGLE);

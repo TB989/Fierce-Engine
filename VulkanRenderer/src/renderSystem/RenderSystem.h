@@ -70,6 +70,7 @@ namespace Fierce {
 		void endFrame();
 
 		GraphicsContext* getGraphicsContext() { return (GraphicsContext*)m_graphicsContext; };
+		void resetGraphicsContext();
 		void drawGraphicsContext();
 
 		void postInit();
@@ -115,8 +116,6 @@ namespace Fierce {
 		VK_Manager<VK_Pipeline*>* m_pipelines=nullptr;
 		VK_Manager<VK_UBO*>* m_ubosViewProjection=nullptr;
 		VK_Manager<VK_UBO*>* m_ubosModel=nullptr;
-
-		VK_Manager<Font*>* m_fonts = nullptr;
 
 		uint32_t m_matrixIndex = 0;
 
