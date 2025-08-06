@@ -1,7 +1,5 @@
 #include "VulkanGraphicsContetxt.h"
 
-#include "src/vulkanObjects/VK_Buffer.h"
-
 #include "src/Color.h"
 
 #include "src/renderSystem/RenderSystem.h"
@@ -14,33 +12,16 @@ namespace Fierce {
 
 		m_device = device;
 
-		//Buffers colored rectangles
-		m_vertexBuffer = new VK_Buffer(device, VERTEX_BUFFER_SIZE * sizeof(float), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-		m_vertexBuffer->setKeepMapped(true);
-		m_vertexBuffer->create();
-		m_indexBuffer = new VK_Buffer(device, INDEX_BUFFER_SIZE * sizeof(uint16_t), VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-		m_indexBuffer->setKeepMapped(true);
-		m_indexBuffer->create();
-		m_vertices = (float*)m_vertexBuffer->getMappedMemoryRegion();
-		m_indices = (uint16_t*)m_indexBuffer->getMappedMemoryRegion();
-
-		//Buffers font
-		m_vertexBufferFont = new VK_Buffer(device, VERTEX_BUFFER_SIZE_FONT * sizeof(float), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-		m_vertexBufferFont->setKeepMapped(true);
-		m_vertexBufferFont->create();
-		m_indexBufferFont = new VK_Buffer(device, INDEX_BUFFER_SIZE_FONT * sizeof(uint16_t), VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-		m_indexBufferFont->setKeepMapped(true);
-		m_indexBufferFont->create();
-		m_verticesFont = (float*)m_vertexBufferFont->getMappedMemoryRegion();
-		m_indicesFont = (uint16_t*)m_indexBufferFont->getMappedMemoryRegion();
+		m_renderBatches.push_back(new RenderBatch(device));
+		m_activeRenderBatch = m_renderBatches[0];
 	}
 
 	VulkanGraphicsContext::~VulkanGraphicsContext(){
-		delete m_vertexBuffer;
-		delete m_indexBuffer;
+		delete m_activeRenderBatch;
 
-		delete m_vertexBufferFont;
-		delete m_indexBufferFont;
+		for (RenderBatchFont* renderBatch : m_renderBatchesFont) {
+			delete renderBatch;
+		}
 
 		delete m_fonts;
 
@@ -48,13 +29,12 @@ namespace Fierce {
 	}
 
 	void VulkanGraphicsContext::reset(){
-		m_vertexPointer = 0;
-		m_indexPointer = 0;
-		m_numRectangles = 0;
-
-		m_vertexPointerFont = 0;
-		m_indexPointerFont = 0;
-		m_numFontRectangles = 0;
+		if (m_activeRenderBatch!=nullptr) {
+			m_activeRenderBatch->reset();
+		}
+		for (RenderBatchFont* renderBatch : m_renderBatchesFont) {
+			renderBatch->reset();
+		}
 	}
 
 	void VulkanGraphicsContext::setColor(int r, int g, int b){
@@ -63,42 +43,56 @@ namespace Fierce {
 		m_activeColor->setB((float)b / 255.0f);
 	}
 
-	void VulkanGraphicsContext::setFont(std::string font,int size){
-		m_activeFont = m_fonts->get(font);
-		m_activeFontSize = size;
+	void VulkanGraphicsContext::setFont(std::string fontName,int size){
+		Font* font = nullptr;
+
+		//Look for existing render batch
+		for (RenderBatchFont* renderBatch:m_renderBatchesFont) {
+			font = m_fonts->get(fontName);
+			if (renderBatch->getFont()==font&&renderBatch->getFontSize()==size) {
+				m_activeRenderBatchFont = renderBatch;
+				return;
+			}
+		}
+
+		//Create new render batch
+		font = m_fonts->get(fontName);
+		RenderBatchFont* renderBatch = new RenderBatchFont(m_device, font, size);
+		m_renderBatchesFont.push_back(renderBatch);
+		m_activeRenderBatchFont = renderBatch;
 	}
 
 	void VulkanGraphicsContext::drawRect(int x, int y, int width, int height){
-		putIndex(4*m_numRectangles); putIndex(4 * m_numRectangles + 1); putIndex(4 * m_numRectangles + 2);
-		putIndex(4 * m_numRectangles); putIndex(4 * m_numRectangles + 2); putIndex(4 * m_numRectangles + 3);
+		m_activeRenderBatch->putRectangleIndices();
 
-		putVertex(x); putVertex(y);
-		putVertex(m_activeColor->getR()); putVertex(m_activeColor->getG()); putVertex(m_activeColor->getB());
-		putVertex(x); putVertex(y+height);
-		putVertex(m_activeColor->getR()); putVertex(m_activeColor->getG()); putVertex(m_activeColor->getB());
-		putVertex(x+width); putVertex(y+height);
-		putVertex(m_activeColor->getR()); putVertex(m_activeColor->getG()); putVertex(m_activeColor->getB());
-		putVertex(x+width); putVertex(y);
-		putVertex(m_activeColor->getR()); putVertex(m_activeColor->getG()); putVertex(m_activeColor->getB());
-
-		m_numRectangles++;
+		m_activeRenderBatch->putVertex(x,y);
+		m_activeRenderBatch->putVertex(m_activeColor->getR(),m_activeColor->getG(),m_activeColor->getB());
+		m_activeRenderBatch->putVertex(x, y+height);
+		m_activeRenderBatch->putVertex(m_activeColor->getR(), m_activeColor->getG(), m_activeColor->getB());
+		m_activeRenderBatch->putVertex(x+width, y+height);
+		m_activeRenderBatch->putVertex(m_activeColor->getR(), m_activeColor->getG(), m_activeColor->getB());
+		m_activeRenderBatch->putVertex(x+width, y);
+		m_activeRenderBatch->putVertex(m_activeColor->getR(), m_activeColor->getG(), m_activeColor->getB());
 	}
 
 	void VulkanGraphicsContext::drawText(int x, int y, std::string text){
 		char letter;
 		Font::Char character;
-		int padding = m_activeFont->info.padding[0];
+		Font* font = m_activeRenderBatchFont->getFont();
+		int padding = font->info.padding[0];
 		float cursor = 0.0f;
 		int kerning = 0;
-		
+		float sizeFactor = (float)m_activeRenderBatchFont->getFontSize() / (float) font->info.size;
+		float randomOffset = 2.0f * sizeFactor;
+
 		for (int i = 0; i < text.size(); i++) {
 			letter = text[i];
-			character = m_activeFont->chars.chars[letter];
+			character = font->chars.chars[letter];
 
 			//Search for kerning
 			if (i<text.size()-1) {
-				for (int j = 0; j < m_activeFont->kernings.count; j++) {
-					Font::Kerning kern = m_activeFont->kernings.kernings[j];
+				for (int j = 0; j < font->kernings.count; j++) {
+					Font::Kerning kern = font->kernings.kernings[j];
 					if (kern.first == text[i]&& kern.second == text[i+1]) {
 						kerning = kern.amount;
 					}
@@ -106,58 +100,36 @@ namespace Fierce {
 			}
 
 			//Texture coordinates
-			float u1 = (float)character.x / (float)m_activeFont->common.scaleW;
-			float u2 = (float)(character.x + character.width) / (float)m_activeFont->common.scaleW;
-			float v1 = (float)character.y / (float)m_activeFont->common.scaleH;
-			float v2 = (float)(character.y + character.height) / (float)m_activeFont->common.scaleH;
+			float u1 = (float)character.x / (float)font->common.scaleW;
+			float u2 = (float)(character.x + character.width) / (float)font->common.scaleW;
+			float v1 = (float)character.y / (float)font->common.scaleH;
+			float v2 = (float)(character.y + character.height) / (float)font->common.scaleH;
 
 			//Positions
-			float x1 = cursor + (float)x + (float)(character.xoffset);
-			float x2 = cursor + (float)x + (float)(character.xoffset) + (float)character.width;
-			float y1 = (float)y + (float)(character.yoffset)-2*padding;
-			float y2 = (float)y + (float)(character.yoffset) + (float)character.height-2*padding;
-			cursor += (float)character.xadvance - 2.5f * padding +kerning;
+			float x1 = cursor + (float)x + (float)(character.xoffset*sizeFactor);
+			float x2 = cursor + (float)x + (float)(character.xoffset*sizeFactor) + (float)character.width*sizeFactor;
+			float y1 = (float)y + (float)(character.yoffset*sizeFactor)-0.5f*padding*sizeFactor-randomOffset;
+			float y2 = (float)y + (float)(character.yoffset * sizeFactor) + (float)character.height * sizeFactor - 0.5f * padding * sizeFactor-randomOffset;
+			cursor += (float)character.xadvance*sizeFactor - 2.5f * padding*sizeFactor +kerning*sizeFactor;
 
 			//Put Indices
-			putFontIndex(4 * m_numFontRectangles); putFontIndex(4 * m_numFontRectangles + 1); putFontIndex(4 * m_numFontRectangles + 2);
-			putFontIndex(4 * m_numFontRectangles); putFontIndex(4 * m_numFontRectangles + 2); putFontIndex(4 * m_numFontRectangles + 3);
+			m_activeRenderBatchFont->putRectangleIndices();
 
 			//Put vertices
-			putFontVertex(x1); putFontVertex(y1); putFontVertex(u1); putFontVertex(v1);
-			putFontVertex(m_activeColor->getR()); putFontVertex(m_activeColor->getG()); putFontVertex(m_activeColor->getB());
-			putFontVertex(x1); putFontVertex(y2); putFontVertex(u1); putFontVertex(v2);
-			putFontVertex(m_activeColor->getR()); putFontVertex(m_activeColor->getG()); putFontVertex(m_activeColor->getB());
-			putFontVertex(x2); putFontVertex(y2); putFontVertex(u2); putFontVertex(v2);
-			putFontVertex(m_activeColor->getR()); putFontVertex(m_activeColor->getG()); putFontVertex(m_activeColor->getB());
-			putFontVertex(x2); putFontVertex(y1); putFontVertex(u2); putFontVertex(v1);
-			putFontVertex(m_activeColor->getR()); putFontVertex(m_activeColor->getG()); putFontVertex(m_activeColor->getB());
+			m_activeRenderBatchFont->putVertex(x1, y1, u1, v1);
+			m_activeRenderBatchFont->putVertex(m_activeColor->getR(),m_activeColor->getG(),m_activeColor->getB());
+			m_activeRenderBatchFont->putVertex(x1, y2, u1, v2);
+			m_activeRenderBatchFont->putVertex(m_activeColor->getR(), m_activeColor->getG(), m_activeColor->getB());
+			m_activeRenderBatchFont->putVertex(x2, y2, u2, v2);
+			m_activeRenderBatchFont->putVertex(m_activeColor->getR(), m_activeColor->getG(), m_activeColor->getB());
+			m_activeRenderBatchFont->putVertex(x2, y1, u2, v1);
+			m_activeRenderBatchFont->putVertex(m_activeColor->getR(), m_activeColor->getG(), m_activeColor->getB());
 
-			m_numFontRectangles++;
 			kerning = 0;
 		}
 	}
 
 	void VulkanGraphicsContext::addFont(std::string name,Font* font){
 		m_fonts->add(name, font);
-	}
-
-	void VulkanGraphicsContext::putIndex(uint16_t index){
-		m_indices[m_indexPointer] = index;
-		m_indexPointer++;
-	}
-
-	void VulkanGraphicsContext::putVertex(float vertex){
-		m_vertices[m_vertexPointer] = vertex;
-		m_vertexPointer++;
-	}
-
-	void VulkanGraphicsContext::putFontIndex(uint16_t index){
-		m_indicesFont[m_indexPointerFont] = index;
-		m_indexPointerFont++;
-	}
-
-	void VulkanGraphicsContext::putFontVertex(float vertex){
-		m_verticesFont[m_vertexPointerFont] = vertex;
-		m_vertexPointerFont++;
 	}
 }

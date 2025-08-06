@@ -1,0 +1,10 @@
+Spread=10
+Size=15
+
+Large:
+Width=0.51
+Edge=0.02
+
+Small:
+Width=0.46
+Edge=0.19

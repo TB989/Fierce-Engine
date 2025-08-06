@@ -227,18 +227,43 @@ namespace Fierce {
 	void RenderSystem::drawGraphicsContext(){
 		VK_CommandBuffer* commandBuffer = m_coreContext->getActiveCommandBuffer();
 
+		//Draw GUI
 		commandBuffer->bindPipeline(m_pipelines->get("GUI")->getId());
 		commandBuffer->bindDescriptorSet(m_pipelines->get("GUI"), m_ubosViewProjection->get(m_coreContext->getCurrentFrame())->getDescriptorSet(), 0);
 		commandBuffer->bindVertexBuffer(m_graphicsContext->getVertexBuffer()->getId());
 		commandBuffer->bindIndexBuffer(m_graphicsContext->getIndexBuffer()->getId());
 		commandBuffer->renderIndexed(m_graphicsContext->getNumIndices());
 
+		//Draw text
 		commandBuffer->bindPipeline(m_pipelines->get("Font")->getId());
 		commandBuffer->bindDescriptorSet(m_pipelines->get("Font"), m_ubosViewProjection->get(m_coreContext->getCurrentFrame())->getDescriptorSet(), 0);
-		commandBuffer->bindDescriptorSet(m_pipelines->get("Font"), m_textures[0]->getDescriptorSet(), 1);
-		commandBuffer->bindVertexBuffer(m_graphicsContext->getVertexBufferFont()->getId());
-		commandBuffer->bindIndexBuffer(m_graphicsContext->getIndexBufferFont()->getId());
-		commandBuffer->renderIndexed(m_graphicsContext->getNumIndicesFont());
+
+		for (int i = 0;i<m_graphicsContext->getNumRenderBatchesFont();i++) {
+			RenderBatchFont* renderBatch = m_graphicsContext->getRenderBatchFont(i);
+			if (renderBatch->getNumIndices()==0) {
+				continue;
+			}
+
+			//10 0.46
+			//100 0.51
+			float m1 = 0.0005556f;
+			float n1 = 0.4544f;
+			float width = renderBatch->getFontSize()*m1+n1;
+
+			//10 0.19
+			//100 0.02
+			float m2 = -0.001889f;
+			float n2 = 0.2089f;
+			float edge = renderBatch->getFontSize() * m2 + n2;
+
+			commandBuffer->pushConstants(m_pipelines->get("Font"), VK_SHADER_STAGE_FRAGMENT_BIT, sizeof(float), 0, &width);
+			commandBuffer->pushConstants(m_pipelines->get("Font"), VK_SHADER_STAGE_FRAGMENT_BIT, sizeof(float), sizeof(float), &edge);
+
+			commandBuffer->bindDescriptorSet(m_pipelines->get("Font"), m_textures[renderBatch->getFont()->page.textureId]->getDescriptorSet(), 1);
+			commandBuffer->bindVertexBuffer(renderBatch->getVertexBuffer()->getId());
+			commandBuffer->bindIndexBuffer(renderBatch->getIndexBuffer()->getId());
+			commandBuffer->renderIndexed(renderBatch->getNumIndices());
+		}
 	}
 
 	void RenderSystem::postInit(){
@@ -363,6 +388,7 @@ namespace Fierce {
 		pipeline->addVertexInput(2, VK_FORMAT_R32G32B32_SFLOAT);
 		pipeline->addDescriptorSetLayout(m_descriptorSetLayouts->get("Projection")->getId());
 		pipeline->addDescriptorSetLayout(m_descriptorSetLayouts->get("Sampler")->getId());
+		pipeline->addPushConstantRange(VK_SHADER_STAGE_FRAGMENT_BIT, 2 * sizeof(float), 0);
 		pipeline->enableBlending();
 		pipeline->create();
 		m_pipelines->add("Font", pipeline);
@@ -427,8 +453,10 @@ namespace Fierce {
 			//Texture
 			pixels = parserTex->parseFile(m_font->page.file, &texWidth, &texHeight, &texChannels);
 
-			int m_textureId = newTexture(texWidth, texHeight, 4);
-			textureLoadData(m_textureId, pixels);
+			int textureId = newTexture(texWidth, texHeight, 4);
+			textureLoadData(textureId, pixels);
+
+			m_font->page.textureId = textureId;
 
 			parserTex->freeData(pixels);
 

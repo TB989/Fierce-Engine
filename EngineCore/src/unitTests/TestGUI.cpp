@@ -40,17 +40,25 @@ namespace Fierce {
 		m_renderSystem->resetGraphicsContext();
 
 		context->setColor(188, 47, 86);
-		context->drawRect(200, 200, 250, 20);
+		context->drawRect(10, 200, 700, 30);
+
+		context->setFont("Jokerman", 22);
+		context->setColor(0, 0, 0);
+		context->drawText(10, 200, "Hello World! @123456789");
 
 		context->setColor(90, 47, 95);
-		context->drawRect(200, 250, 250, 20);
+		context->drawRect(10, 250, 700, 44);
+
+		context->setFont("Candara", 44);
+		context->setColor(0, 0, 0);
+		context->drawText(10, 250, "Hello World! @123456789");
 
 		context->setColor(10, 47, 86);
 		context->drawRect(10, 300, 700, 66);
 
-		context->setFont("Candara",30);
-		context->setColor(0,0,0);
-		context->drawText(10, 310, "Hello World! @123456789");
+		context->setFont("Jokerman",66);
+		context->setColor(255,255,255);
+		context->drawText(10, 300, "Hello World! @123456789"); 
 
 		m_renderSystem->drawGraphicsContext();
 	}
