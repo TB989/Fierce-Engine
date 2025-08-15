@@ -18,10 +18,11 @@ namespace Fierce {
 
 	class Win32_WindowSystem :public WindowSystem{
 	public:
-		Win32_WindowSystem(LoggingSystem* loggingSystem,InputSystem* inputSystem);
+		Win32_WindowSystem();
 		~Win32_WindowSystem();
 
 		void initSystem(std::string m_assetDirectory) override;
+		void linkSystem(System* system) override;
 		void updateSystem() override;
 		void cleanUpSystem() override;
 

@@ -1,10 +1,12 @@
 #pragma once
 
+#include "Parser.h"
+
 #include <string>
 
 namespace Fierce {
 
-	class Parser_Tex{
+	class Parser_Tex:public Parser{
 	public:
 		Parser_Tex(std::string directory);
 

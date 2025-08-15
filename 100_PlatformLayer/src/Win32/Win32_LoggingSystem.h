@@ -6,18 +6,17 @@
 #include "Windows.h"
 
 #include "src/include/LoggingSystem.h"
+#include "src/include/TimeDateSystem.h"
 #include "src/include/FileSystem.h"
 
 namespace Fierce {
 
-	class TimeDateSystem;
-	class FileSystem;
-
 	class Win32_LoggingSystem:public LoggingSystem {
 	public:
-		Win32_LoggingSystem(TimeDateSystem* timeDateSystem,FileSystem* fileSystem);
+		Win32_LoggingSystem();
 
 		void initSystem(std::string m_assetDirectory) override;
+		void linkSystem(System* system) override;
 		void updateSystem() override;
 		void cleanUpSystem() override;
 

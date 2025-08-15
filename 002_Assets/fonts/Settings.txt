@@ -8,3 +8,10 @@ Edge=0.02
 Small:
 Width=0.46
 Edge=0.19
+
+lineHeight-2*padding
+width-2*padding
+height-2*padding
+xoffset-padding
+yoffset+padding
+xadvance-2*padding

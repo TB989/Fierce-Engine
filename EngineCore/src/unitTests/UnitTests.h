@@ -101,8 +101,6 @@ namespace Fierce {
 		Transform3D* m_transformHollowCylinder = nullptr;
 		Transform3D* m_transformCone = nullptr;
 		Transform3D* m_transformSphere = nullptr;
-
-		GeometryLoader* m_loader = nullptr;
 	};
 
 	class TestGUI : public EngineCore {

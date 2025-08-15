@@ -2,7 +2,7 @@
 
 #include "Win32_Window.h"
 
-#include "src/Win32/Win32_LoggingSystem.h"
+#include "src/include/LoggingSystem.h"
 
 #include "src/include/InputSystem.h"
 
@@ -218,19 +218,30 @@ namespace Fierce {
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 
-	Win32_WindowSystem::Win32_WindowSystem(LoggingSystem* loggingSystem, InputSystem* inputSystem) {
-		m_loggingSystem = loggingSystem;
-		m_inputSystem = inputSystem;
+	Win32_WindowSystem::Win32_WindowSystem() {
+		
 	}
 
 	Win32_WindowSystem::~Win32_WindowSystem() {
-		m_loggingSystem->deleteLogger(m_logger);
+		
 	}
 
 	void Win32_WindowSystem::initSystem(std::string m_assetDirectory){
-		m_logger = m_loggingSystem->createLogger("WIN", true, "ALL_LOGS");
+		if (m_loggingSystem != nullptr) {
+			m_logger = m_loggingSystem->createLogger("WIN", true, "ALL_LOGS");
+			m_logger->info("Init window system");
+		}
 		hInstance = GetModuleHandle(NULL);
 		registerWindowClass(m_fierceWindowClassName, wndProcFierceWindow);
+	}
+
+	void Win32_WindowSystem::linkSystem(System* system){
+		if (dynamic_cast<LoggingSystem*>(system)) {
+			m_loggingSystem = (LoggingSystem*)system;
+		}
+		else if (dynamic_cast<InputSystem*>(system)) {
+			m_inputSystem = (InputSystem*)system;
+		}
 	}
 
 	void Win32_WindowSystem::updateSystem(){
@@ -241,6 +252,11 @@ namespace Fierce {
 
 	void Win32_WindowSystem::cleanUpSystem(){
 		unregisterWindowClass(m_fierceWindowClassName);
+
+		if (m_logger != nullptr) {
+			m_logger->info("Clean up window system");
+			m_loggingSystem->deleteLogger(m_logger);
+		}
 	}
 
 	Window* Win32_WindowSystem::createWindow(std::string title, Window::WINDOW_MODE windowMode, int width, int height){

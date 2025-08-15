@@ -13,7 +13,8 @@ namespace Fierce {
 
 	class Parser_Ini :public Parser {
 	public:
-		Parser_Ini(TextFileReader* textFileReader);
+		Parser_Ini(FileSystem* fileSystem, std::string directory);
+		~Parser_Ini();
 
 		void parseFile(std::string filename, EngineSettings& settings);
 
@@ -21,7 +22,9 @@ namespace Fierce {
 		void parseLine(std::string line, EngineSettings& settings);
 
 	private:
+		FileSystem* m_fileSystem = nullptr;
 		TextFileReader* m_fileReader=nullptr;
+
 		std::vector<std::string> m_tokens;
 	};
 

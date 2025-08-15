@@ -1,12 +1,9 @@
 #include "Win32_FileReaderWriter.h"
 
-#include <iostream>
-
 namespace Fierce {
 	Win32_FileIO::Win32_FileIO(std::string directory) :FileIO(directory) {}
 
 	bool Win32_FileIO::openFile(std::string filename,std::string options){
-
 		//Close open file
 		closeFile();
 
@@ -33,6 +30,7 @@ namespace Fierce {
 	void Win32_FileIO::closeFile(){
 		if (m_file != nullptr) {
 			fclose(m_file);
+			m_file = nullptr;
 			m_filename = "";
 		}
 	}
@@ -99,7 +97,7 @@ namespace Fierce {
 	}
 
 	bool Win32_TextFileReader::readNextLine(std::string& line){
-		char buffer[1024];
+		char buffer[4096];
 		if (fgets(buffer, sizeof(buffer), m_file)) {
 			line = buffer;
 

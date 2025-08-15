@@ -6,7 +6,8 @@
 
 #include "src/renderSystem/RenderSystem.h"
 
-#include "src/Parser_Ini.h"
+#include "src/ParsingSystem.h"
+#include "src/GeometrySystem.h"
 
 namespace Fierce {
 
@@ -63,9 +64,12 @@ namespace Fierce {
 		InputSystem* m_inputSystem=nullptr;
 
 		FileSystem* m_fileSystem = nullptr;
-		TextFileReader* m_settingsReader = nullptr;
-		Parser_Ini* m_settingsParser = nullptr;
 
+		ParsingSystem* m_parsingSystem = nullptr;
+
+		GeometrySystem* m_geometrySystem = nullptr;
+
+		//########################################################################################################
 		WindowSystem* m_windowSystem=nullptr;
 		Window* m_window=nullptr;
 

@@ -29,25 +29,25 @@ namespace Fierce {
 #endif // WIN32 
 		}
 
-		inline LoggingSystem* createLoggingSystem(TimeDateSystem* timeDateSystem,FileSystem* fileSystem) { 
+		inline LoggingSystem* createLoggingSystem() { 
 #ifdef WIN32
-			return new Win32_LoggingSystem(timeDateSystem,fileSystem); 
+			return new Win32_LoggingSystem(); 
 #else
 			return nullptr;
 #endif // WIN32 
 		}
 
-		inline InputSystem* createInputSystem(LoggingSystem* loggingSystem) { 
+		inline InputSystem* createInputSystem() { 
 #ifdef WIN32
-			return new InputSystem(loggingSystem);
+			return new InputSystem();
 #else
 			return nullptr:
 #endif // WIN32 
 		}
 
-		inline WindowSystem* createWindowSystem(LoggingSystem* loggingSystem,InputSystem* inputSystem) {
+		inline WindowSystem* createWindowSystem() {
 #ifdef WIN32
-			return new Win32_WindowSystem(loggingSystem,inputSystem); 
+			return new Win32_WindowSystem(); 
 #else
 			return nullptr;
 #endif // WIN32 

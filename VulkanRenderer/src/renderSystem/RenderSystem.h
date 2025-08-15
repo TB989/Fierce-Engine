@@ -20,6 +20,7 @@ namespace Fierce {
 
 	class LoggingSystem;
 	class FileSystem;
+	class ParsingSystem;
 
 	class CoreContext;
 	class UploadContext;
@@ -40,12 +41,13 @@ namespace Fierce {
 
 	class RenderSystem:public System {
 	public:
-		RenderSystem(LoggingSystem* loggingSystem,FileSystem* fileSystem);
+		RenderSystem();
 		~RenderSystem();
 
 		void setWindowHandle(HWND m_windowHandle);
 
 		void initSystem(std::string m_assetDirectory) override;
+		void linkSystem(System* system) override;
 		void updateSystem() override {};
 		void cleanUpSystem() override;
 
@@ -99,6 +101,7 @@ namespace Fierce {
 		HWND m_windowHandle = NULL;
 		FileSystem* m_fileSystem=nullptr;
 
+		ParsingSystem* m_parsingSystem=nullptr;
 		std::string m_assetDirectory = "";
 		std::string m_shaderDirectory = "";
 		std::string m_fontDirectory = "";

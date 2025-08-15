@@ -48,34 +48,67 @@ namespace Fierce {
 	void EngineCore::corePreInit(){
 		m_plattform = new Plattform();
 
+		//Create systems
+		m_timeDateSystem = m_plattform->createTimeDateSystem();
 		m_fileSystem = m_plattform->createFileSystem();
-		m_fileSystem->initSystem("");
+		m_loggingSystem = m_plattform->createLoggingSystem();
+		m_parsingSystem = new ParsingSystem();
+		m_geometrySystem = new GeometrySystem();
 
-		//Load engine settings
-		m_settingsReader = m_fileSystem->createTextFileReader("");
-		m_settingsParser = new Parser_Ini(m_settingsReader);
-		m_settingsParser->parseFile("Engine.ini",m_settings);
-		delete m_settingsParser;
-		m_fileSystem->deleteTextFileReader(m_settingsReader);
+		//Link systems
+		m_loggingSystem->linkSystem(m_timeDateSystem);
+		m_loggingSystem->linkSystem(m_fileSystem);
+
+		m_parsingSystem->linkSystem(m_fileSystem);
+		m_parsingSystem->linkSystem(m_loggingSystem);
+
+		m_fileSystem->linkSystem(m_loggingSystem);
+		m_timeDateSystem->linkSystem(m_loggingSystem);
+		m_geometrySystem->linkSystem(m_loggingSystem);
+
+		//Init systems
+		m_loggingSystem->initSystem("C:/Users/tmbal/Desktop/Fierce-Engine/002_Assets/");//Must be initialised first
+		m_timeDateSystem->initSystem("");
+		m_fileSystem->initSystem("");
+		m_parsingSystem->initSystem("");
+		m_geometrySystem->initSystem("");
+
+		//Read settings
+		Parser_Ini* parser = m_parsingSystem->createParser_Ini("");
+		parser->parseFile("Engine.ini", m_settings);
+		m_parsingSystem->deleteParser(parser);
+
+		//Create core logger and timer
+		m_logger = m_loggingSystem->createLogger("CORE", true, "ALL_LOGS");
+		m_timer = m_timeDateSystem->createTimer();
 	}
 
 	void EngineCore::coreInit(){
-		m_timeDateSystem = m_plattform->createTimeDateSystem();
-		m_timeDateSystem->initSystem("");
-		m_timer = m_timeDateSystem->createTimer();
+		//Create systems
+		m_inputSystem = m_plattform->createInputSystem();
+		m_windowSystem = m_plattform->createWindowSystem();
+		m_renderSystem = new RenderSystem();
 
-		m_loggingSystem = m_plattform->createLoggingSystem(m_timeDateSystem, m_fileSystem);
-		m_loggingSystem->initSystem(m_settings.assetPath);
-		m_logger = m_loggingSystem->createLogger("CORE", true, "ALL_LOGS");
-
-		m_inputSystem = m_plattform->createInputSystem(m_loggingSystem);
+		//Link systems
+		m_inputSystem->linkSystem(m_loggingSystem);
 		m_inputSystem->initSystem(m_settings.assetPath);
 
-		m_windowSystem = m_plattform->createWindowSystem(m_loggingSystem,m_inputSystem);
+		m_windowSystem->linkSystem(m_loggingSystem);
+		m_windowSystem->linkSystem(m_inputSystem);
+
+		m_renderSystem->linkSystem(m_loggingSystem);
+		m_renderSystem->linkSystem(m_fileSystem);
+		m_renderSystem->linkSystem(m_parsingSystem);
+
+		//Init systems
+		m_inputSystem->initSystem(m_settings.assetPath);
 		m_windowSystem->initSystem(m_settings.assetPath);
+
+		//Create window
 		m_window = m_windowSystem->createWindow("Fierce Engine", m_settings.windowMode, m_settings.width, m_settings.height);
 
-		m_renderSystem = new RenderSystem(m_loggingSystem,m_fileSystem);
+		//Initialise render system after window creation, because it needs the window handle
+		//Create graphics context
 		m_renderSystem->setWindowHandle(((Win32_Window*)(m_window))->getHandle());
 		m_renderSystem->initSystem(m_settings.assetPath);
 		m_graphicsContext = m_renderSystem->getGraphicsContext();
@@ -83,9 +116,11 @@ namespace Fierce {
 
 	void EngineCore::coreUpdate(){
 		m_timeDateSystem->updateSystem();
-		m_loggingSystem->updateSystem();
-		m_inputSystem->updateSystem();
 		m_fileSystem->updateSystem();
+		m_loggingSystem->updateSystem();
+		m_parsingSystem->updateSystem();
+		m_geometrySystem->updateSystem();
+		m_inputSystem->updateSystem();
 		m_windowSystem->updateSystem();
 		m_renderSystem->updateSystem();
 	}
@@ -93,26 +128,30 @@ namespace Fierce {
 	void EngineCore::coreRender(){}
 
 	void EngineCore::coreCleanUp(){
-		m_renderSystem->cleanUpSystem();
-		delete m_renderSystem;
-
+		//Delete window and timer and logger
 		m_windowSystem->deleteWindow(m_window);
-		m_windowSystem->cleanUpSystem();
-		delete m_windowSystem;
-
-		m_fileSystem->cleanUpSystem();
-		delete m_fileSystem;
-
-		m_inputSystem->cleanUpSystem();
-		delete m_inputSystem;
-
-		m_loggingSystem->deleteLogger(m_logger);
-		m_loggingSystem->cleanUpSystem();
-		delete m_loggingSystem;
-
 		m_timeDateSystem->deleteTimer(m_timer);
+		m_loggingSystem->deleteLogger(m_logger);
+
+		//Clean up systems
+		m_renderSystem->cleanUpSystem();
+		m_windowSystem->cleanUpSystem();
+		m_inputSystem->cleanUpSystem();
+		m_geometrySystem->cleanUpSystem();
+		m_parsingSystem->cleanUpSystem();
 		m_timeDateSystem->cleanUpSystem();
+		m_fileSystem->cleanUpSystem();
+		m_loggingSystem->cleanUpSystem();//Must be destroyed last
+
+		//Delete systems
+		delete m_renderSystem;
+		delete m_windowSystem;
+		delete m_inputSystem;
+		delete m_geometrySystem;
+		delete m_parsingSystem;
 		delete m_timeDateSystem;
+		delete m_loggingSystem;
+		delete m_fileSystem;
 	}
 
 }

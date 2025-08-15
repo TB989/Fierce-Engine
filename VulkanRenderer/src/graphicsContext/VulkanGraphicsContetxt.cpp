@@ -83,7 +83,6 @@ namespace Fierce {
 		float cursor = 0.0f;
 		int kerning = 0;
 		float sizeFactor = (float)m_activeRenderBatchFont->getFontSize() / (float) font->info.size;
-		float randomOffset = 2.0f * sizeFactor;
 
 		for (int i = 0; i < text.size(); i++) {
 			letter = text[i];
@@ -106,11 +105,12 @@ namespace Fierce {
 			float v2 = (float)(character.y + character.height) / (float)font->common.scaleH;
 
 			//Positions
-			float x1 = cursor + (float)x + (float)(character.xoffset*sizeFactor);
-			float x2 = cursor + (float)x + (float)(character.xoffset*sizeFactor) + (float)character.width*sizeFactor;
-			float y1 = (float)y + (float)(character.yoffset*sizeFactor)-0.5f*padding*sizeFactor-randomOffset;
-			float y2 = (float)y + (float)(character.yoffset * sizeFactor) + (float)character.height * sizeFactor - 0.5f * padding * sizeFactor-randomOffset;
-			cursor += (float)character.xadvance*sizeFactor - 2.5f * padding*sizeFactor +kerning*sizeFactor;
+			float x1 = cursor + x + (character.xoffset * sizeFactor);
+			float x2 = x1 + (character.width)* sizeFactor;
+			float y1 = y - (float)(font->common.lineHeight-font->info.size)/2.0f*sizeFactor+(character.yoffset)* sizeFactor;
+			//float y1 = y + (font->common.base- character.height -character.yoffset) * sizeFactor;
+			float y2 = y1 + character.height * sizeFactor;
+			cursor += (character.xadvance-2* font->info.padding[0]-font->info.spacing[0]) * sizeFactor+ kerning * sizeFactor;
 
 			//Put Indices
 			m_activeRenderBatchFont->putRectangleIndices();

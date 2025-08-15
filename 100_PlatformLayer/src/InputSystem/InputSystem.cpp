@@ -1,16 +1,23 @@
 #include "src/include/InputSystem.h"
 
-#include "src/Win32/Win32_LoggingSystem.h"
-
 namespace Fierce {
 
     void InputSystem::initSystem(std::string m_assetDirectory){
-        m_logger = m_loggingSystem->createLogger("INP", true, "ALL_LOGS");
+        if (m_loggingSystem != nullptr) {
+            m_logger = m_loggingSystem->createLogger("INP", true, "ALL_LOGS");
+            m_logger->info("Init input system");
+        }
 
         m_inputContext_raw = new InputContext(true);
         m_inputContext_normal = new InputContext(false);
 
         m_activeContext = m_inputContext_raw;
+    }
+
+    void InputSystem::linkSystem(System* system){
+        if (dynamic_cast<LoggingSystem*>(system)) {
+            m_loggingSystem = (LoggingSystem*)system;
+        }
     }
 
     void InputSystem::addAction(BINDING binding, Action* action, bool rawInput) {
@@ -74,6 +81,11 @@ namespace Fierce {
     void InputSystem::cleanUpSystem(){
         delete m_inputContext_raw;
         delete m_inputContext_normal;
+
+        if (m_logger != nullptr) {
+            m_logger->info("Clean up input system");
+            m_loggingSystem->deleteLogger(m_logger);
+        }
     }
 
     void InputSystem::switchMouseMode(bool rawMouse){
@@ -85,8 +97,8 @@ namespace Fierce {
         }
     }
 
-    InputSystem::InputSystem(LoggingSystem* loggingSystem){
-        m_loggingSystem = loggingSystem;
+    InputSystem::InputSystem(){
+        
     }
 
 }//end namespace

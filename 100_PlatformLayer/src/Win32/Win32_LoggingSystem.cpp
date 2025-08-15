@@ -2,23 +2,27 @@
 
 #include "Win32_Logger.h"
 
-#include "src/Win32/Win32_TimeDateSystem.h"
-#include "src/Win32/Win32_FileSystem.h"
-
 #include "time.h"
 #include <filesystem>
 
 namespace Fierce {
 
-	Win32_LoggingSystem::Win32_LoggingSystem(TimeDateSystem* timeDateSystem,FileSystem* fileSystem){
-		m_timeDateSystem = timeDateSystem;
-		m_fileSystem = fileSystem;
+	Win32_LoggingSystem::Win32_LoggingSystem(){
+		m_handle = GetStdHandle(STD_OUTPUT_HANDLE);
 	}
 
 	void Win32_LoggingSystem::initSystem(std::string m_assetDirectory){
-		m_handle = GetStdHandle(STD_OUTPUT_HANDLE);
 		m_logDirectory = m_assetDirectory;
 		m_logDirectory.append("logs/");
+	}
+
+	void Win32_LoggingSystem::linkSystem(System* system){
+		if (dynamic_cast<TimeDateSystem*>(system)) {
+			m_timeDateSystem = (TimeDateSystem*)system;
+		}
+		else if (dynamic_cast<FileSystem*>(system)) {
+			m_fileSystem = (FileSystem*)system;
+		}
 	}
 
 	void Win32_LoggingSystem::updateSystem(){

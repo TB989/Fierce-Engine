@@ -6,8 +6,13 @@
 #define VALUE m_tokens[1]
 
 namespace Fierce {
-	Parser_Ini::Parser_Ini(TextFileReader* textFileReader){
-		m_fileReader = textFileReader;
+	Parser_Ini::Parser_Ini(FileSystem* fileSystem, std::string directory){
+		m_fileSystem = fileSystem;
+		m_fileReader = fileSystem->createTextFileReader(directory);
+	}
+
+	Parser_Ini::~Parser_Ini(){
+		m_fileSystem->deleteTextFileReader(m_fileReader);
 	}
 
 	void Parser_Ini::parseFile(std::string filename, EngineSettings& settings) {

@@ -13,7 +13,8 @@ namespace Fierce {
 
 	class Parser_Fnt :public Parser {
 	public:
-		Parser_Fnt(TextFileReader* textFileReader);
+		Parser_Fnt(FileSystem* fileSystem, std::string directory);
+		~Parser_Fnt();
 
 		void parseFile(std::string filename, Font* font);
 
@@ -28,7 +29,9 @@ namespace Fierce {
 		void parseLineKerning(Font* font);
 
 	private:
+		FileSystem* m_fileSystem = nullptr;
 		TextFileReader* m_fileReader = nullptr;
+
 		std::vector<std::string> m_lineParts;
 		std::vector<std::string> m_tokens;
 		int numKernings = 0;

@@ -1,19 +1,28 @@
 #include "Parser_Fnt.h"
 
+#include "src/include/FileSystem.h"
 #include "src/utils/FierceStrings.h"
+
+#include <string>
 
 #define KEY m_tokens[0]
 #define VALUE m_tokens[1]
 
 namespace Fierce {
-	Parser_Fnt::Parser_Fnt(TextFileReader* textFileReader) {
-		m_fileReader = textFileReader;
+	Parser_Fnt::Parser_Fnt(FileSystem* fileSystem,std::string directory) {
+		m_fileSystem = fileSystem;
+		m_fileReader = fileSystem->createTextFileReader(directory);
+	}
+
+	Parser_Fnt::~Parser_Fnt(){
+		m_fileSystem->deleteTextFileReader(m_fileReader);
 	}
 
 	void Parser_Fnt::parseFile(std::string filename,Font* font) {
 		m_fileReader->openFile(filename);
 
 		std::string line;
+
 		while (m_fileReader->readNextLine(line)) {
 			trim(line);
 

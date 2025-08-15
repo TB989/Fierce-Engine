@@ -22,16 +22,14 @@
 
 #include "src/vulkanObjects/VK_DescriptorSetLayout.h"
 
-#include "src/Parser_Fnt.h"
-#include "src/Parser_Tex.h"
+#include "src/ParsingSystem.h"
 
 namespace Fierce {
 
 	Logger* RenderSystem::LOGGER = nullptr;
 
-	RenderSystem::RenderSystem(LoggingSystem* loggingSystem,FileSystem* fileSystem){
-		m_loggingSystem = loggingSystem;
-		m_fileSystem = fileSystem;
+	RenderSystem::RenderSystem(){
+		
 	}
 
 	RenderSystem::~RenderSystem(){}
@@ -41,7 +39,10 @@ namespace Fierce {
 	}
 
 	void RenderSystem::initSystem(std::string assetDirectory){
-		LOGGER = m_loggingSystem->createLogger("VK",true,"VULKAN");
+		if (m_loggingSystem != nullptr) {
+			LOGGER = m_loggingSystem->createLogger("VK", true, "VULKAN");
+			LOGGER->info("Init render system");
+		}
 
 		//Create Directories
 		m_assetDirectory = assetDirectory;
@@ -87,6 +88,18 @@ namespace Fierce {
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	}
 
+	void RenderSystem::linkSystem(System* system){
+		if (dynamic_cast<LoggingSystem*>(system)) {
+			m_loggingSystem = (LoggingSystem*)system;
+		}
+		else if (dynamic_cast<FileSystem*>(system)) {
+			m_fileSystem = (FileSystem*)system;
+		}
+		else if (dynamic_cast<ParsingSystem*>(system)) {
+			m_parsingSystem = (ParsingSystem*)system;
+		}
+	}
+
 	void RenderSystem::cleanUpSystem(){
 		if (vkDeviceWaitIdle(m_coreContext->getDevice()->getDevice())!=VK_SUCCESS) {
 			LOGGER->error("Failed to wait for idle device.");
@@ -112,7 +125,10 @@ namespace Fierce {
 		delete m_uploadContext;
 		delete m_coreContext;
 
-		m_loggingSystem->deleteLogger(LOGGER);
+		if (LOGGER != nullptr) {
+			LOGGER->info("Clean up render system");
+			m_loggingSystem->deleteLogger(LOGGER);
+		}
 	}
 
 	int RenderSystem::newMesh(int numVertices,int numIndices){
@@ -431,12 +447,11 @@ namespace Fierce {
 		RenderSystem::LOGGER->info("##### Loading fonts #####");
 
 		//Fnt
-		TextFileReader* reader = m_fileSystem->createTextFileReader(m_fontDirectory);
-		Parser_Fnt* parser = new Parser_Fnt(reader);
+		Parser_Fnt* parser = m_parsingSystem->createParser_Fnt(m_fontDirectory);
 		Font* m_font;
 
 		//Texture
-		Parser_Tex* parserTex = new Parser_Tex(m_fontDirectory);
+		Parser_Tex* parserTex = m_parsingSystem->createParser_Tex(m_fontDirectory);
 		int texWidth, texHeight, texChannels=0;
 		unsigned char* pixels = nullptr;
 
@@ -463,9 +478,8 @@ namespace Fierce {
 			m_graphicsContext->addFont(name.substr(0, name.size() - 4), m_font);
 		}
 
-		delete parser;
-		delete parserTex;
-		m_fileSystem->deleteTextFileReader(reader);
+		m_parsingSystem->deleteParser(parser);
+		m_parsingSystem->deleteParser(parserTex);
 
 		RenderSystem::LOGGER->info("##### Done loading fonts #####");
 	}

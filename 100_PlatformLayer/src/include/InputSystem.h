@@ -150,6 +150,7 @@ namespace Fierce {
 	class InputSystem :public System {
 	public:
 		void initSystem(std::string m_assetDirectory) override;
+        void linkSystem(System* system) override;
 		void updateSystem() override;
 		void cleanUpSystem() override;
 
@@ -157,7 +158,7 @@ namespace Fierce {
 		InputContext* getActiveContext() { return m_activeContext; }
 
 	public:
-		InputSystem(LoggingSystem* loggingSystem);
+		InputSystem();
 
 		void addAction(BINDING binding, Action* action, bool rawInput);
 		void removeAction(BINDING binding, bool rawInput);

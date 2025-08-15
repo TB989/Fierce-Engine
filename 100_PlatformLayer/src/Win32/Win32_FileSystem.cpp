@@ -14,11 +14,25 @@ namespace Fierce {
 	}
 
 	Win32_FileSystem::~Win32_FileSystem(){
-		
+		for (BinaryFileReader* reader : m_binaryReaders) {
+			delete reader;
+		}
+		for (TextFileReader* reader : m_textReaders) {
+			delete reader;
+		}
 	}
 
 	void Win32_FileSystem::initSystem(std::string m_assetDirectory) {
-		
+		if (m_loggingSystem!=nullptr) {
+			m_logger = m_loggingSystem->createLogger("FILE",true,"IO");
+			m_logger->info("Init file system");
+		}
+	}
+
+	void Win32_FileSystem::linkSystem(System* system){
+		if (dynamic_cast<LoggingSystem*>(system)) {
+			m_loggingSystem = (LoggingSystem*)system;
+		}
 	}
 
 	void Win32_FileSystem::updateSystem() {
@@ -26,11 +40,9 @@ namespace Fierce {
 	}
 
 	void Win32_FileSystem::cleanUpSystem() {
-		for (BinaryFileReader* reader : m_binaryReaders) {
-			delete reader;
-		}
-		for (TextFileReader* reader : m_textReaders) {
-			delete reader;
+		if (m_logger!=nullptr) {
+			m_logger->info("Clean up file system");
+			m_loggingSystem->deleteLogger(m_logger);
 		}
 	}
 
@@ -69,7 +81,7 @@ namespace Fierce {
 		auto it = std::find(m_binaryWriters.begin(), m_binaryWriters.end(), writer);
 		if (it != m_binaryWriters.end()) {
 			m_binaryWriters.erase(it);
-			//delete reader;
+			//delete writer;
 		}
 	}
 
@@ -97,7 +109,7 @@ namespace Fierce {
 		auto it = std::find(m_textWriters.begin(), m_textWriters.end(), writer);
 		if (it != m_textWriters.end()) {
 			m_textWriters.erase(it);
-			//delete reader;
+			//delete writer;
 		}
 	}
 

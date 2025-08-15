@@ -1,5 +1,6 @@
 #pragma once
 
+#include "src/include/LoggingSystem.h"
 #include "src/include/FileSystem.h"
 
 #include <vector>
@@ -12,6 +13,7 @@ namespace Fierce {
 		~Win32_FileSystem();
 
 		void initSystem(std::string m_assetDirectory) override;
+		void linkSystem(System* system) override;
 		void updateSystem() override;
 		void cleanUpSystem() override;
 
@@ -33,6 +35,9 @@ namespace Fierce {
 		void getAllFileNames(std::string directory, std::vector<std::string>& filenames, std::string ending) override;
 
 	private:
+		LoggingSystem* m_loggingSystem=nullptr;
+		Logger* m_logger = nullptr;
+
 		ConsoleWriter* m_consoleWriter=nullptr;
 		std::vector<BinaryFileReader*> m_binaryReaders;
 		std::vector<BinaryFileWriter*> m_binaryWriters;

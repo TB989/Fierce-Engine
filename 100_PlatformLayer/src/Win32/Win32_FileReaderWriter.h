@@ -4,6 +4,8 @@
 
 #include "src/include/FileSystem.h"
 
+#include <iostream>
+
 namespace Fierce {
     class Win32_FileIO : public FileIO {
     public:

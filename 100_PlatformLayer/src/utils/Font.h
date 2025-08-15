@@ -60,7 +60,7 @@ namespace Fierce {
 
 		struct {
 			int count = 0;
-			Kerning kernings[200];
+			Kerning kernings[400];
 		} kernings;
 	};
 }

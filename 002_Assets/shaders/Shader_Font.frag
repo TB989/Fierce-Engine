@@ -16,4 +16,5 @@ void main() {
     float distance=1.0-texture(texSampler,fragTexCoord).a;
     float alpha=1-0-smoothstep(pushConstants.width,pushConstants.width+pushConstants.edge,distance);
     outColor = vec4(vs_color.rgb,alpha);
+    //outColor = vec4(vs_color.rgb,1.0);
 }

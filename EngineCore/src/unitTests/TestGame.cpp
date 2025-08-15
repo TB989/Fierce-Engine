@@ -7,11 +7,7 @@
 #include "src/Vector.h"
 #include "src/Color.h"
 
-#include "src/GeometryLoader.h"
-
 #include "src/Parser_Fnt.h"
-
-#include "src/io/stb_image.h"
 
 #include "src/include/InputSystem.h"
 
@@ -20,18 +16,7 @@
 namespace Fierce {
 
 	TestGame::TestGame() {
-		m_loader = new GeometryLoader();
-		m_loader->registerGeometry(GeometryType::RECTANGLE,new Rectangle2D());
-		m_loader->registerGeometry(GeometryType::CIRCLE, new Circle2D());
-		m_loader->registerGeometry(GeometryType::CIRCLE_RING, new CircleRing2D());
-		m_loader->registerGeometry(GeometryType::TRIANGLE, new Triangle2D());
-
-		m_loader->registerGeometry(GeometryType::PLANE, new Plane3D());
-		m_loader->registerGeometry(GeometryType::CUBE, new Cube3D());
-		m_loader->registerGeometry(GeometryType::CYLINDER, new Cylinder3D());
-		m_loader->registerGeometry(GeometryType::HOLLOW_CYLINDER, new HollowCylinder3D());
-		m_loader->registerGeometry(GeometryType::CONE, new Cone3D());
-		m_loader->registerGeometry(GeometryType::SPHERE, new Sphere3D());
+		
 	}
 
 	TestGame::~TestGame() {
@@ -43,7 +28,7 @@ namespace Fierce {
 		std::vector<float> vertices;
 		std::vector<uint16_t> indices;
 
-		m_loader->loadGeometry(GeometryType::RECTANGLE,0,0.0f,0.0f,0,vertices, indices);
+		m_geometrySystem->loadGeometry(GeometryType::RECTANGLE,0,0.0f,0.0f,0,vertices, indices);
 		m_meshId_rectangle=m_renderSystem->newMesh(vertices.size(),indices.size());
 		m_renderSystem->meshLoadVertices(m_meshId_rectangle,vertices.size(),vertices.data());
 		m_renderSystem->meshLoadIndices(m_meshId_rectangle, indices.size(), indices.data());
@@ -51,7 +36,7 @@ namespace Fierce {
 		std::vector<float> vertices2;
 		std::vector<uint16_t> indices2;
 
-		m_loader->loadGeometry(GeometryType::CIRCLE, 32, 250.0f, 0.0f, 0, vertices2, indices2);
+		m_geometrySystem->loadGeometry(GeometryType::CIRCLE, 32, 250.0f, 0.0f, 0, vertices2, indices2);
 		m_meshId_circle = m_renderSystem->newMesh(vertices2.size(), indices2.size());
 		m_renderSystem->meshLoadVertices(m_meshId_circle, vertices2.size(), vertices2.data());
 		m_renderSystem->meshLoadIndices(m_meshId_circle, indices2.size(), indices2.data());
@@ -59,7 +44,7 @@ namespace Fierce {
 		std::vector<float> vertices3;
 		std::vector<uint16_t> indices3;
 
-		m_loader->loadGeometry(GeometryType::CIRCLE_RING, 6, 360.0f, 0.25f, 0, vertices3, indices3);
+		m_geometrySystem->loadGeometry(GeometryType::CIRCLE_RING, 6, 360.0f, 0.25f, 0, vertices3, indices3);
 		m_meshId_circleRing = m_renderSystem->newMesh(vertices3.size(), indices3.size());
 		m_renderSystem->meshLoadVertices(m_meshId_circleRing, vertices3.size(), vertices3.data());
 		m_renderSystem->meshLoadIndices(m_meshId_circleRing, indices3.size(), indices3.data());
@@ -67,7 +52,7 @@ namespace Fierce {
 		std::vector<float> vertices4;
 		std::vector<uint16_t> indices4;
 
-		m_loader->loadGeometry(GeometryType::TRIANGLE, 0, 0.0f, 0.0f, 0, vertices4, indices4);
+		m_geometrySystem->loadGeometry(GeometryType::TRIANGLE, 0, 0.0f, 0.0f, 0, vertices4, indices4);
 		m_meshId_triangle = m_renderSystem->newMesh(vertices4.size(), indices4.size());
 		m_renderSystem->meshLoadVertices(m_meshId_triangle, vertices4.size(), vertices4.data());
 		m_renderSystem->meshLoadIndices(m_meshId_triangle, indices4.size(), indices4.data());
@@ -75,7 +60,7 @@ namespace Fierce {
 		std::vector<float> vertices5;
 		std::vector<uint16_t> indices5;
 
-		m_loader->loadGeometry(GeometryType::PLANE, 0, 0.0f, 0.0f, 0, vertices5, indices5);
+		m_geometrySystem->loadGeometry(GeometryType::PLANE, 0, 0.0f, 0.0f, 0, vertices5, indices5);
 		m_meshId_plane = m_renderSystem->newMesh(vertices5.size(), indices5.size());
 		m_renderSystem->meshLoadVertices(m_meshId_plane, vertices5.size(), vertices5.data());
 		m_renderSystem->meshLoadIndices(m_meshId_plane, indices5.size(), indices5.data());
@@ -83,7 +68,7 @@ namespace Fierce {
 		std::vector<float> vertices6;
 		std::vector<uint16_t> indices6;
 
-		m_loader->loadGeometry(GeometryType::CUBE, 0, 0.0f, 0.0f, 0, vertices6, indices6);
+		m_geometrySystem->loadGeometry(GeometryType::CUBE, 0, 0.0f, 0.0f, 0, vertices6, indices6);
 		m_meshId_Cube = m_renderSystem->newMesh(vertices6.size(), indices6.size());
 		m_renderSystem->meshLoadVertices(m_meshId_Cube, vertices6.size(), vertices6.data());
 		m_renderSystem->meshLoadIndices(m_meshId_Cube, indices6.size(), indices6.data());
@@ -91,7 +76,7 @@ namespace Fierce {
 		std::vector<float> vertices7;
 		std::vector<uint16_t> indices7;
 
-		m_loader->loadGeometry(GeometryType::CYLINDER, 16, 360.0f, 0.0f, 0, vertices7, indices7);
+		m_geometrySystem->loadGeometry(GeometryType::CYLINDER, 16, 360.0f, 0.0f, 0, vertices7, indices7);
 		m_meshId_Cylinder = m_renderSystem->newMesh(vertices7.size(), indices7.size());
 		m_renderSystem->meshLoadVertices(m_meshId_Cylinder, vertices7.size(), vertices7.data());
 		m_renderSystem->meshLoadIndices(m_meshId_Cylinder, indices7.size(), indices7.data());
@@ -99,7 +84,7 @@ namespace Fierce {
 		std::vector<float> vertices8;
 		std::vector<uint16_t> indices8;
 
-		m_loader->loadGeometry(GeometryType::HOLLOW_CYLINDER, 16, 360.0f, 0.4f, 0, vertices8, indices8);
+		m_geometrySystem->loadGeometry(GeometryType::HOLLOW_CYLINDER, 16, 360.0f, 0.4f, 0, vertices8, indices8);
 		m_meshId_HollowCylinder = m_renderSystem->newMesh(vertices8.size(), indices8.size());
 		m_renderSystem->meshLoadVertices(m_meshId_HollowCylinder, vertices8.size(), vertices8.data());
 		m_renderSystem->meshLoadIndices(m_meshId_HollowCylinder, indices8.size(), indices8.data());
@@ -107,7 +92,7 @@ namespace Fierce {
 		std::vector<float> vertices9;
 		std::vector<uint16_t> indices9;
 
-		m_loader->loadGeometry(GeometryType::CONE, 16, 360.0f, 0.0f, 0, vertices9, indices9);
+		m_geometrySystem->loadGeometry(GeometryType::CONE, 16, 360.0f, 0.0f, 0, vertices9, indices9);
 		m_meshId_Cone = m_renderSystem->newMesh(vertices9.size(), indices9.size());
 		m_renderSystem->meshLoadVertices(m_meshId_Cone, vertices9.size(), vertices9.data());
 		m_renderSystem->meshLoadIndices(m_meshId_Cone, indices9.size(), indices9.data());
@@ -115,7 +100,7 @@ namespace Fierce {
 		std::vector<float> vertices10;
 		std::vector<uint16_t> indices10;
 
-		m_loader->loadGeometry(GeometryType::SPHERE, 16, 360.0f, 0.0f, 8, vertices10, indices10);
+		m_geometrySystem->loadGeometry(GeometryType::SPHERE, 16, 360.0f, 0.0f, 8, vertices10, indices10);
 		m_meshId_Sphere = m_renderSystem->newMesh(vertices10.size(), indices10.size());
 		m_renderSystem->meshLoadVertices(m_meshId_Sphere, vertices10.size(), vertices10.data());
 		m_renderSystem->meshLoadIndices(m_meshId_Sphere, indices10.size(), indices10.data());
@@ -312,19 +297,6 @@ namespace Fierce {
 		delete m_color4;
 		delete m_color5;
 		delete m_colorPlane;
-
-		m_loader->unregisterGeometry(GeometryType::RECTANGLE);
-		m_loader->unregisterGeometry(GeometryType::CIRCLE);
-		m_loader->unregisterGeometry(GeometryType::CIRCLE_RING);
-		m_loader->unregisterGeometry(GeometryType::TRIANGLE);
-
-		m_loader->unregisterGeometry(GeometryType::PLANE);
-		m_loader->unregisterGeometry(GeometryType::CUBE);
-		m_loader->unregisterGeometry(GeometryType::CYLINDER);
-		m_loader->unregisterGeometry(GeometryType::HOLLOW_CYLINDER);
-		m_loader->unregisterGeometry(GeometryType::CONE);
-		m_loader->unregisterGeometry(GeometryType::SPHERE);
-		delete m_loader;
 	}
 
 }//end namespace
