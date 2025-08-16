@@ -21,7 +21,9 @@ project "GUI"
 
 	includedirs
 	{
-		"%{wks.location}/%{prj.name}"
+		"%{wks.location}/%{prj.name}",
+		"%{IncludeDir.MathLibrary}",
+		"%{IncludeDir.PlatformLayer}"
 	}
 
 	libdirs
@@ -31,7 +33,8 @@ project "GUI"
 
 	links
 	{
-		
+		"%{Library.MathLibrary}",
+		"%{Library.PlatformLayer}"
 	}
 
 	filter "system:windows"

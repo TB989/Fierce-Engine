@@ -13,6 +13,9 @@
 
 #include "src/gameplay/Player.h"
 
+#include "src/GUILabel.h"
+#include "src/GUIButton.h"
+
 namespace Fierce {
 
 	class Font;
@@ -118,6 +121,9 @@ namespace Fierce {
 		Action* m_action = nullptr;
 		Mat4* m_orthographicProjectionMatrix = nullptr;
 		Mat4* m_perspectiveProjectionMatrix = nullptr;
+
+		GUILabel* m_label = nullptr;
+		GUIButton* m_button = nullptr;
 	};
 
 }//end namespace

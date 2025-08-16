@@ -26,6 +26,16 @@ namespace Fierce {
 		m_perspectiveProjectionMatrix = new Mat4();
 		m_perspectiveProjectionMatrix->setToPerspectiveProjection(false, (float)m_window->getWidth() / (float)m_window->getHeight(), 60.0f, 0.1f, 1000.0f);
 		m_renderSystem->setPerspectiveProjection(m_perspectiveProjectionMatrix->get());
+
+		m_label = new GUILabel("Test Labeling");
+		m_label->setX(10);
+		m_label->setY(1000);
+
+		m_button = new GUIButton("Testing Button");
+		m_button->setX(200);
+		m_button->setY(1000);
+		m_button->setFont("Mistral");
+		m_button->setForegroundColor(0, 0, 1.0f);
 	}
 
 	void TestGUI::update(double delta) {
@@ -129,6 +139,11 @@ namespace Fierce {
 		context->setFont("TimesNewRoman", 100);
 		context->setColor(255, 255, 255);
 		context->drawText(810, 450, "Testing 123456789!");//450
+		//##############################################################################
+
+		//######################################GUI Test################################
+		m_label->draw(context);
+		m_button->draw(context);
 		//##############################################################################
 
 		m_renderSystem->drawGraphicsContext();

@@ -37,6 +37,12 @@ namespace Fierce {
 		}
 	}
 
+	void VulkanGraphicsContext::setColor(float r, float g, float b){
+		m_activeColor->setR(r);
+		m_activeColor->setG(g);
+		m_activeColor->setB(b);
+	}
+
 	void VulkanGraphicsContext::setColor(int r, int g, int b){
 		m_activeColor->setR((float)r / 255.0f);
 		m_activeColor->setG((float)g / 255.0f);
@@ -127,6 +133,10 @@ namespace Fierce {
 
 			kerning = 0;
 		}
+	}
+
+	Font* VulkanGraphicsContext::getFont(std::string fontName){
+		return m_fonts->get(fontName);
 	}
 
 	void VulkanGraphicsContext::addFont(std::string name,Font* font){

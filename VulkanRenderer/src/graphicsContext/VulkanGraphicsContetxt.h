@@ -23,11 +23,14 @@ namespace Fierce {
 
 		void reset();
 
+		void setColor(float r, float g, float b) override;
 		void setColor(int r, int g, int b) override;
 		void setFont(std::string font, int size) override;
 
 		void drawRect(int x, int y, int width, int height) override;
 		void drawText(int x, int y, std::string text) override;
+
+		Font* getFont(std::string fontName) override;
 
 		VK_Buffer* getVertexBuffer() { return m_activeRenderBatch->getVertexBuffer(); }
 		VK_Buffer* getIndexBuffer() { return m_activeRenderBatch->getIndexBuffer(); }

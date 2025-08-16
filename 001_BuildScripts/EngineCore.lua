@@ -43,7 +43,8 @@ project "EngineCore"
 		"%{Library.Parsers}",
 		"%{Library.VulkanRenderer}",
 		"%{Library.MathLibrary}",
-		"%{Library.GeometryLibrary}"
+		"%{Library.GeometryLibrary}",
+		"%{Library.GUI}"
 	}
 
 	filter "system:windows"
