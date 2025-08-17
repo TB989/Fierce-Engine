@@ -14,11 +14,11 @@ LibraryDir["Vulkan"] = "C:/VulkanSDK/1.3.290.0/Lib"
 
 Library = {}
 Library["PlatformLayer"] = "100_PlatformLayer.lib"
-Library["Parsers"] = "101_Parsers.lib"
+Library["MathLibrary"] = "101_MathLibrary.lib"
+Library["GeometryLibrary"] = "102_GeometryLibrary.lib"
+Library["Parsers"] = "103_Parsers.lib"
+Library["GUI"] = "104_GUI.lib"
+Library["VulkanRenderer"] = "120_VulkanRenderer.lib"
 
 
 Library["Vulkan"] = "vulkan-1.lib"
-Library["VulkanRenderer"] = "VulkanRenderer.lib"
-Library["MathLibrary"] = "MathLibrary.lib"
-Library["GeometryLibrary"] = "GeometryLibrary.lib"
-Library["GUI"] = "GUI.lib"
