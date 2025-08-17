@@ -4,12 +4,16 @@
 
 #include <string>
 
+#include "src/GUI/GraphicsContext.h"
+
 namespace Fierce {
-	class GUILabel : public GUIPanel{
+	class GUIButton : public GUIPanel {
 	public:
-		GUILabel(std::string text);
+		GUIButton(std::string text);
 
 		void draw(GraphicsContext* g);
+		void calculatePreferredSize();
+
 	private:
 		float GAP = 2.0f;
 

@@ -4,8 +4,6 @@
 
 #include "src/PlatformLayer/Win32/Win32_Window.h"
 
-#include "src/GUI/GraphicsContext.h"
-
 namespace Fierce {
 
 	bool EngineCore::m_running = false;
@@ -32,7 +30,7 @@ namespace Fierce {
 			m_renderSystem->startFrame();
 			coreRender();
 			render();
-			renderGUI(m_graphicsContext);
+			renderGUI(m_guiSystem->getGraphicsContext());
 			m_renderSystem->endFrame();
 		}
 		m_timer->stop();
@@ -88,6 +86,7 @@ namespace Fierce {
 		m_inputSystem = m_plattform->createInputSystem();
 		m_windowSystem = m_plattform->createWindowSystem();
 		m_renderSystem = new RenderSystem();
+		m_guiSystem = new GUISystem();
 
 		//Link systems
 		m_inputSystem->linkSystem(m_loggingSystem);
@@ -98,6 +97,9 @@ namespace Fierce {
 		m_renderSystem->linkSystem(m_loggingSystem);
 		m_renderSystem->linkSystem(m_fileSystem);
 		m_renderSystem->linkSystem(m_parsingSystem);
+
+		m_guiSystem->linkSystem(m_loggingSystem);
+		m_guiSystem->linkSystem(m_renderSystem);
 
 		//Init systems
 		m_inputSystem->initSystem(m_settings.assetPath);
@@ -110,7 +112,9 @@ namespace Fierce {
 		//Create graphics context
 		m_renderSystem->setWindowHandle(((Win32_Window*)(m_window))->getHandle());
 		m_renderSystem->initSystem(m_settings.assetPath);
-		m_graphicsContext = m_renderSystem->getGraphicsContext();
+
+		//Create Gui System after Render System, because it needs the graphics context from render system
+		m_guiSystem->initSystem(m_settings.assetPath);
 	}
 
 	void EngineCore::coreUpdate(){
@@ -133,6 +137,7 @@ namespace Fierce {
 		m_loggingSystem->deleteLogger(m_logger);
 
 		//Clean up systems
+		m_guiSystem->cleanUpSystem();
 		m_renderSystem->cleanUpSystem();
 		m_windowSystem->cleanUpSystem();
 		m_inputSystem->cleanUpSystem();

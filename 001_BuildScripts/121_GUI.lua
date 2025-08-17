@@ -1,4 +1,4 @@
-project "104_GUI"
+project "121_GUI"
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
@@ -23,7 +23,10 @@ project "104_GUI"
 	{
 		"%{wks.location}/%{prj.name}",
 		"%{IncludeDir.MathLibrary}",
-		"%{IncludeDir.PlatformLayer}"
+		"%{IncludeDir.PlatformLayer}",
+		"%{IncludeDir.Parsers}",
+		"%{IncludeDir.Vulkan}",
+		"%{IncludeDir.VulkanRenderer}"
 	}
 
 	libdirs
@@ -34,7 +37,9 @@ project "104_GUI"
 	links
 	{
 		"%{Library.MathLibrary}",
-		"%{Library.PlatformLayer}"
+		"%{Library.PlatformLayer}",
+		"%{Library.Parsers}",
+		"%{Library.VulkanRenderer}"
 	}
 
 	filter "system:windows"

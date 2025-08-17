@@ -23,10 +23,14 @@ namespace Fierce{
 
 		void setFont(std::string fontName) {
 			m_font = fontName;
+
+			calculatePreferredSize();
 		}
 
 		void setFontSize(int fontSize) {
 			m_fontSize = fontSize;
+
+			calculatePreferredSize();
 		}
 
 		void setX(int x) {
@@ -38,6 +42,7 @@ namespace Fierce{
 		}
 
 		void draw(GraphicsContext* g);
+		void calculatePreferredSize();
 
 	protected:
 		float m_x=0.0f;

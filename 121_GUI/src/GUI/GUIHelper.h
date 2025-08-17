@@ -11,8 +11,8 @@ namespace Fierce{
 	class GUIHelper {
 	public:
 
-		static inline float getStringWidth(std::string string, std::string fontString, int size,GraphicsContext* g) {
-			Font* font = g->getFont(fontString);
+		static inline float getStringWidth(std::string string, std::string fontString, int size) {
+			Font* font = m_graphicsContext->getFont(fontString);
 			char letter;
 			Font::Char character;
 			float cursor = 0.0f;
@@ -46,8 +46,8 @@ namespace Fierce{
 			return cursor;
 		}
 
-		static inline float getStringHeight(std::string string, std::string fontString, int size, GraphicsContext* g) {
-			Font* font = g->getFont(fontString);
+		static inline float getStringHeight(std::string string, std::string fontString, int size) {
+			Font* font = m_graphicsContext->getFont(fontString);
 			char letter;
 			Font::Char character;
 			float sizeFactor = (float)size / (float)font->info.size;
@@ -72,5 +72,12 @@ namespace Fierce{
 
 			return maxY - minY-2* font->info.padding[0]*sizeFactor;
 		}
+
+		static inline void linkGraphicsContext(GraphicsContext* graphicsContext) {
+			GUIHelper::m_graphicsContext = graphicsContext;
+		}
+
+	private:
+		static GraphicsContext* m_graphicsContext;
 	};
 }

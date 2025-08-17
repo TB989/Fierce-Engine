@@ -5,9 +5,9 @@
 #include "src/PlatformLayer/utils/EngineSettings.h"
 
 #include "src/VulkanRenderer/renderSystem/RenderSystem.h"
-
 #include "src/Parsers/ParsingSystem.h"
 #include "src/GeometryLibrary/GeometrySystem.h"
+#include "src/GUI/GUISystem.h"
 
 namespace Fierce {
 
@@ -21,8 +21,6 @@ namespace Fierce {
 	class WindowSystem;
 	class Window;
 	class FileSystem;
-
-	class GraphicsContext;
 
 	class EngineCore {
 	public:
@@ -74,7 +72,8 @@ namespace Fierce {
 		Window* m_window=nullptr;
 
 		RenderSystem* m_renderSystem=nullptr;
-		GraphicsContext* m_graphicsContext = nullptr;
+
+		GUISystem* m_guiSystem = nullptr;
 	};
 
 }//end namespace
