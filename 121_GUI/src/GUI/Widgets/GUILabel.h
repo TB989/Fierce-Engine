@@ -14,6 +14,9 @@ namespace Fierce {
 		void draw(GraphicsContext* g);
 		void calculatePreferredSize();
 
+		std::string getText() { return m_text; }
+		void setText(std::string text);
+
 	private:
 		float GAP = 2.0f;
 

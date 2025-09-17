@@ -20,6 +20,12 @@ namespace Fierce {
 		for (TextFileReader* reader : m_textReaders) {
 			delete reader;
 		}
+		for (BinaryFileWriter* writer : m_binaryWriters) {
+			delete writer;
+		}
+		for (TextFileWriter* writer : m_textWriters) {
+			delete writer;
+		}
 	}
 
 	void Win32_FileSystem::initSystem(std::string m_assetDirectory) {
@@ -67,7 +73,7 @@ namespace Fierce {
 		auto it = std::find(m_binaryReaders.begin(), m_binaryReaders.end(), reader);
 		if (it != m_binaryReaders.end()) {
 			m_binaryReaders.erase(it);
-			//delete reader;
+			delete reader;
 		}
 	}
 
@@ -81,7 +87,7 @@ namespace Fierce {
 		auto it = std::find(m_binaryWriters.begin(), m_binaryWriters.end(), writer);
 		if (it != m_binaryWriters.end()) {
 			m_binaryWriters.erase(it);
-			//delete writer;
+			delete writer;
 		}
 	}
 
@@ -95,7 +101,7 @@ namespace Fierce {
 		auto it = std::find(m_textReaders.begin(), m_textReaders.end(), reader);
 		if (it != m_textReaders.end()) {
 			m_textReaders.erase(it);
-			//delete reader;
+			delete reader;
 		}
 	}
 
@@ -109,7 +115,7 @@ namespace Fierce {
 		auto it = std::find(m_textWriters.begin(), m_textWriters.end(), writer);
 		if (it != m_textWriters.end()) {
 			m_textWriters.erase(it);
-			//delete writer;
+			delete writer;
 		}
 	}
 

@@ -2,6 +2,7 @@
 
 #include "src/VulkanRenderer/renderSystem/RenderSystem.h"
 #include "src/PlatformLayer/include/LoggingSystem.h"
+#include "src/PlatformLayer/include/InputSystem.h"
 #include "src/PlatformLayer/utils/System.h"
 
 #include "src/GUI/GraphicsContext.h"
@@ -22,12 +23,16 @@ namespace Fierce {
 			return m_graphicsContext;
 		}
 
+	public:
+		static Logger* LOGGER;
+
 	private:
 		LoggingSystem* m_loggingSystem = nullptr;
-		Logger* m_logger = nullptr;
 
 		RenderSystem* m_renderSystem = nullptr;
 		GraphicsContext* m_graphicsContext = nullptr;
+
+		InputSystem* m_inputSystem = nullptr;
 
 		std::string m_fontDirectory;
 	};

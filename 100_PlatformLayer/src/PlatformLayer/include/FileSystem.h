@@ -31,7 +31,7 @@ namespace Fierce {
 
 	class BinaryFileReader{
 	public:
-		~BinaryFileReader() {};
+		virtual ~BinaryFileReader() {};
 
 		virtual bool openFile(std::string filename) = 0;
 		virtual bool readBinary(long* size, char** buffer)=0;
@@ -40,7 +40,7 @@ namespace Fierce {
 
 	class BinaryFileWriter {
 	public:
-		~BinaryFileWriter() {};
+		virtual ~BinaryFileWriter() {};
 
 		virtual bool openFile(std::string filename) = 0;
 		virtual void closeFile() = 0;
@@ -48,7 +48,7 @@ namespace Fierce {
 
 	class TextFileReader{
 	public:
-		~TextFileReader() {};
+		virtual ~TextFileReader() {};
 
 		virtual bool openFile(std::string filename) = 0;
 		virtual bool readNextLine(std::string& line)=0;
@@ -57,7 +57,7 @@ namespace Fierce {
 
 	class TextFileWriter {
 	public:
-		~TextFileWriter() {};
+		virtual ~TextFileWriter() {};
 
 		virtual bool openFile(std::string filename) = 0;
 		virtual void print(const char* format, ...) =0;
@@ -66,6 +66,8 @@ namespace Fierce {
 
 	class FileSystem :public System {
 	public:
+		virtual ~FileSystem() = default;
+
 		virtual ConsoleWriter* createConsoleWriter() = 0;
 		virtual void deleteConsoleWriter(ConsoleWriter* writer) = 0;
 

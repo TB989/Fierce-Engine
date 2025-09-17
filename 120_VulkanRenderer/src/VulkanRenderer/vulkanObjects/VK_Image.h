@@ -27,6 +27,7 @@ namespace Fierce {
 		//Misc
 		VkMemoryPropertyFlags m_memoryFlags = {};
 		VkDeviceSize m_size = 0;
+		uint32_t m_queue_indices[2];
 
 		//Vulkan objects
 		VK_Device* m_device = nullptr;

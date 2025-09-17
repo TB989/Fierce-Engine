@@ -40,6 +40,8 @@ namespace Fierce {
 
 	class WindowSystem :public System {
 	public:
+		virtual ~WindowSystem() = default;
+
 		virtual Window* createWindow(std::string title, Window::WINDOW_MODE windowMode, int width, int height)=0;
 		virtual void deleteWindow(Window* window)=0;
 	};

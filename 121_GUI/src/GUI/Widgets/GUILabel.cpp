@@ -2,6 +2,8 @@
 
 #include "src/GUI/GUIHelper.h"
 
+#include "src/GUI/GUISystem.h"
+
 namespace Fierce {
 
 	Fierce::GUILabel::GUILabel(std::string text){
@@ -22,6 +24,11 @@ namespace Fierce {
 	void GUILabel::calculatePreferredSize() {
 		m_width = m_preferredWidth = GUIHelper::getStringWidth(m_text, m_font, m_fontSize);
 		m_height = m_preferredHeight = GUIHelper::getStringHeight(m_text, m_font, m_fontSize);
+	}
+
+	void GUILabel::setText(std::string text){
+		m_text = text;
+		calculatePreferredSize();
 	}
 
 }

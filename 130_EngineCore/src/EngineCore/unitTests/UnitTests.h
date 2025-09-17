@@ -11,10 +11,14 @@
 #include "src/EngineCore/actions/Range_lookRightLeft.h"
 #include "src/EngineCore/actions/Action_SwitchMouseMode.h"
 
+#include "src/EngineCore/actions/Range_PrintMousePosition.h"
+
 #include "src/EngineCore/gameplay/Player.h"
 
 #include "src/GUI/Widgets/GUILabel.h"
 #include "src/GUI/Widgets/GUIButton.h"
+
+#include "src/EngineCore/actions/Point.h"
 
 namespace Fierce {
 
@@ -118,12 +122,20 @@ namespace Fierce {
 		void cleanUp() override;
 
 	private:
+		Point* m_point = nullptr;
+
 		Action* m_action = nullptr;
 		Mat4* m_orthographicProjectionMatrix = nullptr;
 		Mat4* m_perspectiveProjectionMatrix = nullptr;
 
+		Range* m_rangeX = nullptr;
+		Range* m_rangeY = nullptr;
+
 		GUILabel* m_label = nullptr;
 		GUIButton* m_button = nullptr;
+
+		GUILabel* m_label_x = nullptr;
+		GUILabel* m_label_y = nullptr;
 	};
 
 }//end namespace

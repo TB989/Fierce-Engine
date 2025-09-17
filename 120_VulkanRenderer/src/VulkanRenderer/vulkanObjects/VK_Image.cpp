@@ -40,8 +40,9 @@ namespace Fierce {
 		if (m_shareRessourcesWithTransferQueue) {
 			m_createInfo.sharingMode = VK_SHARING_MODE_CONCURRENT;
 			m_createInfo.queueFamilyIndexCount = 2;
-			uint32_t indices[] = { m_device->getDeviceData()->graphicsQueueIndex,m_device->getDeviceData()->transferQueueIndex };
-			m_createInfo.pQueueFamilyIndices = indices;
+			m_queue_indices[0] = m_device->getDeviceData()->graphicsQueueIndex;
+			m_queue_indices[1] = m_device->getDeviceData()->transferQueueIndex;
+			m_createInfo.pQueueFamilyIndices = m_queue_indices;
 		}
 		else {
 			m_createInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;

@@ -11,7 +11,12 @@ namespace Fierce {
 	}
 
 	void GUIButton::draw(GraphicsContext* g) {
-		g->setColor(m_backgroundColor->getR(), m_backgroundColor->getG(), m_backgroundColor->getB());
+		if (m_isMouseOver) {
+			g->setColor(0.0f, 1.0f, 0.0f);
+		}
+		else {
+			g->setColor(m_backgroundColor->getR(), m_backgroundColor->getG(), m_backgroundColor->getB());
+		}
 		g->drawRect(m_x, m_y, m_width + 2 * GAP, m_height + 2 * GAP);
 
 		g->setColor(m_foregroundColor->getR(), m_foregroundColor->getG(), m_foregroundColor->getB());

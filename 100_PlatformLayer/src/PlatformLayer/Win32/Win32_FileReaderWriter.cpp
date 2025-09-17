@@ -4,9 +4,6 @@ namespace Fierce {
 	Win32_FileIO::Win32_FileIO(std::string directory) :FileIO(directory) {}
 
 	bool Win32_FileIO::openFile(std::string filename,std::string options){
-		//Close open file
-		closeFile();
-
 		//Check if directory and filename are set
 		if (filename == "") {
 			m_file = nullptr;

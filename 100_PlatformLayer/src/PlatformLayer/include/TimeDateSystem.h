@@ -7,6 +7,8 @@ namespace Fierce {
     class Timer {
     public:
 
+        virtual ~Timer()=default;
+
         virtual void start()=0;
         virtual void stop()=0;
 
@@ -18,6 +20,8 @@ namespace Fierce {
 
     class TimeDateSystem :public System {
     public:
+        virtual ~TimeDateSystem() = default;
+
         int getYear() { return m_year; }
         int getMonth() { return m_month; }
         int getDay() { return m_day; }

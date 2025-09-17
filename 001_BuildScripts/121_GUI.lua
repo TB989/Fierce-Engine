@@ -24,7 +24,6 @@ project "121_GUI"
 		"%{wks.location}/%{prj.name}",
 		"%{IncludeDir.MathLibrary}",
 		"%{IncludeDir.PlatformLayer}",
-		"%{IncludeDir.Parsers}",
 		"%{IncludeDir.Vulkan}",
 		"%{IncludeDir.VulkanRenderer}"
 	}
@@ -38,7 +37,6 @@ project "121_GUI"
 	{
 		"%{Library.MathLibrary}",
 		"%{Library.PlatformLayer}",
-		"%{Library.Parsers}",
 		"%{Library.VulkanRenderer}"
 	}
 

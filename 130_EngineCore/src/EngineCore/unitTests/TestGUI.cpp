@@ -4,6 +4,10 @@
 
 #include "src/PlatformLayer/include/InputSystem.h"
 
+//TODO
+//Activate/Deactivate Raw Input in window/input?
+//Merge MouseX and MouseY
+
 namespace Fierce {
 
 	TestGUI::TestGUI() {
@@ -15,7 +19,12 @@ namespace Fierce {
 	}
 
 	void TestGUI::init() {
+		bool temp = false;
+
 		m_action = new Action_StopEngine(this);
+
+		m_inputSystem->switchMouseMode(temp);
+
 		m_inputSystem->addAction(BINDING::KEY_ESC, m_action, true);
 		m_inputSystem->addAction(BINDING::KEY_ESC, m_action, false);
 
@@ -34,12 +43,25 @@ namespace Fierce {
 		m_button = new GUIButton("Testing Button");
 		m_button->setX(200);
 		m_button->setY(1000);
-		m_button->setFont("Mistral");
-		m_button->setForegroundColor(0, 0, 1.0f);
+
+		m_label_x = new GUILabel("X: 100");
+		m_label_x->setX(10);
+		m_label_x->setY(10);
+
+		m_label_y = new GUILabel("Y: 100");
+		m_label_y->setX(100);
+		m_label_y->setY(10);
+
+		m_point = new Point();
+
+		m_rangeX = new Range_PrintMousePosition(m_point,true,m_label_x, "X: ");
+		m_rangeY = new Range_PrintMousePosition(m_point,false,m_label_y, "Y: ");
+		m_inputSystem->addRange(BINDING::MOUSE_X_AXIS, m_rangeX, temp);
+		m_inputSystem->addRange(BINDING::MOUSE_Y_AXIS, m_rangeY, temp);
 	}
 
 	void TestGUI::update(double delta) {
-
+		m_button->onMouseMoved(m_point->m_x,m_point->m_y);
 	}
 
 	void TestGUI::render() {
@@ -50,7 +72,7 @@ namespace Fierce {
 		m_renderSystem->resetGraphicsContext();
 
 		//######################################Candara##################################
-		context->setColor(188, 47, 86);
+		/**context->setColor(188, 47, 86);
 		context->drawRect(10, 10, 700, 10);
 
 		context->setFont("Candara", 10);
@@ -138,20 +160,35 @@ namespace Fierce {
 
 		context->setFont("TimesNewRoman", 100);
 		context->setColor(255, 255, 255);
-		context->drawText(810, 450, "Testing 123456789!");//450
+		context->drawText(810, 450, "Testing 123456789!");//450*/
 		//##############################################################################
 
 		//######################################GUI Test################################
 		m_label->draw(context);
+		/**context->setColor(1.0f, 1.0f, 1.0f);
+		context->drawRect(10, 1000, 800, 20 );
+
+		context->setColor(1.0f,0.0f,0.0f);
+		context->setFont("TimesNewRoman",20);
+		context->drawText(1100,800,"Test");*/
 		m_button->draw(context);
 		//##############################################################################
+		m_label_x->draw(context);
+		m_label_y->draw(context);
 
 		m_renderSystem->drawGraphicsContext();
 	}
 
 	void TestGUI::cleanUp() {
+		delete m_label;
+		delete m_button;
+		delete m_label_x;
+		delete m_label_y;
+
 		delete m_perspectiveProjectionMatrix;
 		delete m_orthographicProjectionMatrix;
 		delete m_action;
+		delete m_rangeX;
+		delete m_rangeY;
 	}
 }

@@ -5,6 +5,9 @@
 namespace Fierce {
 
 	class Parser {
+	public: 
+		virtual ~Parser()=default;
+
 	protected:
 		bool isEmptyLine(std::string line);
 		bool isCommentLine(std::string line);

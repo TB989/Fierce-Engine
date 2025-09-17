@@ -60,7 +60,7 @@ namespace Fierce {
 			m_logger->error("Failed to create window.");
 		}
 
-		activateRawInput();
+		deactivateRawInput();
 	}
 
 	void Win32_Window::destroyWindow() {

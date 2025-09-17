@@ -71,14 +71,18 @@ namespace Fierce {
 		m_parsingSystem->initSystem("");
 		m_geometrySystem->initSystem("");
 
+		//Create core logger and timer
+		m_logger = m_loggingSystem->createLogger("CORE", true, "ALL_LOGS");
+		m_timer = m_timeDateSystem->createTimer();
+
 		//Read settings
 		Parser_Ini* parser = m_parsingSystem->createParser_Ini("");
 		parser->parseFile("Engine.ini", m_settings);
 		m_parsingSystem->deleteParser(parser);
 
 		//Create core logger and timer
-		m_logger = m_loggingSystem->createLogger("CORE", true, "ALL_LOGS");
-		m_timer = m_timeDateSystem->createTimer();
+		//m_logger = m_loggingSystem->createLogger("CORE", true, "ALL_LOGS");
+		//m_timer = m_timeDateSystem->createTimer();
 	}
 
 	void EngineCore::coreInit(){
@@ -100,6 +104,7 @@ namespace Fierce {
 
 		m_guiSystem->linkSystem(m_loggingSystem);
 		m_guiSystem->linkSystem(m_renderSystem);
+		m_guiSystem->linkSystem(m_inputSystem);
 
 		//Init systems
 		m_inputSystem->initSystem(m_settings.assetPath);

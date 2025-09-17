@@ -8,6 +8,8 @@ namespace Fierce {
 
 	class Logger {
 	public:
+		virtual ~Logger() = default;
+
 		Logger(std::string name) {
 			m_name = name;
 		}
@@ -50,6 +52,8 @@ namespace Fierce {
 
 	class LoggingSystem :public System {
 	public:
+		virtual ~LoggingSystem() = default;
+
 		virtual Logger* createLogger(std::string name)=0;
 		virtual Logger* createLogger(std::string name, bool logToConsole, std::string file)=0;
 		virtual void deleteLogger(Logger* logger)=0;

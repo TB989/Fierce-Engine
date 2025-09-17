@@ -41,10 +41,15 @@ namespace Fierce{
 			m_y = y;
 		}
 
+		void onMouseMoved(int x, int y);
+
 		void draw(GraphicsContext* g);
 		void calculatePreferredSize();
 
 	protected:
+		bool m_isMouseOver=false;
+		bool m_isMouseClicked = false;
+
 		float m_x=0.0f;
 		float m_y=0.0f;
 		float m_width=0.0f;
@@ -53,8 +58,8 @@ namespace Fierce{
 		float m_preferredWidth=0.0f;
 		float m_preferredHeight=0.0f;
 
-		Color3f* m_backgroundColor=new Color3f(1,1,1);
-		Color3f* m_foregroundColor=new Color3f(0,0,0);
+		Color3f* m_backgroundColor=new Color3f(0.3f,0,0);
+		Color3f* m_foregroundColor=new Color3f(1,1,1);
 
 		std::string m_font="TimesNewRoman";
 		int m_fontSize=20;

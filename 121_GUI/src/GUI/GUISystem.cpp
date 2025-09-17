@@ -4,6 +4,8 @@
 
 namespace Fierce {
 
+	Logger* GUISystem::LOGGER = nullptr;
+
 	Fierce::GUISystem::GUISystem(){
 
 	}
@@ -14,8 +16,8 @@ namespace Fierce {
 
 	void GUISystem::initSystem(std::string assetDirectory){
 		if (m_loggingSystem != nullptr) {
-			m_logger = m_loggingSystem->createLogger("GUI", true, "ALL_LOGS");
-			m_logger->info("Init GUI system");
+			LOGGER = m_loggingSystem->createLogger("GUI", true, "ALL_LOGS");
+			LOGGER->info("Init GUI system");
 		}
 
 		m_graphicsContext = m_renderSystem->getGraphicsContext();
@@ -29,6 +31,9 @@ namespace Fierce {
 		if (dynamic_cast<RenderSystem*>(system)) {
 			m_renderSystem = (RenderSystem*)system;
 		}
+		if (dynamic_cast<InputSystem*>(system)) {
+			m_inputSystem = (InputSystem*)system;
+		}
 	}
 
 	void GUISystem::updateSystem(){
@@ -36,9 +41,9 @@ namespace Fierce {
 	}
 
 	void GUISystem::cleanUpSystem(){
-		if (m_logger != nullptr) {
-			m_logger->info("Clean up GUI system");
-			m_loggingSystem->deleteLogger(m_logger);
+		if (LOGGER != nullptr) {
+			LOGGER->info("Clean up GUI system");
+			m_loggingSystem->deleteLogger(LOGGER);
 		}
 	}
 }
