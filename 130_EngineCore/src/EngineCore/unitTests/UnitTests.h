@@ -7,8 +7,7 @@
 #include "src/EngineCore/actions/State_MoveBackward.h"
 #include "src/EngineCore/actions/Range_MoveForward.h"
 #include "src/EngineCore/actions/Range_MoveBackward.h"
-#include "src/EngineCore/actions/Range_lookUpDown.h"
-#include "src/EngineCore/actions/Range_lookRightLeft.h"
+#include "src/EngineCore/actions/Range_controlCamera.h"
 #include "src/EngineCore/actions/Action_SwitchMouseMode.h"
 
 #include "src/EngineCore/actions/Range_PrintMousePosition.h"
@@ -17,8 +16,6 @@
 
 #include "src/GUI/Widgets/GUILabel.h"
 #include "src/GUI/Widgets/GUIButton.h"
-
-#include "src/EngineCore/actions/Point.h"
 
 namespace Fierce {
 
@@ -50,8 +47,7 @@ namespace Fierce {
 		Action* m_actionSwitchMouseModeNormal = nullptr;
 		State* m_stateMoveForward=nullptr;
 		State* m_stateMoveBackward = nullptr;
-		Range* m_lookUpDown = nullptr;
-		Range* m_lookRightLeft = nullptr;
+		Range* m_controlCamera = nullptr;
 		Range* m_rangeMoveForward = nullptr;
 		Range* m_rangeMoveBackward = nullptr;
 
@@ -122,14 +118,11 @@ namespace Fierce {
 		void cleanUp() override;
 
 	private:
-		Point* m_point = nullptr;
-
 		Action* m_action = nullptr;
 		Mat4* m_orthographicProjectionMatrix = nullptr;
 		Mat4* m_perspectiveProjectionMatrix = nullptr;
 
-		Range* m_rangeX = nullptr;
-		Range* m_rangeY = nullptr;
+		Range* m_range = nullptr;
 
 		GUILabel* m_label = nullptr;
 		GUIButton* m_button = nullptr;

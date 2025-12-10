@@ -2,11 +2,10 @@
 
 #include "src/PlatformLayer/utils/Bindable.h"
 
-#include "src/PlatformLayer/Win32/Win32_Window.h"
-
 namespace Fierce {
 
 	class InputSystem;
+	class Window;
 
 	class Action_SwitchMouseMode :public Action {
 	public:
@@ -16,7 +15,7 @@ namespace Fierce {
 
 	private:
 		InputSystem* m_inputSystem=nullptr;
-		Win32_Window* m_window=nullptr;
+		Window* m_window=nullptr;
 		bool m_switchToRawInput=false;
 	};
 }

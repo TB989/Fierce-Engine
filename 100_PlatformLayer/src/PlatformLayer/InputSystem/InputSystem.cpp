@@ -88,11 +88,13 @@ namespace Fierce {
         }
     }
 
-    void InputSystem::switchMouseMode(bool rawMouse){
+    void InputSystem::switchMouseMode(Window* window,bool rawMouse){
         if (rawMouse) {
+            window->activateRawInput();
             m_activeContext = m_inputContext_raw;
         }
         else {
+            window->deactivateRawInput();
             m_activeContext = m_inputContext_normal;
         }
     }

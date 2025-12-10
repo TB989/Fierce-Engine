@@ -1,13 +1,14 @@
 #pragma once
 
-#include "src/PlatformLayer/include/LoggingSystem.h"
-#include "src/PlatformLayer/utils/System.h"
+#include "src/systems/System.h"
+#include "src/systems/IGeometrySystem.h"
+#include "src/systems/ILoggingSystem.h"
 
 #include "GeometryLoader.h"
 
 namespace Fierce {
 
-	class GeometrySystem : public System{
+	class GeometrySystem : public System,IGeometrySystem{
 	public:
 		GeometrySystem();
 		~GeometrySystem();
@@ -17,12 +18,11 @@ namespace Fierce {
 		void updateSystem() override;
 		void cleanUpSystem() override;
 
-
-		void loadGeometry(GeometryType type, int numPoints, float angle, float innerRadius, int numRings, std::vector<float>& vertices, std::vector<uint16_t>& indices);
+		void loadGeometry(GeometryType type, int numPoints, float angle, float innerRadius, int numRings, std::vector<float>& vertices, std::vector<uint16_t>& indices) override;
 
 	private:
-		LoggingSystem* m_loggingSystem = nullptr;
-		Logger* m_logger = nullptr;
+		ILoggingSystem* m_loggingSystem = nullptr;
+		ILogger* m_logger = nullptr;
 
 		GeometryLoader* m_loader = nullptr;
 	};

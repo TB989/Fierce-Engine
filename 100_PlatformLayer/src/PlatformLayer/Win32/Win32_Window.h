@@ -24,8 +24,8 @@ namespace Fierce{
 		void destroyWindow();
 
 	public:
-		void activateRawInput();
-		void deactivateRawInput();
+		void activateRawInput() override;
+		void deactivateRawInput() override;
 
 	private:
 		HWND m_windowHandle = nullptr;

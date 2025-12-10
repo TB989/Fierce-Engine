@@ -22,7 +22,7 @@ project "102_GeometryLibrary"
 	includedirs
 	{
 		"%{wks.location}/%{prj.name}",
-		"%{IncludeDir.PlatformLayer}"
+		"%{IncludeDir.Common}"
 	}
 
 	libdirs
@@ -32,7 +32,7 @@ project "102_GeometryLibrary"
 
 	links
 	{
-		"%{Library.PlatformLayer}"
+		
 	}
 
 	filter "system:windows"

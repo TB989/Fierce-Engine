@@ -12,7 +12,7 @@ namespace Fierce {
 	public:
 		Range_MoveBackward(Transform3D* viewTransform,Player* player,float speed);
 
-		void onRangeChanged(float delta) override;
+		void onRangeChanged(float x, float y) override;
 
 	private:
 		Transform3D* m_viewTransform = nullptr;

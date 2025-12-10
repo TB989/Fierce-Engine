@@ -2,10 +2,8 @@
 
 namespace Fierce {
 
-	class Point {
+	class ParsingSystem{
 	public:
-		int m_x;
-		int m_y;
+		
 	};
-
-};
+}

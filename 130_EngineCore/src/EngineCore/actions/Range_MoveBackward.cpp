@@ -12,7 +12,7 @@ namespace Fierce {
 		m_speed = speed;
 	}
 
-	void Range_MoveBackward::onRangeChanged(float delta) {
+	void Range_MoveBackward::onRangeChanged(float x, float y) {
 		if (!m_player->m_moveBackward) {
 			return;
 		}

@@ -54,20 +54,11 @@ namespace Fierce {
         }
     }
 
-    void InputContext::onMouseMoveX(BINDING binding, int value) {
-        auto it = m_ranges.find(MOUSE_X_AXIS);
+    void InputContext::onMouseMoved(BINDING binding, int x, int y) {
+        auto it = m_ranges.find(MOUSE_MOVE);
         if (it != m_ranges.end()) {
             if (it->second != nullptr) {
-                it->second->onRangeChanged((float)value);
-            }
-        }
-    }
-
-    void InputContext::onMouseMoveY(BINDING binding, int value) {
-        auto it = m_ranges.find(MOUSE_Y_AXIS);
-        if (it != m_ranges.end()) {
-            if (it->second != nullptr) {
-                it->second->onRangeChanged((float)value);
+                it->second->onRangeChanged((float)x,(float)y);
             }
         }
     }
@@ -76,7 +67,7 @@ namespace Fierce {
         auto it = m_ranges.find(binding);
         if (it != m_ranges.end()) {
             if (it->second != nullptr) {
-                it->second->onRangeChanged((float)value);
+                it->second->onRangeChanged((float)value,0.0f);
             }
         }
     }

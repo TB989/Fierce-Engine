@@ -175,10 +175,8 @@ namespace Fierce {
 		m_inputSystem->addAction(BINDING::KEY_TAB, m_actionSwitchMouseModeRaw, false);
 		m_inputSystem->addAction(BINDING::KEY_TAB, m_actionSwitchMouseModeNormal, true);
 
-		m_lookUpDown = new Range_lookUpDown(m_viewTransform);
-		m_inputSystem->addRange(BINDING::MOUSE_Y_AXIS, m_lookUpDown,true);
-		m_lookRightLeft = new Range_lookRightLeft(m_viewTransform);
-		m_inputSystem->addRange(BINDING::MOUSE_X_AXIS, m_lookRightLeft,true);
+		m_controlCamera = new Range_controlCamera(m_viewTransform);
+		m_inputSystem->addRange(BINDING::MOUSE_MOVE, m_controlCamera,true);
 
 		m_rangeMoveForward = new Range_MoveForward(m_viewTransform, m_player,0.02f);
 		m_rangeMoveBackward = new Range_MoveBackward(m_viewTransform, m_player,0.02f);
@@ -187,8 +185,8 @@ namespace Fierce {
 	}
 
 	void TestGame::update(double delta){
-		m_rangeMoveForward->onRangeChanged(delta);
-		m_rangeMoveBackward->onRangeChanged(delta);
+		m_rangeMoveForward->onRangeChanged(delta,0.0f);
+		m_rangeMoveBackward->onRangeChanged(delta,0.0f);
 	}
 
 	void TestGame::render() {

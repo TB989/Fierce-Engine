@@ -21,3 +21,8 @@ workspace "Fierce-Engine"
 	include "120_VulkanRenderer.lua"
 	include "130_EngineCore.lua"
 	include "121_GUI.lua"
+
+	include "99_Common.lua"
+	include "99_Game.lua"
+	include "99_MainExe.lua"
+	include "99_GameEngine.lua"

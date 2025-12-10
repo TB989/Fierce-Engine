@@ -159,8 +159,7 @@ namespace Fierce {
 		case WM_MOUSEMOVE:
 			x = LOWORD(lParam);
 			y = HIWORD(lParam);
-			inputSystem->getActiveContext()->onMouseMoveX(BINDING::MOUSE_X_AXIS, x);
-			inputSystem->getActiveContext()->onMouseMoveY(BINDING::MOUSE_Y_AXIS, y);
+			inputSystem->getActiveContext()->onMouseMoved(BINDING::MOUSE_MOVE, x,y);
 			return 0;
 		case WM_INPUT:
 			bufferSize = sizeof(RAWINPUT);
@@ -177,8 +176,7 @@ namespace Fierce {
 
 				//Mouse move
 				if (mouse.lLastX != 0 && mouse.lLastY != 0) {
-					inputSystem->getActiveContext()->onMouseMoveX( BINDING::MOUSE_X_AXIS, mouse.lLastX);
-					inputSystem->getActiveContext()->onMouseMoveY( BINDING::MOUSE_Y_AXIS, mouse.lLastY);
+					inputSystem->getActiveContext()->onMouseMoved( BINDING::MOUSE_MOVE, mouse.lLastX, mouse.lLastY);
 				}
 
 				//Mouse buttons

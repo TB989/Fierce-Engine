@@ -6,13 +6,13 @@
 
 #include "src/PlatformLayer/utils/System.h"
 #include "src/PlatformLayer/utils/Bindable.h"
+#include "src/PlatformLayer/include/WindowSystem.h"
 
 namespace Fierce {
 
     enum BINDING {
         //Mouse
-        MOUSE_X_AXIS,
-        MOUSE_Y_AXIS,
+        MOUSE_MOVE,
         MOUSE_WHEEL_MOVE,
         MOUSE_BUTTON_LEFT,
         MOUSE_BUTTON_MIDDLE,
@@ -134,8 +134,7 @@ namespace Fierce {
         void onKeyDown(BINDING binding);
         void onKeyUp(BINDING binding);
 
-        void onMouseMoveX(BINDING binding, int value);
-        void onMouseMoveY(BINDING binding, int value);
+        void onMouseMoved(BINDING binding, int x, int y);
         void onMouseWheelMove(BINDING binding, int value);
         void onMouseKeyDown(BINDING binding);
         void onMouseKeyUp(BINDING binding);
@@ -154,7 +153,7 @@ namespace Fierce {
 		void updateSystem() override;
 		void cleanUpSystem() override;
 
-		void switchMouseMode(bool rawMouse);
+		void switchMouseMode(Window* window,bool rawMouse);
 		InputContext* getActiveContext() { return m_activeContext; }
 
 	public:

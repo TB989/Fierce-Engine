@@ -31,6 +31,9 @@ namespace Fierce {
 		int getWidth() { return m_width; }
 		int getHeight() { return m_height; }
 
+		virtual void activateRawInput()=0;
+		virtual void deactivateRawInput()=0;
+
 	protected:
 		std::string m_title = "";
 		bool m_isFullscreen = false;

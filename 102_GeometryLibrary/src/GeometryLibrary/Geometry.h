@@ -5,21 +5,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-namespace Fierce {
-	enum GeometryType {
-		RECTANGLE,
-		CIRCLE,
-		CIRCLE_RING,
-		TRIANGLE,
-
-		PLANE,
-		CUBE,
-		CYLINDER,
-		HOLLOW_CYLINDER,
-		CONE,
-		SPHERE
-	};
-
+namespace Fierce{
 	class Geometry {
 	public:
 		virtual void getVertices(std::vector<float>& vertices, int numPoints, float angle, float innerRadius, int numRings) = 0;

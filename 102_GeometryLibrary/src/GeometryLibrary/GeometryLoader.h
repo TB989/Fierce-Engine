@@ -1,5 +1,7 @@
 #pragma once
 
+#include "src/systems/IGeometrySystem.h"
+
 #include <map>
 #include <vector>
 

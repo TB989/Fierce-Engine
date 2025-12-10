@@ -5,7 +5,6 @@
 #include "src/PlatformLayer/include/InputSystem.h"
 
 //TODO
-//Activate/Deactivate Raw Input in window/input?
 //Merge MouseX and MouseY
 
 namespace Fierce {
@@ -19,11 +18,9 @@ namespace Fierce {
 	}
 
 	void TestGUI::init() {
-		bool temp = false;
-
 		m_action = new Action_StopEngine(this);
 
-		m_inputSystem->switchMouseMode(temp);
+		m_inputSystem->switchMouseMode(m_window,false);
 
 		m_inputSystem->addAction(BINDING::KEY_ESC, m_action, true);
 		m_inputSystem->addAction(BINDING::KEY_ESC, m_action, false);
@@ -52,16 +49,12 @@ namespace Fierce {
 		m_label_y->setX(100);
 		m_label_y->setY(10);
 
-		m_point = new Point();
-
-		m_rangeX = new Range_PrintMousePosition(m_point,true,m_label_x, "X: ");
-		m_rangeY = new Range_PrintMousePosition(m_point,false,m_label_y, "Y: ");
-		m_inputSystem->addRange(BINDING::MOUSE_X_AXIS, m_rangeX, temp);
-		m_inputSystem->addRange(BINDING::MOUSE_Y_AXIS, m_rangeY, temp);
+		m_range = new Range_PrintMousePosition(m_label_x, "X: ", m_label_y, "Y: ");
+		m_inputSystem->addRange(BINDING::MOUSE_MOVE, m_range, false);
 	}
 
 	void TestGUI::update(double delta) {
-		m_button->onMouseMoved(m_point->m_x,m_point->m_y);
+		//m_button->onMouseMoved(m_point->m_x,m_point->m_y);
 	}
 
 	void TestGUI::render() {
@@ -188,7 +181,6 @@ namespace Fierce {
 		delete m_perspectiveProjectionMatrix;
 		delete m_orthographicProjectionMatrix;
 		delete m_action;
-		delete m_rangeX;
-		delete m_rangeY;
+		delete m_range;
 	}
 }

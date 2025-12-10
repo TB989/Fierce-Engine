@@ -40,8 +40,8 @@ namespace Fierce {
 	}
 
 	void GeometrySystem::linkSystem(System* system){
-		if (dynamic_cast<LoggingSystem*>(system)) {
-			m_loggingSystem = (LoggingSystem*)system;
+		if (dynamic_cast<ILoggingSystem*>(system)) {
+			m_loggingSystem = (ILoggingSystem*)system;
 		}
 	}
 

@@ -6,11 +6,11 @@ namespace Fierce {
 
 	class Transform3D;
 
-	class Range_lookUpDown :public Range {
+	class Range_controlCamera :public Range {
 	public:
-		Range_lookUpDown(Transform3D* viewTransform);
+		Range_controlCamera(Transform3D* viewTransform);
 
-		void onRangeChanged(float delta) override;
+		void onRangeChanged(float x, float y) override;
 
 	private:
 		Transform3D* m_viewTransform=nullptr;

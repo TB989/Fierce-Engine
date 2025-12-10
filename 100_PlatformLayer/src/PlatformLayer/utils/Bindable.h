@@ -22,6 +22,6 @@ namespace Fierce {
 		Range() {};
 		virtual ~Range() {}
 
-		virtual void onRangeChanged(float delta) = 0;
+		virtual void onRangeChanged(float range1,float range2) = 0;
 	};
 }//end namespace

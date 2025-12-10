@@ -6,6 +6,8 @@ IncludeDir["Parsers"] = "%{wks.location}/103_Parsers"
 IncludeDir["GUI"] = "%{wks.location}/121_GUI"
 IncludeDir["VulkanRenderer"] = "%{wks.location}/120_VulkanRenderer"
 
+IncludeDir["Common"] = "%{wks.location}/99_Common"
+
 IncludeDir["Vulkan"] = "C:/VulkanSDK/1.3.290.0/Include"
 
 LibraryDir = {}
