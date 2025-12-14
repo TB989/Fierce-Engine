@@ -7,7 +7,7 @@
 
 namespace Fierce {
 	SystemManager::SystemManager(){
-        //TODO: Keep graph build (update when adding/removing rules and systems), only sort when adding new rule
+
 	}
 
 	SystemManager::~SystemManager(){
@@ -49,8 +49,6 @@ namespace Fierce {
 	}
 
 	void SystemManager::initAllSystems(){
-        m_systems_init = sortSystems(m_rules_init);
-        m_systems_update = sortSystems(m_rules_update);
 		for (System* system:m_systems_init) {
 			system->initSystem("");
 		}
@@ -69,11 +67,16 @@ namespace Fierce {
 	}
 
 	void SystemManager::cleanUpAllSystems(){
-        m_systems_cleanUp = sortSystems(m_rules_cleanUp);
 		for (System* system : m_systems_cleanUp) {
 			system->cleanUpSystem();
 		}
 	}
+
+    void SystemManager::sortAllSystems(){
+        m_systems_init = sortSystems(m_rules_init);
+        m_systems_update = sortSystems(m_rules_update);
+        m_systems_cleanUp = sortSystems(m_rules_cleanUp);
+    }
 
 	std::vector<System*> SystemManager::sortSystems(std::vector<SystemRule*> rules){
         // Step 1: Build adjacency list (graph)

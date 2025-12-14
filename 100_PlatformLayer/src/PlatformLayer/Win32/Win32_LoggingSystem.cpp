@@ -17,8 +17,8 @@ namespace Fierce {
 	}
 
 	void Win32_LoggingSystem::linkSystem(System* system){
-		if (dynamic_cast<TimeDateSystem*>(system)) {
-			m_timeDateSystem = (TimeDateSystem*)system;
+		if (dynamic_cast<ITimeDateSystem*>(system)) {
+			m_timeDateSystem = (ITimeDateSystem*)system;
 		}
 		else if (dynamic_cast<FileSystem*>(system)) {
 			m_fileSystem = (FileSystem*)system;

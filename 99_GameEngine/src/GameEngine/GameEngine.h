@@ -1,7 +1,7 @@
 #pragma once
 
 #include "src/GameEngine/SystemManager.h"
-#include "src/GameEngine/TestSystems.h"
+#include "src/PlatformLayer/include/Plattform.h"
 
 namespace Fierce{
 	class GameEngine{
@@ -13,9 +13,8 @@ namespace Fierce{
 
 	private:
 		SystemManager* m_systemManager=nullptr;
+		Plattform* m_plattform = nullptr;
 
-		TestSystem1* system1;
-		TestSystem2* system2;
-		TestSystem3* system3;
+		ITimeDateSystem* m_timeDateSystem=nullptr;
 	};
 }//end namespace

@@ -2,7 +2,9 @@
 
 #include "src/PlatformLayer/include/InputSystem.h"
 
-#ifdef WIN32
+#include "src/systems/ITimeDateSystem.h"
+
+#ifdef _WIN32
 	#include "src/PlatformLayer/Win32/Win32_TimeDateSystem.h"
 	#include "src/PlatformLayer/Win32/Win32_FileSystem.h"
 	#include "src/PlatformLayer/Win32/Win32_LoggingSystem.h"
@@ -13,8 +15,8 @@ namespace Fierce {
 
 	class Plattform {
 	public:
-		inline TimeDateSystem* createTimeDateSystem() { 
-#ifdef WIN32
+		inline ITimeDateSystem* createTimeDateSystem() { 
+#ifdef _WIN32
 			return new Win32_TimeDateSystem();
 #else
 			return nullptr;
@@ -22,7 +24,7 @@ namespace Fierce {
 		}
 
 		inline FileSystem* createFileSystem() { 
-#ifdef WIN32
+#ifdef _WIN32
 			return new Win32_FileSystem(); 
 #else
 			return nullptr;
@@ -30,7 +32,7 @@ namespace Fierce {
 		}
 
 		inline LoggingSystem* createLoggingSystem() { 
-#ifdef WIN32
+#ifdef _WIN32
 			return new Win32_LoggingSystem(); 
 #else
 			return nullptr;
@@ -38,15 +40,15 @@ namespace Fierce {
 		}
 
 		inline InputSystem* createInputSystem() { 
-#ifdef WIN32
+#ifdef _WIN32
 			return new InputSystem();
 #else
-			return nullptr:
+			return nullptr;
 #endif // WIN32 
 		}
 
 		inline WindowSystem* createWindowSystem() {
-#ifdef WIN32
+#ifdef _WIN32
 			return new Win32_WindowSystem(); 
 #else
 			return nullptr;

@@ -30,7 +30,7 @@ namespace Fierce {
 	}
 
 	void Win32_TimeDateSystem::cleanUpSystem(){
-		for (Timer* timer:m_timers) {
+		for (ITimer* timer:m_timers) {
 			delete timer;
 		}
 
@@ -40,13 +40,37 @@ namespace Fierce {
 		}
 	}
 
-	Timer* Win32_TimeDateSystem::createTimer(){
-		Timer* timer = new Win32_Timer();
+	int Win32_TimeDateSystem::getYear(){
+		return m_year;
+	}
+
+	int Win32_TimeDateSystem::getMonth(){
+		return m_month;
+	}
+
+	int Win32_TimeDateSystem::getDay(){
+		return m_day;
+	}
+
+	int Win32_TimeDateSystem::getHours(){
+		return m_hours;
+	}
+
+	int Win32_TimeDateSystem::getMinutes(){
+		return m_minutes;
+	}
+
+	int Win32_TimeDateSystem::getSeconds(){
+		return m_seconds;
+	}
+
+	ITimer* Win32_TimeDateSystem::createTimer(){
+		ITimer* timer = new Win32_Timer();
 		m_timers.push_back(timer);
 		return timer;
 	}
 
-	void Win32_TimeDateSystem::deleteTimer(Timer* timer){
+	void Win32_TimeDateSystem::deleteTimer(ITimer* timer){
 		auto it = std::find(m_timers.begin(), m_timers.end(), timer);
 		if (it != m_timers.end()) {
 			m_timers.erase(it);

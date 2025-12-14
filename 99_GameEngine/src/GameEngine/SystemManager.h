@@ -51,6 +51,8 @@ namespace Fierce {
 		void updateAllSystems();
 		void cleanUpAllSystems();
 
+		void sortAllSystems();
+
 	private:
 		std::vector<System*> sortSystems(std::vector<SystemRule*> rules);
 

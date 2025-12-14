@@ -1,32 +1,28 @@
 #include "GameEngine.h"
 
-#include "src/GameEngine/TestSystems.h"
+#include "src/systems/System.h"
 
 namespace Fierce {
 	GameEngine::GameEngine(){
 		m_systemManager = new SystemManager();
+		m_plattform = new Plattform();
 
-		system1 = new TestSystem1();
-		system2 = new TestSystem2();
-		system3 = new TestSystem3();
+		m_timeDateSystem = m_plattform->createTimeDateSystem();
 
-		m_systemManager->addSystem(system3);
-		m_systemManager->addSystem(system1);
-		m_systemManager->addSystem(system2);
+		m_systemManager->addSystem((System*)m_timeDateSystem);
 
-		m_systemManager->addRule(system1,SYSTEM_RULE_TYPE::INIT_FIRST,nullptr);
-		m_systemManager->addRule(system2, SYSTEM_RULE_TYPE::INIT_BEFORE, system3);
-
+		m_systemManager->sortAllSystems();
 		m_systemManager->initAllSystems();
 	}
 
 	GameEngine::~GameEngine(){
-		delete system1;
-		delete system2;
-		delete system3;
+		m_systemManager->cleanUpAllSystems();
+
+		//TODO: Delete in Plattform
+		delete m_timeDateSystem;
 	}
 
 	void GameEngine::run() {
-
+		m_systemManager->updateAllSystems();
 	}
 }//end namespace

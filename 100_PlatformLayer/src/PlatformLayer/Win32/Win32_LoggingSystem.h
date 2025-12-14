@@ -6,7 +6,7 @@
 #include "Windows.h"
 
 #include "src/PlatformLayer/include/LoggingSystem.h"
-#include "src/PlatformLayer/include/TimeDateSystem.h"
+#include "src/systems/ITimeDateSystem.h"
 #include "src/PlatformLayer/include/FileSystem.h"
 
 namespace Fierce {
@@ -25,7 +25,7 @@ namespace Fierce {
 		void deleteLogger(Logger* logger) override;
 
 	private:
-		TimeDateSystem* m_timeDateSystem = nullptr;
+		ITimeDateSystem* m_timeDateSystem = nullptr;
 		FileSystem* m_fileSystem = nullptr;
 
 		HANDLE m_handle=NULL;

@@ -2,10 +2,10 @@
 
 #include <Windows.h>
 
-#include "src/PlatformLayer/include/TimeDateSystem.h"
+#include "src/systems/ITimeDateSystem.h"
 
 namespace Fierce {
-	class Win32_Timer : public Timer{
+	class Win32_Timer : public ITimer{
     public:
         Win32_Timer();
 
@@ -15,6 +15,8 @@ namespace Fierce {
         double getElapsedTime() override;
 
     private:
+        bool m_running=false;
+
         LARGE_INTEGER m_frequency;
         double m_1_frequency;
         LARGE_INTEGER m_lastTime;
