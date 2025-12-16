@@ -2,10 +2,6 @@
 
 #include "Win32_Window.h"
 
-#include "src/PlatformLayer/include/LoggingSystem.h"
-
-#include "src/PlatformLayer/include/InputSystem.h"
-
 namespace Fierce {
 
 	std::unordered_map<int, BINDING> Win32_WindowSystem::m_bindings = {
@@ -106,9 +102,9 @@ namespace Fierce {
 	};
 
 	LRESULT CALLBACK wndProcFierceWindow(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
-		InputSystem* inputSystem = static_cast<InputSystem*>(GetProp(hWnd, L"inputSystem"));
-		Logger* logger = static_cast<Logger*>(GetProp(hWnd, L"logger"));
-		Window* window = static_cast<Window*>(GetProp(hWnd, L"window"));
+		IInputSystem* inputSystem = static_cast<IInputSystem*>(GetProp(hWnd, L"inputSystem"));
+		ILogger* logger = static_cast<ILogger*>(GetProp(hWnd, L"logger"));
+		IWindow* window = static_cast<IWindow*>(GetProp(hWnd, L"window"));
 
 		short wheelDelta;
 		int x,y,deltaX,deltaY;
@@ -234,16 +230,16 @@ namespace Fierce {
 	}
 
 	void Win32_WindowSystem::linkSystem(System* system){
-		if (dynamic_cast<LoggingSystem*>(system)) {
-			m_loggingSystem = (LoggingSystem*)system;
+		if (dynamic_cast<ILoggingSystem*>(system)) {
+			m_loggingSystem = (ILoggingSystem*)system;
 		}
-		else if (dynamic_cast<InputSystem*>(system)) {
-			m_inputSystem = (InputSystem*)system;
+		else if (dynamic_cast<IInputSystem*>(system)) {
+			m_inputSystem = (IInputSystem*)system;
 		}
 	}
 
 	void Win32_WindowSystem::updateSystem(){
-		for (Window* window:m_windows) {
+		for (IWindow* window:m_windows) {
 			window->pollEvents();
 		}
 	}
@@ -257,7 +253,11 @@ namespace Fierce {
 		}
 	}
 
-	Window* Win32_WindowSystem::createWindow(std::string title, Window::WINDOW_MODE windowMode, int width, int height){
+	std::string Win32_WindowSystem::getName(){
+		return "WindowSystem";
+	}
+
+	IWindow* Win32_WindowSystem::createWindow(std::string title, WINDOW_MODE windowMode, int width, int height){
 		Win32_Window* window= new Win32_Window(m_logger,m_fierceWindowClassName,title,windowMode,width,height);
 		SetProp(window->getHandle(), L"inputSystem", m_inputSystem);
 		SetProp(window->getHandle(), L"logger", m_logger);
@@ -266,7 +266,7 @@ namespace Fierce {
 		return window;
 	}
 
-	void Win32_WindowSystem::deleteWindow(Window* window){
+	void Win32_WindowSystem::deleteWindow(IWindow* window){
 		auto it = std::find(m_windows.begin(), m_windows.end(), window);
 		if (it != m_windows.end()) {
 			m_windows.erase(it);

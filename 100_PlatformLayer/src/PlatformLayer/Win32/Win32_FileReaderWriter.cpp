@@ -1,7 +1,7 @@
 #include "Win32_FileReaderWriter.h"
 
 namespace Fierce {
-	Win32_FileIO::Win32_FileIO(std::string directory) :FileIO(directory) {}
+	Win32_FileIO::Win32_FileIO(std::string directory) { m_directory = directory; }
 
 	bool Win32_FileIO::openFile(std::string filename,std::string options){
 		//Check if directory and filename are set

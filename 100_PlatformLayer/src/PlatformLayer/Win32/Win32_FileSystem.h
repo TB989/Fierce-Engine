@@ -1,13 +1,13 @@
 #pragma once
 
-#include "src/PlatformLayer/include/LoggingSystem.h"
-#include "src/PlatformLayer/include/FileSystem.h"
+#include "src/systems/ILoggingSystem.h"
+#include "src/systems/IFileSystem.h"
 
 #include <vector>
 
 namespace Fierce {
 
-	class Win32_FileSystem :public FileSystem {
+	class Win32_FileSystem :public IFileSystem{
 	public:
 		Win32_FileSystem();
 		~Win32_FileSystem();
@@ -17,32 +17,34 @@ namespace Fierce {
 		void updateSystem() override;
 		void cleanUpSystem() override;
 
-		ConsoleWriter* createConsoleWriter() override;
-		void deleteConsoleWriter(ConsoleWriter* writer) override;
+		std::string getName() override;
 
-		BinaryFileReader* createBinaryFileReader(std::string directory) override;
-		void deleteBinaryFileReader(BinaryFileReader* reader) override;
+		IConsoleWriter* createConsoleWriter() override;
+		void deleteConsoleWriter(IConsoleWriter* writer) override;
 
-		BinaryFileWriter* createBinaryFileWriter(std::string directory) override;
-		void deleteBinaryFileWriter(BinaryFileWriter* writer) override;
+		IBinaryFileReader* createBinaryFileReader(std::string directory) override;
+		void deleteBinaryFileReader(IBinaryFileReader* reader) override;
 
-		TextFileReader* createTextFileReader(std::string directory) override;
-		void deleteTextFileReader(TextFileReader* reader) override;
+		IBinaryFileWriter* createBinaryFileWriter(std::string directory) override;
+		void deleteBinaryFileWriter(IBinaryFileWriter* writer) override;
 
-		TextFileWriter* createTextFileWriter(std::string directory) override;
-		void deleteTextFileWriter(TextFileWriter* writer) override;
+		ITextFileReader* createTextFileReader(std::string directory) override;
+		void deleteTextFileReader(ITextFileReader* reader) override;
+
+		ITextFileWriter* createTextFileWriter(std::string directory) override;
+		void deleteTextFileWriter(ITextFileWriter* writer) override;
 
 		void getAllFileNames(std::string directory, std::vector<std::string>& filenames, std::string ending) override;
 
 	private:
-		LoggingSystem* m_loggingSystem=nullptr;
-		Logger* m_logger = nullptr;
+		ILoggingSystem* m_loggingSystem=nullptr;
+		ILogger* m_logger = nullptr;
 
-		ConsoleWriter* m_consoleWriter=nullptr;
-		std::vector<BinaryFileReader*> m_binaryReaders;
-		std::vector<BinaryFileWriter*> m_binaryWriters;
-		std::vector<TextFileReader*> m_textReaders;
-		std::vector<TextFileWriter*> m_textWriters;
+		IConsoleWriter* m_consoleWriter=nullptr;
+		std::vector<IBinaryFileReader*> m_binaryReaders;
+		std::vector<IBinaryFileWriter*> m_binaryWriters;
+		std::vector<ITextFileReader*> m_textReaders;
+		std::vector<ITextFileWriter*> m_textWriters;
 	};
 
 }//end namespace

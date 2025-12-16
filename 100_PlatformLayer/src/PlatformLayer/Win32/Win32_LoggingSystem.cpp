@@ -14,19 +14,21 @@ namespace Fierce {
 	void Win32_LoggingSystem::initSystem(std::string m_assetDirectory){
 		m_logDirectory = m_assetDirectory;
 		m_logDirectory.append("logs/");
+		m_logger = createLogger("LOG", true, "ALL_LOGS");
+		m_logger->info("Init logging system");
 	}
 
 	void Win32_LoggingSystem::linkSystem(System* system){
 		if (dynamic_cast<ITimeDateSystem*>(system)) {
 			m_timeDateSystem = (ITimeDateSystem*)system;
 		}
-		else if (dynamic_cast<FileSystem*>(system)) {
-			m_fileSystem = (FileSystem*)system;
+		else if (dynamic_cast<IFileSystem*>(system)) {
+			m_fileSystem = (IFileSystem*)system;
 		}
 	}
 
 	void Win32_LoggingSystem::updateSystem(){
-		for (Logger* logger:m_loggers) {
+		for (ILogger* logger:m_loggers) {
 			logger->update(
 				m_timeDateSystem->getYear(),
 				m_timeDateSystem->getMonth(),
@@ -38,13 +40,22 @@ namespace Fierce {
 	}
 
 	void Win32_LoggingSystem::cleanUpSystem(){
+		if (m_logger != nullptr) {
+			m_logger->info("Clean up logging system");
+			deleteLogger(m_logger);
+		}
+
 		for (auto pair : m_openFiles) {
 			pair.second->closeFile();
 		}
 	}
 
-	Logger* Win32_LoggingSystem::createLogger(std::string name){
-		Logger* logger = new Win32_Logger(name, nullptr,m_fileSystem->createConsoleWriter());
+	std::string Win32_LoggingSystem::getName(){
+		return "LoggingSystem";
+	}
+
+	ILogger* Win32_LoggingSystem::createLogger(std::string name){
+		ILogger* logger = new Win32_Logger(name, nullptr,m_fileSystem->createConsoleWriter());
 		logger->update(
 			m_timeDateSystem->getYear(),
 			m_timeDateSystem->getMonth(),
@@ -56,7 +67,7 @@ namespace Fierce {
 		return logger;
 	}
 
-	Logger* Win32_LoggingSystem::createLogger(std::string name, bool logToConsole, std::string file){
+	ILogger* Win32_LoggingSystem::createLogger(std::string name, bool logToConsole, std::string file){
 		int counter = 1;
 
 		while (true) {
@@ -75,8 +86,8 @@ namespace Fierce {
 			
 			//Another logger already writes in this file
 			if (m_openFiles.find(temporaryFileName) != m_openFiles.end()) {
-				TextFileWriter* writer= m_openFiles[temporaryFileName];
-				Logger* logger= new Win32_Logger(name,writer,logToConsole? m_fileSystem->createConsoleWriter() :nullptr);
+				ITextFileWriter* writer= m_openFiles[temporaryFileName];
+				ILogger* logger= new Win32_Logger(name,writer,logToConsole? m_fileSystem->createConsoleWriter() :nullptr);
 				logger->update(
 					m_timeDateSystem->getYear(),
 					m_timeDateSystem->getMonth(),
@@ -97,10 +108,10 @@ namespace Fierce {
 
 			//File does not exist and no other logger writes into the file
 			else {
-				TextFileWriter* writer = m_fileSystem->createTextFileWriter(m_logDirectory);
+				ITextFileWriter* writer = m_fileSystem->createTextFileWriter(m_logDirectory);
 				writer->openFile(temporaryFileName);
 				m_openFiles[temporaryFileName] = writer;
-				Logger* logger = new Win32_Logger(name, writer, logToConsole ? m_fileSystem->createConsoleWriter() : nullptr);
+				ILogger* logger = new Win32_Logger(name, writer, logToConsole ? m_fileSystem->createConsoleWriter() : nullptr);
 				logger->update(
 					m_timeDateSystem->getYear(),
 					m_timeDateSystem->getMonth(),
@@ -114,7 +125,7 @@ namespace Fierce {
 		}
 	}
 
-	void Win32_LoggingSystem::deleteLogger(Logger* logger){
+	void Win32_LoggingSystem::deleteLogger(ILogger* logger){
 		auto it = std::remove(m_loggers.begin(), m_loggers.end(), logger);
 		if (it != m_loggers.end()) {
 			m_loggers.erase(it, m_loggers.end());

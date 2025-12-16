@@ -20,8 +20,8 @@ namespace Fierce {
 	}
 
 	void Win32_TimeDateSystem::linkSystem(System* system){
-		if (dynamic_cast<LoggingSystem*>(system)) {
-			m_loggingSystem = (LoggingSystem*)system;
+		if (dynamic_cast<ILoggingSystem*>(system)) {
+			m_loggingSystem = (ILoggingSystem*)system;
 		}
 	}
 
@@ -38,6 +38,10 @@ namespace Fierce {
 			m_logger->info("Clean up time date system");
 			m_loggingSystem->deleteLogger(m_logger);
 		}
+	}
+
+	std::string Win32_TimeDateSystem::getName(){
+		return "TimeDateSystem";
 	}
 
 	int Win32_TimeDateSystem::getYear(){

@@ -5,13 +5,13 @@
 
 #include "Windows.h"
 
-#include "src/PlatformLayer/include/LoggingSystem.h"
+#include "src/systems/ILoggingSystem.h"
 #include "src/systems/ITimeDateSystem.h"
-#include "src/PlatformLayer/include/FileSystem.h"
+#include "src/systems/IFileSystem.h"
 
 namespace Fierce {
 
-	class Win32_LoggingSystem:public LoggingSystem {
+	class Win32_LoggingSystem:public ILoggingSystem{
 	public:
 		Win32_LoggingSystem();
 
@@ -20,17 +20,23 @@ namespace Fierce {
 		void updateSystem() override;
 		void cleanUpSystem() override;
 
-		Logger* createLogger(std::string name) override;
-		Logger* createLogger(std::string name,bool logToConsole, std::string file) override;
-		void deleteLogger(Logger* logger) override;
+		std::string getName() override;
+
+		ILogger* createLogger(std::string name) override;
+		ILogger* createLogger(std::string name,bool logToConsole, std::string file) override;
+		void deleteLogger(ILogger* logger) override;
 
 	private:
+		std::string m_logDirectory = "";
+
 		ITimeDateSystem* m_timeDateSystem = nullptr;
-		FileSystem* m_fileSystem = nullptr;
+		IFileSystem* m_fileSystem = nullptr;
+
+		ILogger* m_logger = nullptr;
 
 		HANDLE m_handle=NULL;
-		std::unordered_map<std::string, TextFileWriter*> m_openFiles;
-		std::vector<Logger*> m_loggers;
+		std::unordered_map<std::string, ITextFileWriter*> m_openFiles;
+		std::vector<ILogger*> m_loggers;
 	};
 
 }//end namespace

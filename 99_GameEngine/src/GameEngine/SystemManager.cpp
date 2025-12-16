@@ -50,13 +50,7 @@ namespace Fierce {
 
 	void SystemManager::initAllSystems(){
 		for (System* system:m_systems_init) {
-			system->initSystem("");
-		}
-	}
-
-	void SystemManager::linkAllSystems(){
-		for (System* system : m_systems) {
-			system->linkSystem(nullptr);
+			system->initSystem("C:/Users/tmbal/Desktop/Fierce-Engine/002_Assets/");
 		}
 	}
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "System.h"
+
 #include <string>
 
 namespace Fierce {
@@ -23,7 +25,7 @@ namespace Fierce {
 		virtual void deactivateRawInput()=0;
 	};
 
-	class IWindowSystem{
+	class IWindowSystem:public System{
 	public:
 		virtual IWindow* createWindow(std::string title, WINDOW_MODE windowMode, int width, int height)=0;
 		virtual void deleteWindow(IWindow* window)=0;

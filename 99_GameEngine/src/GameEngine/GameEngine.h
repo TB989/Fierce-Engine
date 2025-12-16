@@ -16,5 +16,9 @@ namespace Fierce{
 		Plattform* m_plattform = nullptr;
 
 		ITimeDateSystem* m_timeDateSystem=nullptr;
+		IFileSystem* m_fileSystem = nullptr;
+		ILoggingSystem* m_loggingSystem = nullptr;
+		IInputSystem* m_inputSystem = nullptr;
+		IWindowSystem* m_windowSystem = nullptr;
 	};
 }//end namespace

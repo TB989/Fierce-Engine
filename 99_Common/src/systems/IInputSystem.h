@@ -1,10 +1,26 @@
 #pragma once
 
-#include "../Bindable.h"
+#include "System.h"
 
 namespace Fierce {
 
-    class IWindow;
+    class Action {
+    public:
+        virtual ~Action() = default;
+        virtual void onAction() = 0;
+    };
+
+    class State {
+    public:
+        virtual ~State() = default;
+        virtual void onStateChanged(bool isActive) = 0;
+    };
+
+    class Range {
+    public:
+        virtual ~Range() = default;
+        virtual void onRangeChanged(float range1, float range2) = 0;
+    };
 
     enum BINDING {
         //Mouse
@@ -110,9 +126,13 @@ namespace Fierce {
         KEY_NUMPAD_DECIMAL
     };
 
-	class IInputSystem{
+    class InputContext;
+    class IWindow;
+
+	class IInputSystem:public System{
 	public:
 		virtual void switchMouseMode(IWindow* window,bool rawMouse)=0;
+        virtual InputContext* getActiveContext() = 0;
 
 		virtual void addAction(BINDING binding, Action* action, bool rawInput)=0;
 		virtual void removeAction(BINDING binding, bool rawInput)=0;

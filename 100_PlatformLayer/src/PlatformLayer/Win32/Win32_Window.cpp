@@ -1,10 +1,14 @@
 #include "Win32_Window.h"
 
-#include "src/PlatformLayer/Win32/Win32_Logger.h"
+#include "src/systems/ILoggingSystem.h"
 
 namespace Fierce {
 
-	Win32_Window::Win32_Window(Logger* logger, LPCWSTR className, std::string title, WINDOW_MODE windowMode, int width, int height) :Window(title,windowMode,width,height){
+	Win32_Window::Win32_Window(ILogger* logger, LPCWSTR className, std::string title, WINDOW_MODE windowMode, int width, int height){
+		m_title = title;
+		m_isFullscreen = windowMode == FULLSCREEN ? true : false;
+		m_width = width;
+		m_height = height;
 		m_logger = logger;
 		createWindow(className, title, windowMode, width, height);
 	}
@@ -98,6 +102,22 @@ namespace Fierce {
 			m_width = width;
 			m_height = height;
 		}
+	}
+
+	std::string Win32_Window::getTitle(){
+		return m_title;
+	}
+
+	bool Win32_Window::isFullcreen(){
+		return m_isFullscreen;
+	}
+
+	int Win32_Window::getWidth(){
+		return m_width;
+	}
+
+	int Win32_Window::getHeight(){
+		return m_height;
 	}
 
 	void Win32_Window::pollEvents() {

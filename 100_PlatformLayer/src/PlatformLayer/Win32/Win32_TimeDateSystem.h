@@ -1,7 +1,7 @@
 #pragma once
 
 #include "src/systems/ITimeDateSystem.h"
-#include "src/PlatformLayer/include/LoggingSystem.h"
+#include "src/systems/ILoggingSystem.h"
 
 #include "time.h"
 
@@ -9,7 +9,7 @@
 
 namespace Fierce {
 
-	class Win32_TimeDateSystem :public ITimeDateSystem, public System {
+	class Win32_TimeDateSystem :public ITimeDateSystem{
 	public:
 		Win32_TimeDateSystem();
 		~Win32_TimeDateSystem();
@@ -19,6 +19,8 @@ namespace Fierce {
 		void linkSystem(System* system) override;
 		void updateSystem() override;
 		void cleanUpSystem() override;
+
+		std::string getName() override;
 
 	public:
 		int getYear() override;
@@ -36,8 +38,8 @@ namespace Fierce {
 		void getDateTime();
 
 	private:
-		LoggingSystem* m_loggingSystem = nullptr;
-		Logger* m_logger = nullptr;
+		ILoggingSystem* m_loggingSystem = nullptr;
+		ILogger* m_logger = nullptr;
 
 		time_t m_time=NULL;
 		tm m_localTime;

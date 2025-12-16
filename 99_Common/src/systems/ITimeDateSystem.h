@@ -1,5 +1,7 @@
 #pragma once
 
+#include "System.h"
+
 namespace Fierce {
 
     class ITimer {
@@ -9,7 +11,7 @@ namespace Fierce {
         virtual double getElapsedTime()=0;
     };
 
-    class ITimeDateSystem{
+    class ITimeDateSystem:public System{
     public:
         virtual int getYear()=0;
         virtual int getMonth()=0;

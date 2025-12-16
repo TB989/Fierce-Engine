@@ -1,9 +1,17 @@
 #pragma once
 
+#include "System.h"
+
 #include <string>
 #include <vector>
 
 namespace Fierce {
+
+	class IFileIO {
+	protected:
+		virtual bool openFile(std::string filename, std::string options) = 0;
+		virtual void closeFile() = 0;
+	};
 
 	class IConsoleWriter {
 	public:
@@ -38,7 +46,7 @@ namespace Fierce {
 		virtual void closeFile()=0;
 	};
 
-	class IFileSystem{
+	class IFileSystem:public System{
 	public:
 		virtual IConsoleWriter* createConsoleWriter()=0;
 		virtual void deleteConsoleWriter(IConsoleWriter* writer)=0;

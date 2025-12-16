@@ -2,7 +2,8 @@
 
 namespace Fierce {
 
-    Win32_Logger::Win32_Logger(std::string name, TextFileWriter* fileWriter, ConsoleWriter* consoleWriter) :Logger(name){
+    Win32_Logger::Win32_Logger(std::string name, ITextFileWriter* fileWriter, IConsoleWriter* consoleWriter){
+        m_name = name;
         m_fileWriter = fileWriter;
         m_consoleWriter = consoleWriter;
         snprintf(m_nameBuffer, sizeof(m_nameBuffer), "[%s]", name.c_str());
@@ -143,6 +144,42 @@ namespace Fierce {
     void Win32_Logger::update(int year, int month, int day, int hours, int minutes, int seconds){
         snprintf(m_dateBuffer, sizeof(m_dateBuffer), "[%i\.%i\.%i]", day,month,year);
         snprintf(m_timeBuffer, sizeof(m_timeBuffer), "[%i:%i:%i]", hours,minutes,seconds);
+    }
+
+    void Win32_Logger::setConsoleUseColors(bool useColors){
+        m_c_useColors = useColors;
+    }
+
+    void Win32_Logger::setConsolePrintName(bool printName){
+        m_c_printName = printName;
+    }
+
+    void Win32_Logger::setConsolePrintLogLevel(bool printLogLevel){
+        m_c_printLogLevel = printLogLevel;
+    }
+
+    void Win32_Logger::setConsolePrintDate(bool printDate){
+        m_c_printDate = printDate;
+    }
+
+    void Win32_Logger::setConsolePrintTime(bool printTime){
+        m_c_printTime = printTime;
+    }
+
+    void Win32_Logger::setFilePrintName(bool printName){
+        m_f_printName = printName;
+    }
+
+    void Win32_Logger::setFilePrintLogLevel(bool printLogLevel){
+        m_f_printLogLevel = printLogLevel;
+    }
+
+    void Win32_Logger::setFilePrintDate(bool printDate){
+        m_f_printDate = printDate;
+    }
+
+    void Win32_Logger::setFilePrintTime(bool printTime){
+        m_f_printTime = printTime;
     }
 
 }//end namespace

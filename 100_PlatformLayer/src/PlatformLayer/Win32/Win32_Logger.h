@@ -2,14 +2,14 @@
 
 #include "Windows.h"
 
-#include "src/PlatformLayer/include/LoggingSystem.h"
-#include "src/PlatformLayer/include/FileSystem.h"
+#include "src/systems/ILoggingSystem.h"
+#include "src/systems/IFileSystem.h"
 
 namespace Fierce {
 
-	class Win32_Logger:public Logger {
+	class Win32_Logger:public ILogger {
 	public:
-		Win32_Logger(std::string name, TextFileWriter* fileWriter, ConsoleWriter* consoleWriter);
+		Win32_Logger(std::string name, ITextFileWriter* fileWriter, IConsoleWriter* consoleWriter);
 
 		void log(const char* logLevel, const char* format, ...) override;
 		void info(const char* format, ...) override;
@@ -18,9 +18,20 @@ namespace Fierce {
 	
 		void update(int year,int month,int day,int hours,int minutes,int seconds) override;
 
+		virtual void setConsoleUseColors(bool useColors) override;
+		virtual void setConsolePrintName(bool printName) override;
+		virtual void setConsolePrintLogLevel(bool printLogLevel) override;
+		virtual void setConsolePrintDate(bool printDate) override;
+		virtual void setConsolePrintTime(bool printTime) override;
+
+		virtual void setFilePrintName(bool printName) override;
+		virtual void setFilePrintLogLevel(bool printLogLevel) override;
+		virtual void setFilePrintDate(bool printDate) override;
+		virtual void setFilePrintTime(bool printTime) override;
+
 	private:
-		TextFileWriter* m_fileWriter=nullptr;
-		ConsoleWriter* m_consoleWriter=nullptr;
+		ITextFileWriter* m_fileWriter=nullptr;
+		IConsoleWriter* m_consoleWriter=nullptr;
 
 		int m_year = -1;
 		int m_month = -1;
@@ -38,6 +49,21 @@ namespace Fierce {
 		const char* m_logLevelInfo = "[INFO]";
 		const char* m_logLevelWarn = "[WARN]";
 		const char* m_logLevelError = "[ERROR]";
+
+		std::string m_name = "";
+
+		//Console
+		bool m_c_useColors = true;
+		bool m_c_printName = true;
+		bool m_c_printLogLevel = false;
+		bool m_c_printDate = false;
+		bool m_c_printTime = true;
+
+		//File
+		bool m_f_printName = true;
+		bool m_f_printLogLevel = true;
+		bool m_f_printDate = false;
+		bool m_f_printTime = true;
 	};
 
 }//end namespace

@@ -2,20 +2,25 @@
 
 #include "Windows.h"
 
-#include "src/PlatformLayer/include/WindowSystem.h"
+#include "src/systems/IWindowSystem.h"
 
 namespace Fierce{
 
-	class Logger;
+	class ILogger;
 
-	class Win32_Window :public Window{
+	class Win32_Window :public IWindow{
 	public:
-		Win32_Window(Logger* logger,LPCWSTR className, std::string title, WINDOW_MODE windowMode, int width, int height);
+		Win32_Window(ILogger* logger,LPCWSTR className, std::string title, WINDOW_MODE windowMode, int width, int height);
 		~Win32_Window();
 
 		void pollEvents() override;
 		void show() override;
 		void onResize(int width, int height) override;
+
+		std::string getTitle() override;
+		bool isFullcreen() override;
+		int getWidth() override;
+		int getHeight() override;
 
 		HWND getHandle() { return m_windowHandle; }
 
@@ -30,7 +35,12 @@ namespace Fierce{
 	private:
 		HWND m_windowHandle = nullptr;
 
-		Logger* m_logger;
+		ILogger* m_logger;
+
+		std::string m_title = "";
+		bool m_isFullscreen = false;
+		int m_width = -1;
+		int m_height = -1;
 	};
 
 }//end namespace

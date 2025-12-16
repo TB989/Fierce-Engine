@@ -2,12 +2,12 @@
 
 #include <Windows.h>
 
-#include "src/PlatformLayer/include/FileSystem.h"
+#include "src/systems/IFileSystem.h"
 
 #include <iostream>
 
 namespace Fierce {
-    class Win32_FileIO : public FileIO {
+    class Win32_FileIO : public IFileIO {
     public:
         Win32_FileIO(std::string directory);
 
@@ -16,10 +16,12 @@ namespace Fierce {
         void closeFile() override;
 
     protected:
+        std::string m_directory = "";
+        std::string m_filename = "";
         FILE* m_file = nullptr;
     };
 
-    class Win32_ConsoleWriter:public ConsoleWriter{
+    class Win32_ConsoleWriter:public IConsoleWriter{
     public:
         Win32_ConsoleWriter();
         virtual ~Win32_ConsoleWriter();
@@ -31,7 +33,7 @@ namespace Fierce {
         HANDLE m_handle=NULL;
     };
 
-    class Win32_BinaryFileReader : public Win32_FileIO,public BinaryFileReader {
+    class Win32_BinaryFileReader : public Win32_FileIO,public IBinaryFileReader {
     public:
         Win32_BinaryFileReader(std::string directory);
         virtual ~Win32_BinaryFileReader();
@@ -41,7 +43,7 @@ namespace Fierce {
         void closeFile() override;
     };
 
-    class Win32_BinaryFileWriter : public Win32_FileIO, public BinaryFileWriter {
+    class Win32_BinaryFileWriter : public Win32_FileIO, public IBinaryFileWriter {
     public:
         Win32_BinaryFileWriter(std::string directory);
         virtual ~Win32_BinaryFileWriter();
@@ -50,7 +52,7 @@ namespace Fierce {
         void closeFile() override;
     };
 
-    class Win32_TextFileReader : public Win32_FileIO, public TextFileReader {
+    class Win32_TextFileReader : public Win32_FileIO, public ITextFileReader {
     public:
         Win32_TextFileReader(std::string directory);
         virtual ~Win32_TextFileReader();
@@ -60,7 +62,7 @@ namespace Fierce {
         void closeFile() override;
     };
 
-    class Win32_TextFileWriter : public Win32_FileIO, public TextFileWriter {
+    class Win32_TextFileWriter : public Win32_FileIO, public ITextFileWriter {
     public:
         Win32_TextFileWriter(std::string directory);
         virtual ~Win32_TextFileWriter();

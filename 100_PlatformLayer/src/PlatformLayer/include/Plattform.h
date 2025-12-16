@@ -1,13 +1,16 @@
 #pragma once
 
-#include "src/PlatformLayer/include/InputSystem.h"
-
 #include "src/systems/ITimeDateSystem.h"
+#include "src/systems/IFileSystem.h"
+#include "src/systems/ILoggingSystem.h"
+#include "src/systems/IInputSystem.h"
+#include "src/systems/IWindowSystem.h"
 
 #ifdef _WIN32
 	#include "src/PlatformLayer/Win32/Win32_TimeDateSystem.h"
 	#include "src/PlatformLayer/Win32/Win32_FileSystem.h"
 	#include "src/PlatformLayer/Win32/Win32_LoggingSystem.h"
+	#include "src/PlatformLayer/InputSystem/InputSystem.h"
 	#include "src/PlatformLayer/Win32/Win32_WindowSystem.h"
 #endif // WIN32
 
@@ -23,7 +26,15 @@ namespace Fierce {
 #endif // WIN32 
 		}
 
-		inline FileSystem* createFileSystem() { 
+		inline void deleteTimeDateSystem(ITimeDateSystem* system) {
+#ifdef _WIN32
+			delete system;
+#else
+			return;
+#endif // WIN32 
+		}
+
+		inline IFileSystem* createFileSystem() { 
 #ifdef _WIN32
 			return new Win32_FileSystem(); 
 #else
@@ -31,7 +42,15 @@ namespace Fierce {
 #endif // WIN32 
 		}
 
-		inline LoggingSystem* createLoggingSystem() { 
+		inline void deleteFileSystem(IFileSystem* system) {
+#ifdef _WIN32
+			delete system;
+#else
+			return;
+#endif // WIN32 
+		}
+
+		inline ILoggingSystem* createLoggingSystem() { 
 #ifdef _WIN32
 			return new Win32_LoggingSystem(); 
 #else
@@ -39,7 +58,15 @@ namespace Fierce {
 #endif // WIN32 
 		}
 
-		inline InputSystem* createInputSystem() { 
+		inline void deleteLoggingSystem(ILoggingSystem* system) {
+#ifdef _WIN32
+			delete system;
+#else
+			return;
+#endif // WIN32 
+		}
+
+		inline IInputSystem* createInputSystem() { 
 #ifdef _WIN32
 			return new InputSystem();
 #else
@@ -47,11 +74,27 @@ namespace Fierce {
 #endif // WIN32 
 		}
 
-		inline WindowSystem* createWindowSystem() {
+		inline void deleteInputSystem(IInputSystem* system) {
+#ifdef _WIN32
+			delete system;
+#else
+			return;
+#endif // WIN32 
+		}
+
+		inline IWindowSystem* createWindowSystem() {
 #ifdef _WIN32
 			return new Win32_WindowSystem(); 
 #else
 			return nullptr;
+#endif // WIN32 
+		}
+
+		inline void deleteWindowSystem(IWindowSystem* system) {
+#ifdef _WIN32
+			delete system;
+#else
+			return;
 #endif // WIN32 
 		}
 	};

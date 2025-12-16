@@ -5,7 +5,11 @@
 
 #include "Windows.h"
 
-#include "src/PlatformLayer/include/WindowSystem.h"
+#include "src/systems/IWindowSystem.h"
+#include "src/systems/ILoggingSystem.h"
+#include "src/systems/IInputSystem.h"
+
+#include "src/PlatformLayer/InputSystem/InputContext.h"
 
 namespace Fierce {
 
@@ -16,7 +20,7 @@ namespace Fierce {
 	class InputSystem;
 	enum BINDING;
 
-	class Win32_WindowSystem :public WindowSystem{
+	class Win32_WindowSystem :public IWindowSystem{
 	public:
 		Win32_WindowSystem();
 		~Win32_WindowSystem();
@@ -26,8 +30,10 @@ namespace Fierce {
 		void updateSystem() override;
 		void cleanUpSystem() override;
 
-		Window* createWindow(std::string title, Window::WINDOW_MODE windowMode, int width, int height);
-		void deleteWindow(Window* window);
+		std::string getName() override;
+
+		IWindow* createWindow(std::string title, WINDOW_MODE windowMode, int width, int height) override;
+		void deleteWindow(IWindow* window) override;
 
 	private:
 		void registerWindowClass(LPCWSTR className, WNDPROC wndProc);
@@ -36,12 +42,12 @@ namespace Fierce {
 	private:
 		HINSTANCE hInstance = nullptr;
 		LPCWSTR m_fierceWindowClassName = L"FierceWindow";
-		std::vector<Window*> m_windows;
+		std::vector<IWindow*> m_windows;
 
-		LoggingSystem* m_loggingSystem=nullptr;
-		Logger* m_logger=nullptr;
+		ILoggingSystem* m_loggingSystem=nullptr;
+		ILogger* m_logger=nullptr;
 
-		InputSystem* m_inputSystem=nullptr;
+		IInputSystem* m_inputSystem=nullptr;
 
 	public:
 		static std::unordered_map<int, BINDING> m_bindings;

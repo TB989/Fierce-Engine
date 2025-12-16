@@ -1,5 +1,7 @@
 #pragma once
 
+#include "System.h"
+
 #include <string>
 
 namespace Fierce {
@@ -26,7 +28,7 @@ namespace Fierce {
 		virtual void update(int year, int month, int day, int hours, int minutes, int seconds)=0;
 	};
 
-	class ILoggingSystem{
+	class ILoggingSystem:public System{
 	public:
 		virtual ILogger* createLogger(std::string name)=0;
 		virtual ILogger* createLogger(std::string name, bool logToConsole, std::string file)=0;

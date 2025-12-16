@@ -1,8 +1,12 @@
-#include "src/PlatformLayer/include/InputSystem.h"
+#include "InputContext.h"
 
 namespace Fierce {
     InputContext::InputContext(bool acceptsRawMouseInput){
         m_acceptsRawMouseInput = acceptsRawMouseInput;
+    }
+
+    bool InputContext::acceptsRawMouseInput() {
+        return m_acceptsRawMouseInput;
     }
 
     void InputContext::addAction(BINDING binding, Action* action) {

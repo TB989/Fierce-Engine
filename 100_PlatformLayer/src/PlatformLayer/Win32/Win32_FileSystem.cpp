@@ -14,16 +14,16 @@ namespace Fierce {
 	}
 
 	Win32_FileSystem::~Win32_FileSystem(){
-		for (BinaryFileReader* reader : m_binaryReaders) {
+		for (IBinaryFileReader* reader : m_binaryReaders) {
 			delete reader;
 		}
-		for (TextFileReader* reader : m_textReaders) {
+		for (ITextFileReader* reader : m_textReaders) {
 			delete reader;
 		}
-		for (BinaryFileWriter* writer : m_binaryWriters) {
+		for (IBinaryFileWriter* writer : m_binaryWriters) {
 			delete writer;
 		}
-		for (TextFileWriter* writer : m_textWriters) {
+		for (ITextFileWriter* writer : m_textWriters) {
 			delete writer;
 		}
 	}
@@ -36,8 +36,8 @@ namespace Fierce {
 	}
 
 	void Win32_FileSystem::linkSystem(System* system){
-		if (dynamic_cast<LoggingSystem*>(system)) {
-			m_loggingSystem = (LoggingSystem*)system;
+		if (dynamic_cast<ILoggingSystem*>(system)) {
+			m_loggingSystem = (ILoggingSystem*)system;
 		}
 	}
 
@@ -52,24 +52,28 @@ namespace Fierce {
 		}
 	}
 
-	ConsoleWriter* Win32_FileSystem::createConsoleWriter(){
+	std::string Win32_FileSystem::getName(){
+		return "FileSystem";
+	}
+
+	IConsoleWriter* Win32_FileSystem::createConsoleWriter(){
 		if (m_consoleWriter==nullptr) {
 			m_consoleWriter = new Win32_ConsoleWriter();
 		}
 		return m_consoleWriter;
 	}
 
-	void Win32_FileSystem::deleteConsoleWriter(ConsoleWriter* writer){
+	void Win32_FileSystem::deleteConsoleWriter(IConsoleWriter* writer){
 
 	}
 
-	BinaryFileReader* Win32_FileSystem::createBinaryFileReader(std::string directory) {
-		BinaryFileReader* reader = new Win32_BinaryFileReader(directory);
+	IBinaryFileReader* Win32_FileSystem::createBinaryFileReader(std::string directory) {
+		IBinaryFileReader* reader = new Win32_BinaryFileReader(directory);
 		m_binaryReaders.push_back(reader);
 		return reader;
 	}
 
-	void Win32_FileSystem::deleteBinaryFileReader(BinaryFileReader* reader) {
+	void Win32_FileSystem::deleteBinaryFileReader(IBinaryFileReader* reader) {
 		auto it = std::find(m_binaryReaders.begin(), m_binaryReaders.end(), reader);
 		if (it != m_binaryReaders.end()) {
 			m_binaryReaders.erase(it);
@@ -77,13 +81,13 @@ namespace Fierce {
 		}
 	}
 
-	BinaryFileWriter* Win32_FileSystem::createBinaryFileWriter(std::string directory) {
-		BinaryFileWriter* writer = new Win32_BinaryFileWriter(directory);
+	IBinaryFileWriter* Win32_FileSystem::createBinaryFileWriter(std::string directory) {
+		IBinaryFileWriter* writer = new Win32_BinaryFileWriter(directory);
 		m_binaryWriters.push_back(writer);
 		return writer;
 	}
 
-	void Win32_FileSystem::deleteBinaryFileWriter(BinaryFileWriter* writer) {
+	void Win32_FileSystem::deleteBinaryFileWriter(IBinaryFileWriter* writer) {
 		auto it = std::find(m_binaryWriters.begin(), m_binaryWriters.end(), writer);
 		if (it != m_binaryWriters.end()) {
 			m_binaryWriters.erase(it);
@@ -91,13 +95,13 @@ namespace Fierce {
 		}
 	}
 
-	TextFileReader* Win32_FileSystem::createTextFileReader(std::string directory) {
-		TextFileReader* reader = new Win32_TextFileReader(directory);
+	ITextFileReader* Win32_FileSystem::createTextFileReader(std::string directory) {
+		ITextFileReader* reader = new Win32_TextFileReader(directory);
 		m_textReaders.push_back(reader);
 		return reader;
 	}
 
-	void Win32_FileSystem::deleteTextFileReader(TextFileReader* reader) {
+	void Win32_FileSystem::deleteTextFileReader(ITextFileReader* reader) {
 		auto it = std::find(m_textReaders.begin(), m_textReaders.end(), reader);
 		if (it != m_textReaders.end()) {
 			m_textReaders.erase(it);
@@ -105,13 +109,13 @@ namespace Fierce {
 		}
 	}
 
-	TextFileWriter* Win32_FileSystem::createTextFileWriter(std::string directory) {
-		TextFileWriter* writer = new Win32_TextFileWriter(directory);
+	ITextFileWriter* Win32_FileSystem::createTextFileWriter(std::string directory) {
+		ITextFileWriter* writer = new Win32_TextFileWriter(directory);
 		m_textWriters.push_back(writer);
 		return writer;
 	}
 
-	void Win32_FileSystem::deleteTextFileWriter(TextFileWriter* writer) {
+	void Win32_FileSystem::deleteTextFileWriter(ITextFileWriter* writer) {
 		auto it = std::find(m_textWriters.begin(), m_textWriters.end(), writer);
 		if (it != m_textWriters.end()) {
 			m_textWriters.erase(it);

@@ -47,7 +47,6 @@ namespace Fierce {
 
 	public:
 		void initAllSystems();
-		void linkAllSystems();
 		void updateAllSystems();
 		void cleanUpAllSystems();
 

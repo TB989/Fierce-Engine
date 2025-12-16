@@ -9,5 +9,7 @@ namespace Fierce {
 		virtual void linkSystem(System* system) = 0;
 		virtual void updateSystem() = 0;
 		virtual void cleanUpSystem() = 0;
+
+		virtual std::string getName() = 0;
 	};
 }//end namespace

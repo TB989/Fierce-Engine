@@ -1,4 +1,6 @@
-#include "src/PlatformLayer/include/InputSystem.h"
+#include "InputSystem.h"
+
+#include "InputContext.h"
 
 namespace Fierce {
 
@@ -15,8 +17,8 @@ namespace Fierce {
     }
 
     void InputSystem::linkSystem(System* system){
-        if (dynamic_cast<LoggingSystem*>(system)) {
-            m_loggingSystem = (LoggingSystem*)system;
+        if (dynamic_cast<ILoggingSystem*>(system)) {
+            m_loggingSystem = (ILoggingSystem*)system;
         }
     }
 
@@ -88,7 +90,11 @@ namespace Fierce {
         }
     }
 
-    void InputSystem::switchMouseMode(Window* window,bool rawMouse){
+    std::string InputSystem::getName(){
+        return "InputSystem";
+    }
+
+    void InputSystem::switchMouseMode(IWindow* window,bool rawMouse){
         if (rawMouse) {
             window->activateRawInput();
             m_activeContext = m_inputContext_raw;
@@ -99,8 +105,8 @@ namespace Fierce {
         }
     }
 
-    InputSystem::InputSystem(){
-        
+    InputContext* InputSystem::getActiveContext() {
+        return m_activeContext;
     }
 
 }//end namespace
