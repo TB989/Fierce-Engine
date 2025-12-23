@@ -18,11 +18,11 @@ namespace Fierce {
 	}
 
 	void ParsingSystem::linkSystem(System* system){
-		if (dynamic_cast<LoggingSystem*>(system)) {
-			m_loggingSystem = (LoggingSystem*)system;
+		if (dynamic_cast<ILoggingSystem*>(system)) {
+			m_loggingSystem = (ILoggingSystem*)system;
 		}
-		if (dynamic_cast<FileSystem*>(system)) {
-			m_fileSystem = (FileSystem*)system;
+		if (dynamic_cast<IFileSystem*>(system)) {
+			m_fileSystem = (IFileSystem*)system;
 		}
 	}
 
@@ -37,25 +37,29 @@ namespace Fierce {
 		}
 	}
 
-	Parser_Fnt* ParsingSystem::createParser_Fnt(std::string directory){
-		Parser_Fnt* parser = new Parser_Fnt(m_fileSystem,directory);
+	std::string ParsingSystem::getName(){
+		return "InputSystem";
+	}
+
+	IParser_Fnt* ParsingSystem::createParser_Fnt(std::string directory){
+		IParser_Fnt* parser = new Parser_Fnt(m_fileSystem,directory);
 		m_parsers.push_back(parser);
 		return parser;
 	}
 
-	Parser_Ini* ParsingSystem::createParser_Ini(std::string directory) {
-		Parser_Ini* parser = new Parser_Ini(m_fileSystem,directory);
+	IParser_Ini* ParsingSystem::createParser_Ini(std::string directory) {
+		IParser_Ini* parser = new Parser_Ini(m_fileSystem,directory);
 		m_parsers.push_back(parser);
 		return parser;
 	}
 
-	Parser_Tex* ParsingSystem::createParser_Tex(std::string directory) {
-		Parser_Tex* parser = new Parser_Tex(directory);
+	IParser_Tex* ParsingSystem::createParser_Tex(std::string directory) {
+		IParser_Tex* parser = new Parser_Tex(directory);
 		m_parsers.push_back(parser);
 		return parser;
 	}
 
-	void ParsingSystem::deleteParser(Parser* parser){
+	void ParsingSystem::deleteParser(IParser* parser){
 		auto it = std::find(m_parsers.begin(), m_parsers.end(), parser);
 		if (it != m_parsers.end()) {
 			m_parsers.erase(it);

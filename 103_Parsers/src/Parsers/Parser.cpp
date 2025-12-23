@@ -1,6 +1,6 @@
 #include "Parser.h"
 
-#include "src/PlatformLayer/utils/FierceStrings.h"
+#include "src/utils/FierceStrings.h"
 
 namespace Fierce {
 

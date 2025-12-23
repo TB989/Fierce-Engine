@@ -1,12 +1,12 @@
 #include "Parser_Ini.h"
 
-#include "src/PlatformLayer/utils/FierceStrings.h"
+#include "src/utils/FierceStrings.h"
 
 #define KEY m_tokens[0]
 #define VALUE m_tokens[1]
 
 namespace Fierce {
-	Parser_Ini::Parser_Ini(FileSystem* fileSystem, std::string directory){
+	Parser_Ini::Parser_Ini(IFileSystem* fileSystem, std::string directory){
 		m_fileSystem = fileSystem;
 		m_fileReader = fileSystem->createTextFileReader(directory);
 	}
@@ -45,10 +45,10 @@ namespace Fierce {
 		
 		if (KEY == "windowMode" || KEY == "WINDOW_MODE") {
 			if (VALUE == "windowed" || VALUE == "WINDOWED") {
-				settings.windowMode = Window::WINDOW_MODE::WINDOWED;
+				settings.windowMode = WINDOW_MODE::WINDOWED;
 			}
 			if (VALUE == "fullscreen" || VALUE == "FULLSCREEN") {
-				settings.windowMode = Window::WINDOW_MODE::FULLSCREEN;
+				settings.windowMode = WINDOW_MODE::FULLSCREEN;
 			}
 		}
 		if (KEY == "width" || KEY == "WIDTH") {

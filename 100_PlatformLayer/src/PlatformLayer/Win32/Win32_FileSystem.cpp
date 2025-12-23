@@ -6,7 +6,7 @@
 
 #include <filesystem>
 
-#include "src/PlatformLayer/utils/FierceStrings.h"
+#include "src/utils/FierceStrings.h"
 
 namespace Fierce {
 	Win32_FileSystem::Win32_FileSystem(){

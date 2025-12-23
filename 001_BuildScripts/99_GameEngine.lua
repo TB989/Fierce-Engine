@@ -23,7 +23,8 @@ project "99_GameEngine"
 	{
 		"%{wks.location}/%{prj.name}",
 		"%{IncludeDir.Common}",
-		"%{IncludeDir.PlatformLayer}"
+		"%{IncludeDir.PlatformLayer}",
+		"%{IncludeDir.Parsers}"
 	}
 
 	libdirs 
@@ -33,7 +34,8 @@ project "99_GameEngine"
 
 	links
 	{
-		"%{Library.PlatformLayer}"
+		"%{Library.PlatformLayer}",
+		"%{Library.Parsers}"
 	}
 
 	filter "system:windows"

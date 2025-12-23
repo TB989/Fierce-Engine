@@ -5,16 +5,16 @@
 #include "Parser_Ini.h"
 #include "Parser_Tex.h"
 
-#include "src/PlatformLayer/utils/System.h"
-#include "src/PlatformLayer/include/LoggingSystem.h"
-#include "src/PlatformLayer/include/FileSystem.h"
+#include "src/systems/IParsingSystem.h"
+#include "src/systems/ILoggingSystem.h"
+#include "src/systems/IFileSystem.h"
 
 #include <vector>
 #include <string>
 
 namespace Fierce {
 
-	class ParsingSystem : public System{
+	class ParsingSystem : public IParsingSystem{
 	public:
 		ParsingSystem();
 		~ParsingSystem();
@@ -24,17 +24,19 @@ namespace Fierce {
 		void updateSystem() override;
 		void cleanUpSystem() override;
 
-		Parser_Fnt* createParser_Fnt(std::string directory);
-		Parser_Ini* createParser_Ini(std::string directory);
-		Parser_Tex* createParser_Tex(std::string directory);
-		void deleteParser(Parser* parser);
+		std::string getName() override;
+
+		IParser_Fnt* createParser_Fnt(std::string directory) override;
+		IParser_Ini* createParser_Ini(std::string directory) override;
+		IParser_Tex* createParser_Tex(std::string directory) override;
+		void deleteParser(IParser* parser) override;
 
 	private:
-		LoggingSystem* m_loggingSystem = nullptr;
-		Logger* m_logger = nullptr;
+		ILoggingSystem* m_loggingSystem = nullptr;
+		ILogger* m_logger = nullptr;
 
-		FileSystem* m_fileSystem = nullptr;
+		IFileSystem* m_fileSystem = nullptr;
 
-		std::vector<Parser*> m_parsers;
+		std::vector<IParser*> m_parsers;
 	};
 }

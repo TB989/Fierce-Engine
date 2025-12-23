@@ -1,8 +1,7 @@
 #pragma once
 
-#include "src/PlatformLayer/include/FileSystem.h"
-
-#include "src/PlatformLayer/utils/Font.h"
+#include "src/systems/IFileSystem.h"
+#include "src/utils/Font.h"
 
 #include "Parser.h"
 
@@ -11,12 +10,12 @@
 
 namespace Fierce {
 
-	class Parser_Fnt :public Parser {
+	class Parser_Fnt :public IParser_Fnt,public Parser {
 	public:
-		Parser_Fnt(FileSystem* fileSystem, std::string directory);
+		Parser_Fnt(IFileSystem* fileSystem, std::string directory);
 		~Parser_Fnt();
 
-		void parseFile(std::string filename, Font* font);
+		void parseFile(std::string filename, Font* font) override;
 
 	private:
 		void parseLine(std::string line, Font* font);
@@ -29,8 +28,8 @@ namespace Fierce {
 		void parseLineKerning(Font* font);
 
 	private:
-		FileSystem* m_fileSystem = nullptr;
-		TextFileReader* m_fileReader = nullptr;
+		IFileSystem* m_fileSystem = nullptr;
+		ITextFileReader* m_fileReader = nullptr;
 
 		std::vector<std::string> m_lineParts;
 		std::vector<std::string> m_tokens;

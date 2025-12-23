@@ -15,12 +15,14 @@ namespace Fierce {
 
 	class IConsoleWriter {
 	public:
+		virtual ~IConsoleWriter() = default;
 		virtual void print(const char* format, ...)=0;
 		virtual void setColor(int color)=0;
 	};
 
 	class IBinaryFileReader{
 	public:
+		virtual ~IBinaryFileReader() = default;
 		virtual bool openFile(std::string filename)=0;
 		virtual bool readBinary(long* size, char** buffer)=0;
 		virtual void closeFile()=0;
@@ -28,12 +30,14 @@ namespace Fierce {
 
 	class IBinaryFileWriter {
 	public:
+		virtual ~IBinaryFileWriter() = default;
 		virtual bool openFile(std::string filename)=0;
 		virtual void closeFile()=0;
 	};
 
 	class ITextFileReader{
 	public:
+		virtual ~ITextFileReader() = default;
 		virtual bool openFile(std::string filename)=0;
 		virtual bool readNextLine(std::string& line)=0;
 		virtual void closeFile()=0;
@@ -41,6 +45,7 @@ namespace Fierce {
 
 	class ITextFileWriter {
 	public:
+		virtual ~ITextFileWriter() = default;
 		virtual bool openFile(std::string filename)=0;
 		virtual void print(const char* format, ...)=0;
 		virtual void closeFile()=0;

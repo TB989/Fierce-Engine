@@ -1,8 +1,7 @@
 #pragma once
 
-#include "src/PlatformLayer/include/FileSystem.h"
-
-#include "src/PlatformLayer/utils/EngineSettings.h"
+#include "src/systems/IFileSystem.h"
+#include "src/utils/EngineSettings.h"
 
 #include "Parser.h"
 
@@ -11,19 +10,19 @@
 
 namespace Fierce {
 
-	class Parser_Ini :public Parser {
+	class Parser_Ini :public IParser_Ini, public Parser {
 	public:
-		Parser_Ini(FileSystem* fileSystem, std::string directory);
+		Parser_Ini(IFileSystem* fileSystem, std::string directory);
 		~Parser_Ini();
 
-		void parseFile(std::string filename, EngineSettings& settings);
+		void parseFile(std::string filename, EngineSettings& settings) override;
 
 	private:
 		void parseLine(std::string line, EngineSettings& settings);
 
 	private:
-		FileSystem* m_fileSystem = nullptr;
-		TextFileReader* m_fileReader=nullptr;
+		IFileSystem* m_fileSystem = nullptr;
+		ITextFileReader* m_fileReader=nullptr;
 
 		std::vector<std::string> m_tokens;
 	};

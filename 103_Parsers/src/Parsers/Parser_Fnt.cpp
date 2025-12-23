@@ -1,7 +1,6 @@
 #include "Parser_Fnt.h"
 
-#include "src/PlatformLayer/include/FileSystem.h"
-#include "src/PlatformLayer/utils/FierceStrings.h"
+#include "src/utils/FierceStrings.h"
 
 #include <string>
 
@@ -9,7 +8,7 @@
 #define VALUE m_tokens[1]
 
 namespace Fierce {
-	Parser_Fnt::Parser_Fnt(FileSystem* fileSystem,std::string directory) {
+	Parser_Fnt::Parser_Fnt(IFileSystem* fileSystem,std::string directory) {
 		m_fileSystem = fileSystem;
 		m_fileReader = fileSystem->createTextFileReader(directory);
 	}

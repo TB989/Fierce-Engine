@@ -1,10 +1,12 @@
 #pragma once
 
+#include "src/systems/IParsingSystem.h"
+
 #include <string>
 
 namespace Fierce {
 
-	class Parser {
+	class Parser:public IParser{
 	public: 
 		virtual ~Parser()=default;
 

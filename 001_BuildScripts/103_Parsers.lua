@@ -22,17 +22,17 @@ project "103_Parsers"
 	includedirs
 	{
 		"%{wks.location}/%{prj.name}",
-		"%{IncludeDir.PlatformLayer}"
+		"%{IncludeDir.Common}"
 	}
 
 	libdirs
 	{
-		"%{LibraryDir.Common}"
+		
 	}
 
 	links
 	{
-		"%{Library.PlatformLayer}"
+		
 	}
 
 	filter "system:windows"

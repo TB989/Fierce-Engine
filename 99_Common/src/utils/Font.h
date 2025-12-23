@@ -1,6 +1,6 @@
 #pragma once
 
-#include "src/PlatformLayer/utils/FierceStrings.h"
+#include "FierceStrings.h"
 
 namespace Fierce {
 	class Font {

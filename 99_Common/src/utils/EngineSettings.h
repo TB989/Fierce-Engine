@@ -1,13 +1,13 @@
 #pragma once
 
-#include "src/PlatformLayer/include/WindowSystem.h"
+#include "../systems/IWindowSystem.h"
 #include <string>
 
 namespace Fierce {
 
 	struct EngineSettings {
 		//Window
-		Window::WINDOW_MODE windowMode = Window::WINDOW_MODE::WINDOWED;
+		WINDOW_MODE windowMode = WINDOW_MODE::WINDOWED;
 		int width = 800;
 		int height = 600;
 
