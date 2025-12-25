@@ -6,6 +6,7 @@ namespace Fierce {
 
     class ITimer {
     public:
+        virtual ~ITimer() = default;
         virtual void start()=0;
         virtual void stop()=0;
         virtual double getElapsedTime()=0;
@@ -13,6 +14,8 @@ namespace Fierce {
 
     class ITimeDateSystem:public System{
     public:
+        virtual ~ITimeDateSystem() = default;
+
         virtual int getYear()=0;
         virtual int getMonth()=0;
         virtual int getDay()=0;

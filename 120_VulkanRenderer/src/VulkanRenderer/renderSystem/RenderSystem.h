@@ -1,26 +1,21 @@
-
 #pragma once
 
 #include <windows.h>
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_win32.h>
 
-#include "src/PlatformLayer/utils/System.h"
-#include "src/PlatformLayer/include/LoggingSystem.h"
-#include "src/PlatformLayer/include/FileSystem.h"
+#include "src/systems/IRenderSystem.h"
+#include "src/systems/ILoggingSystem.h"
 
 #include "src/VulkanRenderer/manager/VK_Manager.h"
-
-#include "src/PlatformLayer/utils/FierceStrings.h"
-#include "src/PlatformLayer/utils/Font.h"
 
 #include "src/GUI/GraphicsContext.h"
 
 namespace Fierce {
 
-	class LoggingSystem;
-	class FileSystem;
-	class ParsingSystem;
+	class ILoggingSystem;
+	class IFileSystem;
+	class IParsingSystem;
 
 	class CoreContext;
 	class UploadContext;
@@ -34,12 +29,12 @@ namespace Fierce {
 	class VK_UBO;
 	class VulkanGraphicsContext;
 
-	class Mat4;
+	class IMat4;
 
 	class VK_Mesh;
 	class VK_Texture;
 
-	class RenderSystem:public System {
+	class RenderSystem:public IRenderSystem {
 	public:
 		RenderSystem();
 		~RenderSystem();
@@ -51,35 +46,37 @@ namespace Fierce {
 		void updateSystem() override {};
 		void cleanUpSystem() override;
 
+		std::string getName() override;
+
 		//########################### INTERFACE ##############################################################################
-		int newMesh(int numVertices, int numIndices);
-		void meshLoadVertices(int meshId,int numVertices,float* vertices);
-		void meshLoadIndices(int meshId, int numIndices, uint16_t* indices);
+		int newMesh(int numVertices, int numIndices) override;
+		void meshLoadVertices(int meshId,int numVertices,float* vertices) override;
+		void meshLoadIndices(int meshId, int numIndices, uint16_t* indices) override;
 
-		int newTexture(int width, int height, int numChannels);
-		void textureLoadData(int textureId, unsigned char* pixels);
+		int newTexture(int width, int height, int numChannels) override;
+		void textureLoadData(int textureId, unsigned char* pixels) override;
 
-		void bindPipeline(std::string name);
-		void setOrthographicProjection(float* projectionMatrix);
-		void setPerspectiveProjection(float* projectionMatrix);
-		void setViewMatrix(float* viewMatrix);
-		void loadModelMatrix(float* modelMatrix);
-		void loadColor(float* color);
-		void activateSampler(std::string pipeline, int texture);
+		void bindPipeline(std::string name) override;
+		void setOrthographicProjection(float* projectionMatrix) override;
+		void setPerspectiveProjection(float* projectionMatrix) override;
+		void setViewMatrix(float* viewMatrix) override;
+		void loadModelMatrix(float* modelMatrix) override;
+		void loadColor(float* color) override;
+		void activateSampler(std::string pipeline, int texture) override;
 
-		void startFrame();
-		void drawMesh(int m_meshId);
-		void endFrame();
+		void startFrame() override;
+		void drawMesh(int m_meshId) override;
+		void endFrame() override;
 
 		GraphicsContext* getGraphicsContext() { return (GraphicsContext*)m_graphicsContext; };
 		void resetGraphicsContext();
 		void drawGraphicsContext();
 
-		void postInit();
+		void postInit() override;
 		//########################### INTERFACE ##############################################################################
 
 	public:
-		static Logger* LOGGER;
+		static ILogger* LOGGER;
 
 	private:
 		void createRenderpasses();
@@ -97,11 +94,11 @@ namespace Fierce {
 	private:
 		const static int MAX_NUM_MODEL_MATRICES = 100;
 
-		LoggingSystem* m_loggingSystem=nullptr;
+		ILoggingSystem* m_loggingSystem=nullptr;
 		HWND m_windowHandle = NULL;
-		FileSystem* m_fileSystem=nullptr;
+		IFileSystem* m_fileSystem=nullptr;
 
-		ParsingSystem* m_parsingSystem=nullptr;
+		IParsingSystem* m_parsingSystem=nullptr;
 		std::string m_assetDirectory = "";
 		std::string m_shaderDirectory = "";
 		std::string m_fontDirectory = "";

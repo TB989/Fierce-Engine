@@ -131,6 +131,8 @@ namespace Fierce {
 
 	class IInputSystem:public System{
 	public:
+        virtual ~IInputSystem() = default;
+
 		virtual void switchMouseMode(IWindow* window,bool rawMouse)=0;
         virtual InputContext* getActiveContext() = 0;
 

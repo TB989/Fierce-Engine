@@ -1,12 +1,14 @@
 #pragma once
 
+#include "src/systems/IMathSystem.h"
+
 #include "Vector.h"
 
 namespace Fierce {
 
 	class Transform {};
 
-	class Transform2D : Transform {
+	class Transform2D : Transform{
 	private:
 		Vector2f* m_position;
 		Vector2f* m_scale;
@@ -25,7 +27,7 @@ namespace Fierce {
 		void setRotation(float rotation) { m_rotation = rotation; }
 	};
 
-	class Transform3D : Transform {
+	class Transform3D : Transform{
 	private:
 		Vector3f* m_position;
 		Vector3f* m_scale;

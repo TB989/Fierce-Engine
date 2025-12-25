@@ -11,10 +11,10 @@
 #include <vector>
 
 namespace Fierce {
-    void Layer2D::OnAttach(){
-		IGeometrySystem* geometrySystem = nullptr;
-		IRenderSystem* renderSystem = nullptr;
-		IMathSystem* mathSystem = nullptr;
+    void Layer2D::OnAttach(ISystemManager* manager){
+		IGeometrySystem* geometrySystem = (IGeometrySystem*)manager->getSystem("GeometrySystem");
+		IRenderSystem* renderSystem = (IRenderSystem*)manager->getSystem("RenderSystem");
+		IMathSystem* mathSystem = (IMathSystem*)manager->getSystem("MathSystem");
 		IWindow* m_window=nullptr;
 
 		//###################################### Meshes ###############################################################################
@@ -117,7 +117,7 @@ namespace Fierce {
 		renderSystem->drawMesh(m_meshId_triangle);
     }
 
-	void Layer2D::OnDetach(){
+	void Layer2D::OnDetach(ISystemManager* manager){
 		delete m_transform1;
 		delete m_transform2;
 		delete m_transform3;

@@ -22,6 +22,7 @@ project "121_GUI"
 	includedirs
 	{
 		"%{wks.location}/%{prj.name}",
+		"%{IncludeDir.Common}",
 		"%{IncludeDir.MathLibrary}",
 		"%{IncludeDir.PlatformLayer}",
 		"%{IncludeDir.Vulkan}",

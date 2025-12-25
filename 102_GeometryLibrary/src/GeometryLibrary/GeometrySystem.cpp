@@ -56,6 +56,10 @@ namespace Fierce {
 		}
 	}
 
+	std::string GeometrySystem::getName(){
+		return "GeometrySystem";
+	}
+
 	void GeometrySystem::loadGeometry(GeometryType type, int numPoints, float angle, float innerRadius, int numRings, std::vector<float>& vertices, std::vector<uint16_t>& indices) {
 		m_loader->loadGeometry(type,numPoints,angle,innerRadius,numRings,vertices,indices);
 	}

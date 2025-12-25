@@ -1,5 +1,7 @@
 #pragma once
 
+#include "src/systems/IMathSystem.h"
+
 namespace Fierce {
 
 	class Color3f{
@@ -23,7 +25,7 @@ namespace Fierce {
 		float m_b;
 	};
 
-	class Color4f {
+	class Color4f{
 	public:
 		Color4f(float r, float g, float b, float a) {
 			m_r = r;

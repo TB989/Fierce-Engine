@@ -3,7 +3,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-#include "src/PlatformLayer/include/LoggingSystem.h"
+#include "src/systems/ILoggingSystem.h"
 
 namespace Fierce {
 
@@ -54,7 +54,7 @@ namespace Fierce {
 		return m;
 	}
 
-	void Mat4::print(Logger* logger, std::string name){
+	void Mat4::print(ILogger* logger, std::string name){
 		logger->info("[Matrix %s]:", name.c_str());
 		logger->info("%1.3f %1.3f %1.3f %1.3f", M00, M10, M20, M30);
 		logger->info("%1.3f %1.3f %1.3f %1.3f", M01, M11, M21, M31);

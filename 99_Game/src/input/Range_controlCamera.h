@@ -1,6 +1,6 @@
 #pragma once
 
-#include "src/Bindable.h"
+#include "src/systems/IInputSystem.h"
 
 namespace Fierce {
 

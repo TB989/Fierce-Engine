@@ -8,6 +8,8 @@ namespace Fierce {
 
 	class ILogger {
 	public:
+		virtual ~ILogger() = default;
+
 		virtual void log(const char* logLevel, const char* format, ...)=0;
 		virtual void info(const char* format, ...)=0;
 		virtual void warn(const char* format, ...)=0;
@@ -30,6 +32,8 @@ namespace Fierce {
 
 	class ILoggingSystem:public System{
 	public:
+		virtual ~ILoggingSystem() = default;
+
 		virtual ILogger* createLogger(std::string name)=0;
 		virtual ILogger* createLogger(std::string name, bool logToConsole, std::string file)=0;
 		virtual void deleteLogger(ILogger* logger)=0;

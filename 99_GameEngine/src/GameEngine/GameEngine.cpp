@@ -6,6 +6,7 @@ namespace Fierce {
 	GameEngine::GameEngine(){
 		m_systemManager = new SystemManager();
 		m_plattform = new Plattform();
+		m_layerStack = new LayerStack(m_systemManager);
 
 		//Create plattform systems
 		createSystems();
@@ -15,7 +16,7 @@ namespace Fierce {
 
 		//Sort and intialize systems
 		m_systemManager->sortAllSystems();
-		m_systemManager->initAllSystems();
+		m_systemManager->initAllSystems();//TODO: Rendering System needs Window handle before init
 
 		//Create core logger and timer
 		m_logger = m_loggingSystem->createLogger("CORE", true, "ALL_LOGS");
@@ -28,9 +29,14 @@ namespace Fierce {
 
 		//Create window
 		m_window = m_windowSystem->createWindow("Fierce Engine", m_settings.windowMode, m_settings.width, m_settings.height);
+
+		//Loading App
+		loadApp();
 	}
 
 	GameEngine::~GameEngine(){
+		FreeLibrary(appDLL);
+
 		m_loggingSystem->deleteLogger(m_logger);
 		m_timeDateSystem->deleteTimer(m_timer);
 		m_windowSystem->deleteWindow(m_window);
@@ -39,6 +45,7 @@ namespace Fierce {
 
 		deleteSystems();
 
+		delete m_layerStack;
 		delete m_plattform;
 		delete m_systemManager;
 	}
@@ -49,6 +56,9 @@ namespace Fierce {
 		m_timer->start();
 		while (m_running) {
 			m_systemManager->updateAllSystems();
+			if (m_window->isClosing()) {
+				m_running = false;
+			}
 		}
 		m_timer->stop();
 	}
@@ -60,6 +70,9 @@ namespace Fierce {
 		m_inputSystem = m_plattform->createInputSystem();
 		m_windowSystem = m_plattform->createWindowSystem();
 		m_parsingSystem = new ParsingSystem();
+		m_geometrySystem = new GeometrySystem();
+		m_mathSystem = new MathSystem();
+		m_renderSystem = new RenderSystem();
 	}
 
 	void GameEngine::linkSystems(){
@@ -77,6 +90,10 @@ namespace Fierce {
 
 		m_parsingSystem->linkSystem(m_fileSystem);
 		m_parsingSystem->linkSystem(m_loggingSystem);
+
+		m_renderSystem->linkSystem(m_loggingSystem);
+		m_renderSystem->linkSystem(m_fileSystem);
+		m_renderSystem->linkSystem(m_parsingSystem);
 	}
 
 	void GameEngine::addSystemsToManager(){
@@ -86,6 +103,9 @@ namespace Fierce {
 		m_systemManager->addSystem(m_inputSystem);
 		m_systemManager->addSystem(m_windowSystem);
 		m_systemManager->addSystem(m_parsingSystem);
+		m_systemManager->addSystem(m_geometrySystem);
+		m_systemManager->addSystem(m_mathSystem);
+		m_systemManager->addSystem(m_renderSystem);
 	}
 
 	void GameEngine::addSystemRules(){
@@ -100,5 +120,29 @@ namespace Fierce {
 		m_plattform->deleteInputSystem(m_inputSystem);
 		m_plattform->deleteWindowSystem(m_windowSystem);
 		delete m_parsingSystem;
+		delete m_geometrySystem;
+		delete m_mathSystem;
+		delete m_renderSystem;
+	}
+
+	void GameEngine::loadApp(){
+		appDLL = LoadLibraryA(m_settings.app.c_str());
+		if (!appDLL) {
+			m_logger->error("Failed to load App: %s", m_settings.app.c_str());
+			return;
+		}
+		else {
+			m_logger->info("Loading App: %s", m_settings.app.c_str());
+		}
+
+		auto createFunc = (initAppFunc)GetProcAddress(appDLL, "initApp");
+		if (!createFunc) {
+			m_logger->error("Failed to load function %s from App %s.", "initApp",m_settings.app.c_str());
+			FreeLibrary(appDLL);
+			return;
+		}
+		else {
+			createFunc(m_layerStack);
+		}
 	}
 }//end namespace

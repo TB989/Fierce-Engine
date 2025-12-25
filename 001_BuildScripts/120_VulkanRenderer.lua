@@ -24,6 +24,7 @@ project "120_VulkanRenderer"
 	includedirs
 	{
 		"%{wks.location}/%{prj.name}",
+		"%{IncludeDir.Common}",
 		"%{IncludeDir.PlatformLayer}",
 		"%{IncludeDir.Parsers}",
 		"%{IncludeDir.Vulkan}",

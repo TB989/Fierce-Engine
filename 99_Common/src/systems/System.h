@@ -5,6 +5,8 @@
 namespace Fierce {
 	class System {
 	public:
+		virtual ~System() = default;
+
 		virtual void initSystem(std::string assetDirectory) = 0;
 		virtual void linkSystem(System* system) = 0;
 		virtual void updateSystem() = 0;

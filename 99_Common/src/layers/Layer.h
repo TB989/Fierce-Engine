@@ -1,7 +1,9 @@
 #pragma once
 
-#include "systems/IInputSystem.h"
-#include "systems/IRenderSystem.h"
+#include "../systems/IInputSystem.h"
+#include "../systems/IRenderSystem.h"
+
+#include "../systems/ISystemManager.h"
 
 #include <string>
 
@@ -12,8 +14,8 @@ namespace Fierce {
         explicit Layer(const std::string& name) : m_Name(name) {}
         virtual ~Layer() = default;
 
-        virtual void OnAttach() {}
-        virtual void OnDetach() {}
+        virtual void OnAttach(ISystemManager* manager) {}
+        virtual void OnDetach(ISystemManager* manager) {}
         virtual void OnInput(IInputSystem* inputSystem) {}
         virtual void OnUpdate(float deltaTime) {}
         virtual void OnRender(IRenderSystem* renderSystem) {}

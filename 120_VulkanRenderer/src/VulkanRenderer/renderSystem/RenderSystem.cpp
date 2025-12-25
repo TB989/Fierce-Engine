@@ -22,11 +22,13 @@
 
 #include "src/VulkanRenderer/vulkanObjects/VK_DescriptorSetLayout.h"
 
-#include "src/Parsers/ParsingSystem.h"
+#include "src/systems/IParsingSystem.h"
+#include "src/systems/ILoggingSystem.h"
+#include "src/systems/IFileSystem.h"
 
 namespace Fierce {
 
-	Logger* RenderSystem::LOGGER = nullptr;
+	ILogger* RenderSystem::LOGGER = nullptr;
 
 	RenderSystem::RenderSystem(){
 		
@@ -89,14 +91,14 @@ namespace Fierce {
 	}
 
 	void RenderSystem::linkSystem(System* system){
-		if (dynamic_cast<LoggingSystem*>(system)) {
-			m_loggingSystem = (LoggingSystem*)system;
+		if (dynamic_cast<ILoggingSystem*>(system)) {
+			m_loggingSystem = (ILoggingSystem*)system;
 		}
-		else if (dynamic_cast<FileSystem*>(system)) {
-			m_fileSystem = (FileSystem*)system;
+		else if (dynamic_cast<IFileSystem*>(system)) {
+			m_fileSystem = (IFileSystem*)system;
 		}
-		else if (dynamic_cast<ParsingSystem*>(system)) {
-			m_parsingSystem = (ParsingSystem*)system;
+		else if (dynamic_cast<IParsingSystem*>(system)) {
+			m_parsingSystem = (IParsingSystem*)system;
 		}
 	}
 
@@ -129,6 +131,10 @@ namespace Fierce {
 			LOGGER->info("Clean up render system");
 			m_loggingSystem->deleteLogger(LOGGER);
 		}
+	}
+
+	std::string RenderSystem::getName(){
+		return "RenderSystem";
 	}
 
 	int RenderSystem::newMesh(int numVertices,int numIndices){
@@ -447,11 +453,11 @@ namespace Fierce {
 		RenderSystem::LOGGER->info("##### Loading fonts #####");
 
 		//Fnt
-		Parser_Fnt* parser = m_parsingSystem->createParser_Fnt(m_fontDirectory);
+		IParser_Fnt* parser = m_parsingSystem->createParser_Fnt(m_fontDirectory);
 		Font* m_font;
 
 		//Texture
-		Parser_Tex* parserTex = m_parsingSystem->createParser_Tex(m_fontDirectory);
+		IParser_Tex* parserTex = m_parsingSystem->createParser_Tex(m_fontDirectory);
 		int texWidth, texHeight, texChannels=0;
 		unsigned char* pixels = nullptr;
 
@@ -487,7 +493,7 @@ namespace Fierce {
 	void RenderSystem::loadAllShaders(){
 		RenderSystem::LOGGER->info("##### Loading shaders #####");
 
-		BinaryFileReader* reader = m_fileSystem->createBinaryFileReader(m_shaderDirectory);
+		IBinaryFileReader* reader = m_fileSystem->createBinaryFileReader(m_shaderDirectory);
 		VK_Shader* shader = nullptr;
 		long size = 0;
 		char* sourceCode = nullptr;
@@ -539,8 +545,7 @@ namespace Fierce {
 
 	void RenderSystem::loadAllTextures(){
 		RenderSystem::LOGGER->info("##### Loading textures #####");
-
-		Parser_Tex* parser = new Parser_Tex(m_textureDirectory);
+		IParser_Tex* parser = m_parsingSystem->createParser_Tex(m_textureDirectory);
 		int texWidth, texHeight, texChannels;
 		unsigned char* pixels=nullptr;
 		
@@ -557,7 +562,7 @@ namespace Fierce {
 			parser->freeData(pixels);
 		}
 
-		delete parser;
+		m_parsingSystem->deleteParser(parser);
 
 		RenderSystem::LOGGER->info("##### Done loading textures #####");
 	}

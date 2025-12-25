@@ -1,6 +1,7 @@
 #pragma once
 
 #include "src/systems/System.h"
+#include "src/systems/ISystemManager.h"
 
 #include <vector>
 
@@ -22,7 +23,7 @@ namespace Fierce {
 		CLEANUP_AFTER
 	};
 
-	class SystemManager{
+	class SystemManager:public ISystemManager{
 	private:
 		class SystemRule {
 		public:
@@ -40,6 +41,8 @@ namespace Fierce {
 	public:
 		SystemManager();
 		~SystemManager();
+
+		System* getSystem(std::string name) override;
 
 		void addSystem(System* system);
 		void removeSystem(System* system);

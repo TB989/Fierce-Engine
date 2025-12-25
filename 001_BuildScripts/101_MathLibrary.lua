@@ -22,6 +22,7 @@ project "101_MathLibrary"
 	includedirs
 	{
 		"%{wks.location}/%{prj.name}",
+		"%{IncludeDir.Common}",
 		"%{IncludeDir.PlatformLayer}"
 	}
 

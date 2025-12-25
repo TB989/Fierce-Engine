@@ -60,5 +60,8 @@ namespace Fierce {
 		if (KEY == "assetPath" || KEY == "ASSETPATH") {
 			settings.assetPath = VALUE;
 		}
+		if (KEY == "app" || KEY == "APP") {
+			settings.app = VALUE;
+		}
 	}
 }

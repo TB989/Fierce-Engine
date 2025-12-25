@@ -24,7 +24,10 @@ project "99_GameEngine"
 		"%{wks.location}/%{prj.name}",
 		"%{IncludeDir.Common}",
 		"%{IncludeDir.PlatformLayer}",
-		"%{IncludeDir.Parsers}"
+		"%{IncludeDir.Parsers}",
+		"%{IncludeDir.GeometryLibrary}",
+		"%{IncludeDir.MathLibrary}",
+		"%{IncludeDir.VulkanRenderer}"
 	}
 
 	libdirs 
@@ -35,7 +38,10 @@ project "99_GameEngine"
 	links
 	{
 		"%{Library.PlatformLayer}",
-		"%{Library.Parsers}"
+		"%{Library.Parsers}",
+		"%{Library.GeometryLibrary}",
+		"%{Library.MathLibrary}",
+		"%{Library.VulkanRenderer}"
 	}
 
 	filter "system:windows"

@@ -2,7 +2,7 @@
 
 #include "vulkan/vulkan.h"
 
-#include "src/PlatformLayer/utils/FierceStrings.h"
+#include "src/utils/FierceStrings.h"
 #include <vector>
 
 #include "VK_CompatibilityChecks.h"

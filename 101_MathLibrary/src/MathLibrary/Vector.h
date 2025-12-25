@@ -1,15 +1,15 @@
 #pragma once
 
-#include "src/PlatformLayer/utils/FierceStrings.h"
+#include "src/utils/FierceStrings.h"
 
 namespace Fierce {
 
-	#define VX v[0]
-	#define VY v[1]
-	#define VZ v[2]
-	#define VW v[3]
+#define VX v[0]
+#define VY v[1]
+#define VZ v[2]
+#define VW v[3]
 
-	class Logger;
+	class ILogger;
 
 	class Vector2f {
 	public:
@@ -28,7 +28,7 @@ namespace Fierce {
 
 		void normalize();
 
-		void print(Logger* logger, std::string name);
+		void print(ILogger* logger, std::string name);
 
 	public:
 		float* get() { return v; };
@@ -37,7 +37,7 @@ namespace Fierce {
 		void setX(float x) { VX = x; }
 		void setY(float y) { VY = y; }
 		void setTo(const Vector2f* vector) { VX = vector->VX; VY = vector->VY; }
-		void setTo(float x,float y) { VX = x; VY = y; }
+		void setTo(float x, float y) { VX = x; VY = y; }
 
 	public:
 		Vector2f& operator=(const Vector2f vector);
@@ -81,10 +81,10 @@ namespace Fierce {
 
 		void normalize();
 
-		void print(Logger* logger, std::string name);
+		void print(ILogger* logger, std::string name);
 
 	public:
-		static Vector3f cross(const Vector3f* v1,const Vector3f* v2);
+		static Vector3f cross(const Vector3f* v1, const Vector3f* v2);
 
 	public:
 		float* get() { return v; };
@@ -139,7 +139,7 @@ namespace Fierce {
 
 		void normalize();
 
-		void print(Logger* logger, std::string name);
+		void print(ILogger* logger, std::string name);
 
 	public:
 		float* get() { return v; };
@@ -151,7 +151,7 @@ namespace Fierce {
 		void setY(float y) { VY = y; }
 		void setZ(float z) { VZ = z; }
 		void setW(float w) { VW = w; }
-		void setTo(const Vector4f* vector) { VX = vector->VX; VY = vector->VY; VZ = vector->VZ; VW = vector->VW;}
+		void setTo(const Vector4f* vector) { VX = vector->VX; VY = vector->VY; VZ = vector->VZ; VW = vector->VW; }
 		void setTo(float x, float y, float z, float w) { VX = x; VY = y; VZ = z; VW = w; }
 
 	public:

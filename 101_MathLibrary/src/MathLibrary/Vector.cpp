@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#include "src/PlatformLayer/include/LoggingSystem.h"
+#include "src/systems/ILoggingSystem.h"
 
 namespace Fierce {
 
@@ -22,18 +22,18 @@ namespace Fierce {
 		VY = y;
 	}
 
-	Vector2f::Vector2f(const Vector2f* vector){
+	Vector2f::Vector2f(const Vector2f* vector) {
 		VX = vector->VX;
 		VY = vector->VY;
 	}
 
-	Vector2f::Vector2f(float* vector){
+	Vector2f::Vector2f(float* vector) {
 		for (int i = 0; i < 2; i++) {
 			v[i] = vector[i];
 		}
 	}
 
-	Vector2f::~Vector2f(){
+	Vector2f::~Vector2f() {
 		//delete[] v;
 	}
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -41,15 +41,15 @@ namespace Fierce {
 		return std::sqrtf(VX * VX + VY * VY);
 	}
 
-	float Vector2f::lengthSquared(){
+	float Vector2f::lengthSquared() {
 		return VX * VX + VY * VY;
 	}
 
-	float Vector2f::distance(const Vector2f* vector){
-		return std::sqrtf((VX - vector->VX)*(VX - vector->VX) + (VY - vector->VY)*(VY - vector->VY));
+	float Vector2f::distance(const Vector2f* vector) {
+		return std::sqrtf((VX - vector->VX) * (VX - vector->VX) + (VY - vector->VY) * (VY - vector->VY));
 	}
 
-	float Vector2f::distanceSquared(const Vector2f* vector){
+	float Vector2f::distanceSquared(const Vector2f* vector) {
 		return (VX - vector->VX) * (VX - vector->VX) + (VY - vector->VY) * (VY - vector->VY);
 	}
 
@@ -59,9 +59,9 @@ namespace Fierce {
 		VY = VY / l;
 	}
 
-	void Vector2f::print(Logger* logger,std::string name){
+	void Vector2f::print(ILogger* logger, std::string name) {
 		logger->info("[Vector %s]:", name.c_str());
-		logger->info("%1.3f %1.3f",VX,VY);
+		logger->info("%1.3f %1.3f", VX, VY);
 	}
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	Vector2f& Vector2f::operator=(const Vector2f vector) {
@@ -181,19 +181,19 @@ namespace Fierce {
 		VZ = z;
 	}
 
-	Vector3f::Vector3f(const Vector3f* vector){
+	Vector3f::Vector3f(const Vector3f* vector) {
 		VX = vector->VX;
 		VY = vector->VY;
 		VZ = vector->VZ;
 	}
 
-	Vector3f::Vector3f(float* vector){
+	Vector3f::Vector3f(float* vector) {
 		for (int i = 0; i < 3; i++) {
 			v[i] = vector[i];
 		}
 	}
 
-	Vector3f::~Vector3f(){
+	Vector3f::~Vector3f() {
 		//delete[] v;
 	}
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -201,15 +201,15 @@ namespace Fierce {
 		return std::sqrtf(VX * VX + VY * VY + VZ * VZ);
 	}
 
-	float Vector3f::lengthSquared(){
+	float Vector3f::lengthSquared() {
 		return VX * VX + VY * VY + VZ * VZ;
 	}
 
-	float Vector3f::distance(const Vector3f* vector){
-		return std::sqrtf((VX - vector->VX) * (VX - vector->VX) + (VY - vector->VY) * (VY - vector->VY)+ (VZ - vector->VZ) * (VZ - vector->VZ));
+	float Vector3f::distance(const Vector3f* vector) {
+		return std::sqrtf((VX - vector->VX) * (VX - vector->VX) + (VY - vector->VY) * (VY - vector->VY) + (VZ - vector->VZ) * (VZ - vector->VZ));
 	}
 
-	float Vector3f::distanceSquared(const Vector3f* vector){
+	float Vector3f::distanceSquared(const Vector3f* vector) {
 		return (VX - vector->VX) * (VX - vector->VX) + (VY - vector->VY) * (VY - vector->VY) + (VZ - vector->VZ) * (VZ - vector->VZ);
 	}
 
@@ -220,17 +220,17 @@ namespace Fierce {
 		VZ = VZ / l;
 	}
 
-	void Vector3f::print(Logger* logger,std::string name){
+	void Vector3f::print(ILogger* logger, std::string name) {
 		logger->info("[Vector %s]:", name.c_str());
 		logger->info("%1.3f %1.3f %1.3f", VX, VY, VZ);
 	}
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	Vector3f Vector3f::cross(const Vector3f* v1, const Vector3f* v2){
+	Vector3f Vector3f::cross(const Vector3f* v1, const Vector3f* v2) {
 		return Vector3f(
 			v1->VY * v2->VZ - v1->VZ * v2->VY,
 			v1->VZ * v2->VX - v1->VX * v2->VZ,
 			v1->VX * v2->VY - v1->VY * v2->VX
-			);
+		);
 	}
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	Vector3f& Vector3f::operator=(const Vector3f vector) {
@@ -354,20 +354,20 @@ namespace Fierce {
 		VW = w;
 	}
 
-	Vector4f::Vector4f(const Vector4f* vector){
+	Vector4f::Vector4f(const Vector4f* vector) {
 		VX = vector->VX;
 		VY = vector->VY;
 		VZ = vector->VZ;
 		VW = vector->VW;
 	}
 
-	Vector4f::Vector4f(float* vector){
+	Vector4f::Vector4f(float* vector) {
 		for (int i = 0; i < 4; i++) {
 			v[i] = vector[i];
 		}
 	}
 
-	Vector4f::~Vector4f(){
+	Vector4f::~Vector4f() {
 		//delete[] v;
 	}
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -375,15 +375,15 @@ namespace Fierce {
 		return std::sqrtf(VX * VX + VY * VY + VZ * VZ + VW * VW);
 	}
 
-	float Vector4f::lengthSquared(){
+	float Vector4f::lengthSquared() {
 		return VX * VX + VY * VY + VZ * VZ + VW * VW;
 	}
 
-	float Vector4f::distance(const Vector4f* vector){
+	float Vector4f::distance(const Vector4f* vector) {
 		return std::sqrtf((VX - vector->VX) * (VX - vector->VX) + (VY - vector->VY) * (VY - vector->VY) + (VZ - vector->VZ) * (VZ - vector->VZ) + (VW - vector->VW) * (VW - vector->VW));
 	}
 
-	float Vector4f::distanceSquared(const Vector4f* vector){
+	float Vector4f::distanceSquared(const Vector4f* vector) {
 		return (VX - vector->VX) * (VX - vector->VX) + (VY - vector->VY) * (VY - vector->VY) + (VZ - vector->VZ) * (VZ - vector->VZ) + (VW - vector->VW) * (VW - vector->VW);
 	}
 
@@ -395,7 +395,7 @@ namespace Fierce {
 		VW = VW / l;
 	}
 
-	void Vector4f::print(Logger* logger,std::string name){
+	void Vector4f::print(ILogger* logger, std::string name) {
 		logger->info("[Vector %s]:", name.c_str());
 		logger->info("%1.3f %1.3f %1.3f %1.3f", VX, VY, VZ, VW);
 	}

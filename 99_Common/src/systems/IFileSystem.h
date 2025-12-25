@@ -53,6 +53,8 @@ namespace Fierce {
 
 	class IFileSystem:public System{
 	public:
+		virtual ~IFileSystem() = default;
+
 		virtual IConsoleWriter* createConsoleWriter()=0;
 		virtual void deleteConsoleWriter(IConsoleWriter* writer)=0;
 

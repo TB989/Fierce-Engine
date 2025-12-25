@@ -24,5 +24,4 @@ workspace "Fierce-Engine"
 
 	include "99_Common.lua"
 	include "99_Game.lua"
-	include "99_MainExe.lua"
 	include "99_GameEngine.lua"

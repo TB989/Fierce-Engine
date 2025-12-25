@@ -1,10 +1,12 @@
 #pragma once
 
+#include "System.h"
+
 #include <string>
 
 namespace Fierce {
 
-	class IRenderSystem{
+	class IRenderSystem:public System{
 	public:
 		//########################### INTERFACE ##############################################################################
 		virtual int newMesh(int numVertices, int numIndices)=0;

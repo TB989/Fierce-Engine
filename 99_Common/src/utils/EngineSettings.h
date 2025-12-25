@@ -13,6 +13,9 @@ namespace Fierce {
 
 		//Asset path
 		std::string assetPath = "";
+
+		//App
+		std::string app = "";
 	};
 
 }//end namespace

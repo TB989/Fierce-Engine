@@ -1,5 +1,7 @@
 #pragma once
 
+#include "System.h"
+
 #include <vector>
 
 namespace Fierce {
@@ -17,7 +19,7 @@ namespace Fierce {
 		SPHERE
 	};
 
-	class IGeometrySystem{
+	class IGeometrySystem:public System{
 	public:
 		virtual void loadGeometry(GeometryType type, int numPoints, float angle, float innerRadius, int numRings, std::vector<float>& vertices, std::vector<uint16_t>& indices)=0;
 	};

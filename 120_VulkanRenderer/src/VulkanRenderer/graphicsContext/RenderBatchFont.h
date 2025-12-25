@@ -4,7 +4,7 @@
 
 #include "RenderBatch.h"
 
-#include "src/PlatformLayer/utils/Font.h"
+#include "src/utils/Font.h"
 
 namespace Fierce {
 

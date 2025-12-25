@@ -1,7 +1,7 @@
 #pragma once
 
-#include "src/Bindable.h"
-#include "src/Layer.h"
+#include "src/systems/IInputSystem.h"
+#include "src/layers/Layer.h"
 #include "src/math/IColor.h"
 #include "src/math/ITransform.h"
 #include "src/math/IMatrix.h"
@@ -11,7 +11,7 @@ namespace Fierce {
 	public:
 		Layer2D() : Layer("Layer2D") {}
 
-		void OnAttach() override;
+		void OnAttach(ISystemManager* manager) override;
 
 		void OnInput(IInputSystem* inputSystem) override;
 
@@ -19,7 +19,7 @@ namespace Fierce {
 
 		void OnRender(IRenderSystem* renderSystem) override;
 
-		void OnDetach() override;
+		void OnDetach(ISystemManager* manager) override;
 
 	private:
 		Action* m_action = nullptr;

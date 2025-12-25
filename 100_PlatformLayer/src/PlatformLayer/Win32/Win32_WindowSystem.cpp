@@ -114,6 +114,7 @@ namespace Fierce {
 		switch (message) {
 			//*** Window ***//
 		case WM_CLOSE:
+			window->onClose();
 			return 0;
 		case WM_SIZE:
 			if (window!=nullptr) {

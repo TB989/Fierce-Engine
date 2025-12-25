@@ -3,7 +3,9 @@
 #include "Vector.h"
 #include "Transform.h"
 
-#include "src/PlatformLayer/utils/FierceStrings.h"
+#include "src/systems/IMathSystem.h"
+
+#include "src/utils/FierceStrings.h"
 
 namespace Fierce {
 
@@ -27,9 +29,9 @@ namespace Fierce {
 	#define M32 m[14]
 	#define M33 m[15]
 
-	class Logger;
+	class ILogger;
 
-	class Mat4 {
+	class Mat4{
 
 	public:
 		Mat4();
@@ -39,7 +41,7 @@ namespace Fierce {
 
 	public:
 		float* get();
-		void print(Logger* logger, std::string name);
+		void print(ILogger* logger, std::string name);
 
 		void setToIdentity();
 		void setToNull();

@@ -8,7 +8,7 @@
 
 namespace Fierce {
 
-	class GeometrySystem : public System,IGeometrySystem{
+	class GeometrySystem : public IGeometrySystem{
 	public:
 		GeometrySystem();
 		~GeometrySystem();
@@ -17,6 +17,8 @@ namespace Fierce {
 		void linkSystem(System* system) override;
 		void updateSystem() override;
 		void cleanUpSystem() override;
+
+		std::string getName() override;
 
 		void loadGeometry(GeometryType type, int numPoints, float angle, float innerRadius, int numRings, std::vector<float>& vertices, std::vector<uint16_t>& indices) override;
 

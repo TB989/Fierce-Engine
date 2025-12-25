@@ -12,9 +12,14 @@ namespace Fierce {
 
 	class IWindow {
 	public:
+		virtual ~IWindow() = default;
+
 		virtual void pollEvents()=0;
 		virtual void show()=0;
 		virtual void onResize(int width, int height)=0;
+
+		virtual void onClose() = 0;
+		virtual bool isClosing() = 0;
 
 		virtual std::string getTitle()=0;
 		virtual bool isFullcreen()=0;
@@ -27,6 +32,7 @@ namespace Fierce {
 
 	class IWindowSystem:public System{
 	public:
+		virtual ~IWindowSystem() = default;
 		virtual IWindow* createWindow(std::string title, WINDOW_MODE windowMode, int width, int height)=0;
 		virtual void deleteWindow(IWindow* window)=0;
 	};

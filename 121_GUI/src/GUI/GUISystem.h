@@ -1,10 +1,5 @@
 #pragma once
 
-#include "src/VulkanRenderer/renderSystem/RenderSystem.h"
-#include "src/PlatformLayer/include/LoggingSystem.h"
-#include "src/PlatformLayer/include/InputSystem.h"
-#include "src/PlatformLayer/utils/System.h"
-
 #include "src/GUI/GraphicsContext.h"
 
 namespace Fierce {

@@ -16,6 +16,15 @@ namespace Fierce {
         for (auto* rule : m_rules_cleanUp) delete rule;
 	}
 
+    System* SystemManager::getSystem(std::string name){
+        for (System* system:m_systems) {
+            if (system->getName() == name) {
+                return system;
+            }
+        }
+        return nullptr;
+    }
+
 	void SystemManager::addSystem(System* system){
 		m_systems.push_back(system);
 	}

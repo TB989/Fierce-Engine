@@ -16,6 +16,8 @@ namespace Fierce{
 		void pollEvents() override;
 		void show() override;
 		void onResize(int width, int height) override;
+		void onClose() override;
+		bool isClosing() override;
 
 		std::string getTitle() override;
 		bool isFullcreen() override;
@@ -39,6 +41,7 @@ namespace Fierce{
 
 		std::string m_title = "";
 		bool m_isFullscreen = false;
+		bool m_isClosing = false;
 		int m_width = -1;
 		int m_height = -1;
 	};

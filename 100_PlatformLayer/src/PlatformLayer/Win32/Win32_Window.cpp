@@ -104,6 +104,14 @@ namespace Fierce {
 		}
 	}
 
+	void Win32_Window::onClose(){
+		m_isClosing = true;
+	}
+
+	bool Win32_Window::isClosing(){
+		return m_isClosing;
+	}
+
 	std::string Win32_Window::getTitle(){
 		return m_title;
 	}

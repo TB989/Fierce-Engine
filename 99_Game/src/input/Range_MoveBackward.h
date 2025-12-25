@@ -2,7 +2,7 @@
 
 #include "src/layers/Player.h"
 
-#include "src/Bindable.h"
+#include "src/systems/IInputSystem.h"
 
 namespace Fierce {
 
